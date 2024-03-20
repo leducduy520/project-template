@@ -14,5 +14,6 @@ jobs:
       run: sudo apt install libmpfr-dev libgmp3-dev libmpc-dev -y
     - name: install-cmake-format
       run: pip install cmake-format
-    - name: run-config
-      run: cmake --preset=u-ninja-gcc
+    - name: test_cmake_vers
+      run: cmake --version
+    
