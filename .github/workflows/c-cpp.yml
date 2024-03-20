@@ -14,14 +14,13 @@ jobs:
       run: sudo apt install libmpfr-dev libgmp3-dev libmpc-dev -y
     - name: install_cmake_format
       run: pip install cmake-format
-    - name: test_cmake_vers
-      run: cmake --version
-    - name: check_folder
-      run: printenv PWD
-    - name: list
-      run: ls
-    - name: check_folder2
-      run: cd ..;printenv PWD
-    - name: list2
-      run: ls
+    - name: git_config
+      run: git config --global user.name "leducduy520"; git config --global user.email duyleduc123@gmail.com
+    - name:  git_clone
+      run: git clone -v --progress https://github.com/leducduy520/project-template.git
+    - name: go_to_project-template
+      run: cd project-template
+    - name: run_configuration
+      run: cmake --preset=u-ninja-gcc
+    
       
