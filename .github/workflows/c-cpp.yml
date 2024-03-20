@@ -8,10 +8,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: update
-      run: sudo apt update; sudo apt upgrade
     - name: install_essentail_deps
-      run: sudo apt install build-essential python3 cmake doxygen graphviz ninja-build pkgconf gcc -y
+      run: sudo apt-get install build-essential python3 cmake doxygen graphviz ninja-build pkgconf gcc -y --fix-missing
     - name: install_cmake_format
       run: pip install cmake-format
     - name: git_config
