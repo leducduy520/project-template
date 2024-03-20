@@ -17,5 +17,5 @@ jobs:
     - name: test_cmake_vers
       run: cmake --version
     - name: check_folder
-      run: ls;ls ..
+      run: cd project-template;ls
       
