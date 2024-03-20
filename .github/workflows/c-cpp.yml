@@ -8,12 +8,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: install-essentail-deps
+    - name: install_essentail_deps
       run: sudo apt install -y build-essential python3 cmake doxygen graphviz ninja-build pkgconf 
-    - name: install-gcc-deps
+    - name: install_gcc_deps
       run: sudo apt install libmpfr-dev libgmp3-dev libmpc-dev -y
-    - name: install-cmake-format
+    - name: install_cmake_format
       run: pip install cmake-format
     - name: test_cmake_vers
       run: cmake --version
-    
+    - name: run_configuration
+      run: cmake --preset=u-ninja-gcc
