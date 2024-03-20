@@ -19,7 +19,7 @@ jobs:
     - name:  git_clone
       run: git clone -v --progress https://github.com/leducduy520/project-template.git
     - name: go_to_project-template
-      run: cd project-template
+      run: cd project-template; ls
     - name: run_configuration
       run: cmake --preset=u-ninja-gcc
     
