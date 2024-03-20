@@ -17,4 +17,4 @@ jobs:
     - name: test_cmake_vers
       run: cmake --version
     - name: run_configuration
-      run: cmake --preset=u-ninja-gcc
+      run: cmake -S. -Bbuild -DCMAKE_INSTALL_PREFIX=install -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -GNinja
