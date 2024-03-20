@@ -20,4 +20,8 @@ jobs:
       run: printenv PWD
     - name: list
       run: ls
+    - name: check_folder2
+      run: cd ..;printenv PWD
+    - name: list2
+      run: ls
       
