@@ -1,0 +1,18 @@
+name: C/C++ CI
+
+on: workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: install-essentail-deps
+      run: sudo apt install -y build-essential python3 cmake doxygen graphviz ninja-build pkgconf 
+    - name: install-gcc-deps
+      run: sudo apt install libmpfr-dev libgmp3-dev libmpc-dev -y
+    - name: install-cmake-format
+      run: pip install cmake-format
+    - name: run-config
+      run: cmake --preset=u-ninja-gcc
