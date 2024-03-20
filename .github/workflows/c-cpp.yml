@@ -9,11 +9,9 @@ jobs:
 
     steps:
     - name: update
-      run: sudo apt-get update; sudo apt-get upgrade
+      run: sudo apt update; sudo apt upgrade
     - name: install_essentail_deps
-      run: sudo apt-get install -y build-essential python3 cmake doxygen graphviz ninja-build pkgconf --fix-missing
-    - name: install_gcc_deps
-      run: sudo apt-get install libmpfr-dev libgmp3-dev libmpc-dev -y --fix-missing
+      run: sudo apt update; sudo apt install build-essential python3 cmake doxygen graphviz ninja-build pkgconf gcc -y
     - name: install_cmake_format
       run: pip install cmake-format
     - name: git_config
