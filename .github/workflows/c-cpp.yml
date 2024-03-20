@@ -17,5 +17,7 @@ jobs:
     - name: test_cmake_vers
       run: cmake --version
     - name: check_folder
-      run: cd project-template;ls
+      run: printenv PWD
+    - name: list
+      run: ls
       
