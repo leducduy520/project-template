@@ -1,0 +1,54 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 27,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "external",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": {
+                    "type": "FILEPATH",
+                    "value": "g++.exe"
+                },
+                "CMAKE_C_COMPILER": {
+                    "type": "FILEPATH",
+                    "value": "gcc.exe"
+                }
+            }
+        },
+        {
+            "name": "u-external",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_C_COMPILER": "gcc"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "external",
+            "configurePreset": "external",
+            "jobs": 4,
+            "verbose": true
+        },
+        {
+            "name": "u-external",
+            "configurePreset": "u-external",
+            "inherits": "external"
+        }
+    ]
+}

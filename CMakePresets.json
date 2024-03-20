@@ -1,0 +1,81 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 27
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build",
+            "installDir": "${sourceDir}/install",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "ninja-gcc",
+            "inherits": "base",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": {
+                    "type": "FILEPATH",
+                    "value": "gcc.exe"
+                },
+                "CMAKE_CXX_COMPILER": {
+                    "type": "FILEPATH",
+                    "value": "g++.exe"
+                }
+            },
+            "condition":{
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "u-ninja-gcc",
+            "inherits":"ninja-gcc",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
+            },
+            "condition":{
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "ninja-gcc",
+            "configurePreset": "ninja-gcc",
+            "configuration": "Release",
+            "jobs": 4,
+            "targets": [
+                "all"
+            ]
+        },
+        {
+            "name": "ninja-gcc-docs",
+            "inherits": "ninja-gcc",
+            "targets": [
+                "gen_doc",
+                "gen_graph",
+                "install"
+            ]
+        },
+        {
+            "name": "ninja-gcc-cmake-format",
+            "inherits": "ninja-gcc",
+            "targets": "run_cmake_format"
+        },
+        {
+            "name": "u-ninja-gcc",
+            "configurePreset": "u-ninja-gcc",
+            "inherits": "ninja-gcc"
+        }
+    ]
+}

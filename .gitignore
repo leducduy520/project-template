@@ -1,0 +1,12 @@
+.vs
+.git
+
+external/build
+external/src
+external/tmp
+external/install
+
+build/
+install/
+docs/html
+docs/graph
