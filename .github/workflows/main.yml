@@ -23,8 +23,6 @@ jobs:
       - name: Configure Project
         uses: threeal/cmake-action@v1.3.0
         with:
-          args: |
-            --graphviz=docs/graph/graph.dot
-            --preset=u-ninja-gcc
-      - name: Build project
-        run: cmake --build --preset=u-ninja-gcc-docs
+          args: --preset=u-ninja-gcc --graphviz=docs/graph/graph.dot
+          build-args: --preset=u-ninja-gcc-docs
+          run-build: true

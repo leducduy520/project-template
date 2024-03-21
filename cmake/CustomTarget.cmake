@@ -21,18 +21,6 @@ function(add_gen_doc)
             SOURCES ${CMAKE_SOURCE_DIR}/docs/docCfg
             )
 
-        if(NOT EXISTS ${CMAKE_SOURCE_DIR}/docs/graph)
-            execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/docs/graph)
-            message(STATUS "create ${CMAKE_SOURCE_DIR}/docs/graph directory")
-            message(WARNING "Can not generate graph. Please try \"make graph\" at source directory before")
-            return()
-        endif()
-
-        if(NOT EXISTS ${CMAKE_SOURCE_DIR}/docs/graph/graph.dot)
-            message(WARNING "Can not generate graph. Please try \"make graph\" at source directory before")
-            return()
-        endif()
-
         add_custom_command(
             OUTPUT ${CMAKE_SOURCE_DIR}/docs/graph/graph.png
             COMMAND dot -v -Tpng graph.dot -o graph.png
