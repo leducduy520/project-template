@@ -23,7 +23,7 @@ jobs:
     - name: install clang-format
       run: pip install cmake-format
     - name: install_ninja
-      run: sudo apt-get install ninja_build
+      run: pip install ninja
     - name: install_graphviz
       run: sudo apt-get install graphviz pkg-config
     - name: git_config
