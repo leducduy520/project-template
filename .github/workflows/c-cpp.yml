@@ -8,15 +8,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: install_essentail_deps
-      run: sudo apt-get install build-essential python3 cmake doxygen graphviz ninja-build pkgconf gcc -y --fix-missing
-    - name: install_cmake_format
-      run: pip install cmake-format
+    - name: apt_update
+      run: apt-get update
+    - name: apt_upgrade
+      run: sudo apt-get upgrade
+    - name: install_gcc
+      run: sudo apt-get install gcc g++ gdb
+    - name: install_cmake
+      run: sudo apt-get install make cmake
+    - name: install_git_doxygen
+      run: sudo apt-get install git doxygen
+    - name: install_python
+      run: sudo apt-get install python3 python3-pip
+    - name: install clang-format
+      run: sudo apt-get install cmake-format
+    - name: install_ninja
+      run: sudo apt-get install ninja_build
+    - name: install_graphviz
+      run: sudo apt-get install graphviz pkg-config
     - name: git_config
       run: git config --global user.name "leducduy520"; git config --global user.email duyleduc123@gmail.com
     - name:  git_clone
       run: git clone -v --progress https://github.com/leducduy520/project-template.git
     - name: go_to_project-template
-      run: cd project-template; ls; cmake --preset=u-ninja-gcc
+      run: cd project-template; ls;export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PWD/install/share/pkgconfig; cmake --preset=u-ninja-gcc
     
       
