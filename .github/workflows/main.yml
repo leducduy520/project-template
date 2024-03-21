@@ -25,6 +25,7 @@ jobs:
         uses: threeal/cmake-action@v1.3.0
         with:
           args: --preset=ubuntu --graphviz=docs/graph/graph.dot
-          build-args: --preset=ubuntu-all
-          run-build: true
-          run-test: true
+      - name: Build Project
+        run: cmake --build --preset=ubuntu-all
+      - name: Ctest
+        run: ctest --preset=ubuntu
