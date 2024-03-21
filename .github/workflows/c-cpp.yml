@@ -5,9 +5,11 @@ on: workflow_dispatch
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
+    - name: update
+      run: sudo apt update
     - name: apt_upgrade
       run: sudo apt-get upgrade
     - name: install_gcc
