@@ -19,8 +19,14 @@ jobs:
           pip install ninja
           sudo apt-get install graphviz pkg-config
       - name: git_config
-        run: git config --global user.name "leducduy520"; git config --global user.email duyleduc123@gmail.com
+        run: |
+          git config --global user.name "leducduy520"
+          git config --global user.email duyleduc123@gmail.com
       - name: git_clone
         run: git clone -v --progress https://github.com/leducduy520/project-template.git
       - name: go_to_project-template
-        run: cd project-template; ls;export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PWD/install/share/pkgconfig; git branch; cmake --preset=u-ninja-gcc
+        run: |
+          cd project-template
+          ls
+          export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PWD/install/share/pkgconfig
+          git branch; cmake --preset=u-ninja-gcc
