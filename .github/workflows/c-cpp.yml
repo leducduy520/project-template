@@ -8,8 +8,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: apt_update
-      run: apt-get update
     - name: apt_upgrade
       run: sudo apt-get upgrade
     - name: install_gcc
