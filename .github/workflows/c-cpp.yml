@@ -7,24 +7,17 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: update
-        run: sudo apt update
-      - name: apt_upgrade
-        run: sudo apt-get upgrade
-      - name: install_gcc
-        run: sudo apt-get install gcc g++ gdb
-      - name: install_cmake
-        run: sudo apt-get install make cmake
-      - name: install_git_doxygen
-        run: sudo apt-get install git doxygen
-      - name: install_python
-        run: sudo apt-get install python3 python3-pip
-      - name: install clang-format
-        run: pip install cmake-format
-      - name: install_ninja
-        run: pip install ninja
-      - name: install_graphviz
-        run: sudo apt-get install graphviz pkg-config
+      - name: update & install deps
+        run: |
+          sudo apt update
+          sudo apt-get upgrade
+          sudo apt-get install gcc g++ gdb
+          sudo apt-get install make cmake
+          sudo apt-get install git doxygen
+          sudo apt-get install python3 python3-pip
+          pip install cmake-format
+          pip install ninja
+          sudo apt-get install graphviz pkg-config
       - name: git_config
         run: git config --global user.name "leducduy520"; git config --global user.email duyleduc123@gmail.com
       - name: git_clone
