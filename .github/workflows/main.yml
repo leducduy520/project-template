@@ -22,9 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.2
       - name: Configure Project
-        uses: threeal/cmake-action@v1.3.0
-        with:
-          args: --preset=ubuntu --graphviz=docs/graph/graph.dot
+        run: cmake --preset=ubuntu --graphviz=docs/graph/graph.dot
       - name: Build Project
         run: cmake --build --preset=ubuntu-all
       - name: Ctest
