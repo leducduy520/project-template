@@ -72,6 +72,11 @@
             "name": "u-ninja-gcc",
             "configurePreset": "u-ninja-gcc",
             "inherits": "ninja-gcc"
+        },
+        {
+            "name": "u-ninja-gcc-docs",
+            "configurePreset": "u-ninja-gcc",
+            "inherits": "ninja-gcc-docs"
         }
     ]
 }

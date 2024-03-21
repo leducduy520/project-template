@@ -1,5 +1,5 @@
 config-gcc:
-	cmake --preset=ninja-gcc -GNinja --graphviz=docs/graph/graph.dot
+	cmake --preset=ninja-gcc --graphviz=docs/graph/graph.dot
 .PHONY: config-gcc
 
 fresh-gcc:

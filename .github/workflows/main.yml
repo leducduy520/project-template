@@ -1,10 +1,10 @@
-name: Test
-on: 
+name: Test project on push to main
+on:
   push:
     branches:
       - main
 jobs:
-  job-one:
+  config-and-build:
     runs-on: ubuntu-22.04
     steps:
       - name: update & install deps
@@ -26,6 +26,5 @@ jobs:
           args: |
             --graphviz=docs/graph/graph.dot
             --preset=u-ninja-gcc
-      - name: test folder
-        run: ls
-        
+      - name: Build project
+        run: cmake --build --preset=u-ninja-gcc-docs
