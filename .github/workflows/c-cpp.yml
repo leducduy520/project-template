@@ -21,7 +21,7 @@ jobs:
     - name: install_python
       run: sudo apt-get install python3 python3-pip
     - name: install clang-format
-      run: sudo apt-get install cmake-format
+      run: pip install cmake-format
     - name: install_ninja
       run: sudo apt-get install ninja_build
     - name: install_graphviz
