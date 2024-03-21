@@ -26,6 +26,7 @@ jobs:
           generator: Ninja
           c-compiler: gcc
           cxx-compiler: g++
+          options: --graphviz=docs/graph/graph.dot
       - name: test folder
         run: ls
         
