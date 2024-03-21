@@ -6,33 +6,36 @@ function(add_gen_doc)
     find_package(Doxygen REQUIRED)
 
     if(Doxygen_FOUND)
+        set(DOCS_HTML_DIR ${DOCS_DIR}/html CACHE PATH "project html directory")
+        set(DOCS_GRAPH_DIR ${DOCS_DIR}/graph CACHE PATH "project graph directory")
+
         add_custom_command(
-            OUTPUT ${CMAKE_SOURCE_DIR}/docs/html/index.html
+            OUTPUT ${DOCS_HTML_DIR}/index.html
             COMMAND doxygen ./docCfg
-            DEPENDS ${CMAKE_SOURCE_DIR}/docs/docCfg
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs
+            DEPENDS ${DOCS_DIR}/docCfg
+            WORKING_DIRECTORY ${DOCS_DIR}
             VERBATIM USES_TERMINAL
             )
 
         add_custom_target(
             gen_doc
             COMMENT "Generate project document"
-            DEPENDS ${CMAKE_SOURCE_DIR}/docs/html/index.html
-            SOURCES ${CMAKE_SOURCE_DIR}/docs/docCfg
+            DEPENDS ${DOCS_HTML_DIR}/index.html
+            SOURCES ${DOCS_DIR}/docCfg
             )
 
         add_custom_command(
-            OUTPUT ${CMAKE_SOURCE_DIR}/docs/graph/graph.png
-            COMMAND dot -v -Tpng graph.dot -o graph.png
-            DEPENDS ${CMAKE_SOURCE_DIR}/docs/graph/graph.dot
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/graph
+            OUTPUT ${DOCS_GRAPH_DIR}/${GRAPH_OUTPUT_NAME}.png
+            COMMAND dot -v -Tpng graph.dot -o ${GRAPH_OUTPUT_NAME}.png
+            DEPENDS ${DOCS_GRAPH_DIR}/graph.dot
+            WORKING_DIRECTORY ${DOCS_GRAPH_DIR}
             VERBATIM USES_TERMINAL
             )
 
         add_custom_target(
             gen_graph
             COMMENT "Generate project graph dependencies"
-            DEPENDS ${CMAKE_SOURCE_DIR}/docs/graph/graph.png
+            DEPENDS ${DOCS_GRAPH_DIR}/${GRAPH_OUTPUT_NAME}.png
             )
     endif()
 endfunction()
@@ -43,14 +46,16 @@ function(and_external_catch2)
     set(OUTPUT)
     set(ERROR)
     if(WIN32)
-        set(PRESET external)
+        set(PRESET windows)
     else()
-        set(PRESET u-external)
+        set(PRESET ubuntu)
     endif(WIN32)
 
-    execute_process(COMMAND ${CMAKE_COMMAND} --preset=${PRESET} WORKING_DIRECTORY ${EXTERNAL_DIR})
+    set(EXTERNAL_BINARY_DIR ${EXTERNAL_DIR}/build/${PRESET} PARENT_SCOPE)
+
+    execute_process(COMMAND ${CMAKE_COMMAND} -S . -B ${EXTERNAL_DIR}/build/${PRESET} --preset=${PRESET} WORKING_DIRECTORY ${EXTERNAL_DIR})
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build --preset=${PRESET}
+        COMMAND ${CMAKE_COMMAND} --build ${EXTERNAL_DIR}/build/${PRESET} --preset=${PRESET}
         WORKING_DIRECTORY ${EXTERNAL_DIR}
         RESULT_VARIABLE RESULT
         OUTPUT_VARIABLE OUTPUT

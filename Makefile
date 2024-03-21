@@ -1,19 +1,15 @@
-config-gcc:
-	cmake --preset=ninja-gcc --graphviz=docs/graph/graph.dot
-.PHONY: config-gcc
+config-win:
+	cmake --preset=windows --graphviz=docs/graph/graph.dot
+.PHONY: config-win
 
-fresh-gcc:
-	cmake --fresh --preset=ninja-gcc --graphviz=docs/graph/graph.dot
-.PHONY: fresh-gcc
+config-ubuntu:
+	cmake --preset=ubuntu --graphviz=docs/graph/graph.dot
+.PHONY: config-ubuntu
 
-build:
-	cmake --build --preset=ninja-gcc
-.PHONY: build
+fresh-win:
+	cmake --fresh --preset=windows --graphviz=docs/graph/graph.dot
+.PHONY: fresh-win
 
-docs:
-	cmake --build --preset=ninja-gcc-docs
-.PHONY: docs
-
-cmake_format:
-	cmake --build --preset=ninja-gcc-cmake-format
-.PHONY: cmake_format
+fresh-ubuntu:
+	cmake --fresh --preset=ubuntu --graphviz=docs/graph/graph.dot
+.PHONY: fresh-ubuntu

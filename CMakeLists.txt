@@ -17,7 +17,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MESSAGE_LOG_LEVEL VERBOSE)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
-set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 if(WIN32)
@@ -32,14 +31,14 @@ foreach(build_type in ${CMAKE_CONFIGURATION_TYPES})
 endforeach()
 
 # CHECK_CXX_ACCEPTS_FLAG(<flags> <variable>)
-check_cxx_accepts_flag(/W4 AVALIABLE)
+# check_cxx_accepts_flag(/W4 AVALIABLE)
 
-if(AVALIABLE)
-    list(APPEND CMAKE_MESSAGE_INDENT "NOTICE:")
-    message(STATUS "/W4 is avaliable")
-    list(POP_BACK CMAKE_MESSAGE_INDENT)
-    set(CMAKE_CXX_FLAGS "/W4 /wd4530 /we4244")
-endif()
+# if(AVALIABLE)
+#     list(APPEND CMAKE_MESSAGE_INDENT "NOTICE:")
+#     message(STATUS "/W4 is avaliable")
+#     list(POP_BACK CMAKE_MESSAGE_INDENT)
+#     set(CMAKE_CXX_FLAGS "/W4 /wd4530 /we4244")
+# endif()
 
 option(ENABLE_CMAKE_FORMAT "enable cmake format" ON)
 option(ENABLE_DOCUMENT_TARGET "enable document target" ON)
@@ -47,6 +46,8 @@ option(ENABLE_DOCUMENT_TARGET "enable document target" ON)
 set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/external)
 set(DOCS_DIR ${CMAKE_SOURCE_DIR}/docs)
 set(TOOLS_DIR ${CMAKE_SOURCE_DIR}/tools)
+
+set(GRAPH_OUTPUT_NAME graph)
 
 include(Tools)
 add_cmake_format_target()
@@ -69,7 +70,7 @@ install(
     )
 
 install(
-    DIRECTORY ${DOCS_DIR}/html/
+    DIRECTORY ${DOCS_DIR}/html
     DESTINATION ${CMAKE_INSTALL_DOCDIR}
     DIRECTORY_PERMISSIONS OWNER_WRITE WORLD_READ WORLD_EXECUTE
     )

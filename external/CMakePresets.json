@@ -10,13 +10,12 @@
             "name": "base",
             "hidden": true,
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
         },
         {
-            "name": "external",
+            "name": "windows",
             "inherits": "base",
             "cacheVariables": {
                 "CMAKE_CXX_COMPILER": {
@@ -30,7 +29,7 @@
             }
         },
         {
-            "name": "u-external",
+            "name": "ubuntu",
             "inherits": "base",
             "cacheVariables": {
                 "CMAKE_CXX_COMPILER": "g++",
@@ -40,15 +39,15 @@
     ],
     "buildPresets": [
         {
-            "name": "external",
-            "configurePreset": "external",
+            "name": "windows",
+            "configurePreset": "windows",
             "jobs": 4,
             "verbose": true
         },
         {
-            "name": "u-external",
-            "configurePreset": "u-external",
-            "inherits": "external"
+            "name": "ubuntu",
+            "configurePreset": "ubuntu",
+            "inherits": "windows"
         }
     ]
 }

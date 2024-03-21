@@ -4,14 +4,14 @@
         {
             "name": "base",
             "hidden": true,
-            "binaryDir": "${sourceDir}/build",
-            "installDir": "${sourceDir}/install",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
         },
         {
-            "name": "ninja-gcc",
+            "name": "windows",
             "inherits": "base",
             "generator": "Ninja",
             "cacheVariables": {
@@ -31,8 +31,8 @@
             }
         },
         {
-            "name": "u-ninja-gcc",
-            "inherits":"ninja-gcc",
+            "name": "ubuntu",
+            "inherits":"windows",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
                 "CMAKE_CXX_COMPILER": "g++"
@@ -46,17 +46,23 @@
     ],
     "buildPresets": [
         {
-            "name": "ninja-gcc",
-            "configurePreset": "ninja-gcc",
+            "name": "windows",
+            "configurePreset": "windows",
             "configuration": "Release",
             "jobs": 4,
             "targets": [
                 "all"
-            ]
+            ],
+            "condition":
+            {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
         },
         {
-            "name": "ninja-gcc-docs",
-            "inherits": "ninja-gcc",
+            "name": "windows-docs",
+            "inherits": "windows",
             "targets": [
                 "gen_doc",
                 "gen_graph",
@@ -64,13 +70,8 @@
             ]
         },
         {
-            "name": "ninja-gcc-cmake-format",
-            "inherits": "ninja-gcc",
-            "targets": "run_cmake_format"
-        },
-        {
-            "name": "ninja-gcc-all",
-            "inherits": "ninja-gcc",
+            "name": "windows-all",
+            "inherits": "windows",
             "targets": [
                 "all",
                 "gen_doc",
@@ -79,19 +80,55 @@
             ]
         },
         {
-            "name": "u-ninja-gcc",
-            "configurePreset": "u-ninja-gcc",
-            "inherits": "ninja-gcc"
+            "name": "ubuntu",
+            "configurePreset": "ubuntu",
+            "inherits": "windows",
+            "condition":
+            {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
         },
         {
-            "name": "u-ninja-gcc-docs",
-            "configurePreset": "u-ninja-gcc",
-            "inherits": "ninja-gcc-docs"
+            "name": "ubuntu-docs",
+            "configurePreset": "ubuntu",
+            "inherits": ["ubuntu"],
+            "targets": [
+                "gen_doc",
+                "gen_graph",
+                "install"
+            ]
         },
         {
-            "name": "u-ninja-gcc-all",
-            "configurePreset": "u-ninja-gcc",
-            "inherits": "ninja-gcc-all"
+            "name": "ubuntu-all",
+            "configurePreset": "ubuntu",
+            "inherits": ["ubuntu"],
+            "targets": [
+                "all",
+                "gen_doc",
+                "gen_graph",
+                "install"
+            ]
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "windows",
+            "configurePreset": "windows",
+            "output":{
+                "verbosity": "verbose",
+                "shortProgress":true,
+                "debug":true
+            },
+            "execution":{
+                "jobs": 5
+            }
+        },
+        {
+            "name": "ubuntu",
+            "configurePreset": "ubuntu",
+            "inherits": "windows"
         }
     ]
 }
