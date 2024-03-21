@@ -69,6 +69,16 @@
             "targets": "run_cmake_format"
         },
         {
+            "name": "ninja-gcc-all",
+            "inherits": "ninja-gcc",
+            "targets": [
+                "all",
+                "gen_doc",
+                "gen_graph",
+                "install"
+            ]
+        },
+        {
             "name": "u-ninja-gcc",
             "configurePreset": "u-ninja-gcc",
             "inherits": "ninja-gcc"
@@ -77,6 +87,11 @@
             "name": "u-ninja-gcc-docs",
             "configurePreset": "u-ninja-gcc",
             "inherits": "ninja-gcc-docs"
+        },
+        {
+            "name": "u-ninja-gcc-all",
+            "configurePreset": "u-ninja-gcc",
+            "inherits": "ninja-gcc-all"
         }
     ]
 }

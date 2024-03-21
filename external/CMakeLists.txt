@@ -20,11 +20,12 @@ ExternalProject_Add(
     USES_TERMINAL_INSTALL YES
 )
 
-# ExternalProject_Get_Property(catch2 SOURCE_DIR)
-# set(CATCH2_SOURCE_DIR
-# ${SOURCE_DIR}
-# CACHE PATH "CATCH2_SOURCE_DIR"
-# )
+ExternalProject_Get_Property(catch2 SOURCE_DIR)
+set(CATCH2_SOURCE_DIR
+${SOURCE_DIR}
+CACHE PATH "CATCH2_SOURCE_DIR"
+)
+
 ExternalProject_Get_Property(catch2 BINARY_DIR)
 set(CATCH2_BINARY_DIR
     ${BINARY_DIR}

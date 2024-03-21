@@ -1,20 +1,31 @@
-project(test)
+project(Catch-test)
 
-add_executable(test test.cpp)
-target_link_libraries(test PRIVATE base)
+and_external_catch2()
+
+add_executable(${PROJECT_NAME} test.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE base)
 find_package(PkgConfig REQUIRED)
-
 if(PKG_CONFIG_FOUND)
     load_cache(${EXTERNAL_DIR}/build READ_WITH_PREFIX EXTERNAL_ CATCH2_BINARY_DIR)
     load_cache(${EXTERNAL_CATCH2_BINARY_DIR} READ_WITH_PREFIX CATCH2_ PKGCONFIG_INSTALL_DIR)
     load_cache(${EXTERNAL_CATCH2_BINARY_DIR} READ_WITH_PREFIX CATCH2_ CMAKE_INSTALL_PREFIX)
+
     set(CATCH2_PKGCONFIG_INSTALL_DIR ${CATCH2_CMAKE_INSTALL_PREFIX}/${CATCH2_PKGCONFIG_INSTALL_DIR})
+    message(STATUS "CATCH2_PKGCONFIG_INSTALL_DIR: ${CATCH2_PKGCONFIG_INSTALL_DIR}")
     set(ENV{PKG_CONFIG_PATH} ${CATCH2_PKGCONFIG_INSTALL_DIR})
+
     pkg_check_modules(CATCH2 QUIET Catch2-With-Main)
+
+    if(NOT CATCH2_FOUND)
+        message(STATUS "Try export PKG_CONFIG_PATH")
+        execute_process(COMMAND export PKG_CONFIG_PATH=${CATCH2_PKGCONFIG_INSTALL_DIR}:$PKG_CONFIG_PATH)
+        pkg_check_modules(CATCH2 QUIET Catch2-With-Main)
+    endif()
+
     if(CATCH2_FOUND)
         message(STATUS "CATCH2_FOUND")
-        target_include_directories(test PRIVATE ${CATCH2_INCLUDE_DIRS})
-        target_link_directories(test PRIVATE ${CATCH2_LIBRARY_DIRS})
+        target_include_directories(${PROJECT_NAME} PRIVATE ${CATCH2_INCLUDE_DIRS})
+        target_link_directories(${PROJECT_NAME} PRIVATE ${CATCH2_LIBRARY_DIRS})
         string(
             REPLACE ".a"
                     ".a;"
@@ -22,7 +33,7 @@ if(PKG_CONFIG_FOUND)
                     ${CATCH2_LINK_LIBRARIES}
             )
         message(STATUS "CATCH2_LINK_LIBRARIES ${CATCH2_LINK_LIBRARIES}")
-        target_link_libraries(test PRIVATE ${CATCH2_LINK_LIBRARIES})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${CATCH2_LINK_LIBRARIES})
     else()
         message(WARNING "CATCH2_NOT_FOUND")
     endif()
@@ -32,8 +43,14 @@ if(NOT CATCH2_FOUND)
     message(STATUS "USE MODULE CONFIG FILE")
     list(APPEND CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/cmake/Catch2)
     find_package(Catch2 REQUIRED)
-    target_link_libraries(test PRIVATE Catch2::Catch2WithMain)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Catch2::Catch2WithMain)
 endif()
+
+load_cache(${EXTERNAL_DIR}/build READ_WITH_PREFIX EXTERNAL_ CATCH2_SOURCE_DIR)
+list(APPEND CMAKE_MODULE_PATH ${EXTERNAL_CATCH2_SOURCE_DIR}/extras)
+message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+include(Catch)
+catch_discover_tests(${PROJECT_NAME})
 
 install(
     TARGETS ${PROJECT_NAME}

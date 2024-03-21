@@ -45,7 +45,7 @@ function(and_external_catch2)
     if(WIN32)
         set(PRESET external)
     else()
-    set(PRESET u-external)
+        set(PRESET u-external)
     endif(WIN32)
 
     execute_process(COMMAND ${CMAKE_COMMAND} --preset=${PRESET} WORKING_DIRECTORY ${EXTERNAL_DIR})

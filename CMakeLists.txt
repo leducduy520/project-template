@@ -53,17 +53,23 @@ add_cmake_format_target()
 
 include(CustomTarget)
 add_gen_doc()
-and_external_catch2()
 
 add_subdirectory(src)
 add_subdirectory(include)
 add_subdirectory(app)
+
+include(CTest)
+enable_testing()
 add_subdirectory(test)
 
-install(FILES ${DOCS_DIR}/graph/graph.png DESTINATION ${CMAKE_INSTALL_DOCDIR}
+install(
+    FILES ${DOCS_DIR}/graph/graph.png
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}
     PERMISSIONS OWNER_WRITE WORLD_READ WORLD_EXECUTE
-)
+    )
 
-install(DIRECTORY ${DOCS_DIR}/html/ DESTINATION ${CMAKE_INSTALL_DOCDIR}
+install(
+    DIRECTORY ${DOCS_DIR}/html/
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}
     DIRECTORY_PERMISSIONS OWNER_WRITE WORLD_READ WORLD_EXECUTE
-)
+    )
