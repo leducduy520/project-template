@@ -23,10 +23,9 @@ jobs:
       - name: Configure Project
         uses: threeal/cmake-action@v1.3.0
         with:
-          generator: Ninja
-          c-compiler: gcc
-          cxx-compiler: g++
-          args: --graphviz=docs/graph/graph.dot
+          args: |
+            --graphviz=docs/graph/graph.dot
+            --preset=u-ninja-gcc
       - name: test folder
         run: ls
         
