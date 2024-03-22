@@ -1,9 +1,9 @@
 config-win:
-	cmake --preset=windows --graphviz=docs/graph/graph.dot
+	cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=windows
 .PHONY: config-win
 
 config-ubuntu:
-	cmake --preset=ubuntu --graphviz=docs/graph/graph.dot
+	cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=ubuntu
 .PHONY: config-ubuntu
 
 fresh-win:

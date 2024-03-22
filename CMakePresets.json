@@ -7,7 +7,12 @@
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "Release",
+                "PRESET": "${presetName}",
+                "EXTERNAL_DIR": "${sourceDir}/external",
+                "EXTERNAL_BINARY_DIR": "${sourceDir}/external/build/${presetName}",
+                "DOCS_DIR": "${sourceDir}/docs",
+                "TOOLS_DIR": "${sourceDir}/tools"
             }
         },
         {

@@ -43,10 +43,7 @@ endforeach()
 option(ENABLE_CMAKE_FORMAT "enable cmake format" ON)
 option(ENABLE_DOCUMENT_TARGET "enable document target" ON)
 
-set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/external)
-set(DOCS_DIR ${CMAKE_SOURCE_DIR}/docs)
-set(TOOLS_DIR ${CMAKE_SOURCE_DIR}/tools)
-
+set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDERR)
 set(GRAPH_OUTPUT_NAME graph)
 
 include(Tools)

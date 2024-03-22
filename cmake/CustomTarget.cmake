@@ -40,22 +40,40 @@ function(add_gen_doc)
     endif()
 endfunction()
 
-function(and_external_catch2)
-    set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDERR)
+function(build_external_project)
+
+    set(oneValueArgs REPO BRANCH LABEL)
+    cmake_parse_arguments(
+        EX_PROJ
+        "${options}"
+        "${oneValueArgs}"
+        "${multiValueArgs}"
+        ${ARGN})
+
+    message(STATUS "repo ${EX_PROJ_REPO}")
+    message(STATUS "branch ${EX_PROJ_BRANCH}")
+    message(STATUS "name ${EX_PROJ_LABEL}")
+
     set(RESULT)
     set(OUTPUT)
     set(ERROR)
-    if(WIN32)
-        set(PRESET windows)
-    else()
-        set(PRESET ubuntu)
-    endif(WIN32)
 
-    set(EXTERNAL_BINARY_DIR ${EXTERNAL_DIR}/build/${PRESET} PARENT_SCOPE)
+    set(EX_PROJ_LABEL_LOWER)
+    string(TOLOWER ${EX_PROJ_LABEL} EX_PROJ_LABEL_LOWER)
 
-    execute_process(COMMAND ${CMAKE_COMMAND} -S . -B ${EXTERNAL_DIR}/build/${PRESET} --preset=${PRESET} WORKING_DIRECTORY ${EXTERNAL_DIR})
+    if(NOT EXISTS ${EXTERNAL_DIR}/${EX_PROJ_LABEL_LOWER})
+        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${EXTERNAL_DIR}/${EX_PROJ_LABEL_LOWER})
+
+        configure_file(
+        ${CMAKE_SOURCE_DIR}/cmake/ExternalCMakeLists.txt.in
+        ${EXTERNAL_DIR}/${EX_PROJ_LABEL_LOWER}/CMakeLists.txt
+        @ONLY
+        )
+    endif()
+
+    execute_process(COMMAND ${CMAKE_COMMAND} --fresh -S . -B ${EXTERNAL_BINARY_DIR} --preset=${PRESET} WORKING_DIRECTORY ${EXTERNAL_DIR})
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ${EXTERNAL_DIR}/build/${PRESET} --preset=${PRESET}
+        COMMAND ${CMAKE_COMMAND} --build ${EXTERNAL_BINARY_DIR} --preset=${PRESET}
         WORKING_DIRECTORY ${EXTERNAL_DIR}
         RESULT_VARIABLE RESULT
         OUTPUT_VARIABLE OUTPUT

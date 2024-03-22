@@ -2,9 +2,7 @@
 .git
 
 external/build
-external/src
-external/tmp
-external/install
+external/catch2
 
 build/
 install/

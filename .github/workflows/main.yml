@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.2
       - name: Configure Project
-        run: cmake --preset=ubuntu --graphviz=docs/graph/graph.dot
+        run: make config-ubuntu
       - name: Build Project
         run: cmake --build --preset=ubuntu-all
       - name: Ctest
