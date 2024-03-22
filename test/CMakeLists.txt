@@ -1,12 +1,17 @@
 project(Catch-test)
 
+file(READ ${CMAKE_SOURCE_DIR}/deps.json DPES_JSON_STRING)
+string(JSON PKG_LABEL GET ${DPES_JSON_STRING} 0 label)
+string(JSON PKG_REPO GET ${DPES_JSON_STRING} 0 repo)
+string(JSON PKG_BRANCH GET ${DPES_JSON_STRING} 0 branch)
+
 build_external_project(
     BRANCH
-    "dev_dld"
+    ${PKG_BRANCH}
     LABEL
-    "Catch2"
+    ${PKG_LABEL}
     REPO
-    "https://github.com/leducduy520/Catch2"
+    ${PKG_REPO}
     )
 
 add_executable(${PROJECT_NAME} test.cpp)
