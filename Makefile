@@ -7,9 +7,9 @@ config-ubuntu:
 .PHONY: config-ubuntu
 
 fresh-win:
-	cmake --fresh --preset=windows --graphviz=docs/graph/graph.dot
+	cmake --fresh --no-warn-unused-cli --graphviz=docs/graph/graph.dot  --preset=windows
 .PHONY: fresh-win
 
 fresh-ubuntu:
-	cmake --fresh --preset=ubuntu --graphviz=docs/graph/graph.dot
+	cmake --fresh --no-warn-unused-cli --graphviz=docs/graph/graph.dot --preset=ubuntu
 .PHONY: fresh-ubuntu

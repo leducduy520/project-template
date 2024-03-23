@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.26)
 
 # set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
-project(
-    DuyApp
-    VERSION 0.0.1
-    LANGUAGES C CXX
-    )
+project(DuyApp
+        VERSION 0.0.1
+        LANGUAGES C CXX
+        )
 
 include(GNUInstallDirs)
 include(FetchContent)
@@ -23,7 +22,7 @@ if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
 
-foreach(build_type in ${CMAKE_CONFIGURATION_TYPES})
+foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
     string(TOUPPER ${build_type} build_type_upper)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/lib)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/lib)
@@ -60,14 +59,12 @@ include(CTest)
 enable_testing()
 add_subdirectory(test)
 
-install(
-    FILES ${DOCS_DIR}/graph/graph.png
-    DESTINATION ${CMAKE_INSTALL_DOCDIR}
-    PERMISSIONS OWNER_WRITE WORLD_READ WORLD_EXECUTE
-    )
+install(FILES ${DOCS_DIR}/graph/graph.png
+        DESTINATION ${CMAKE_INSTALL_DOCDIR}
+        PERMISSIONS OWNER_WRITE WORLD_READ WORLD_EXECUTE
+        )
 
-install(
-    DIRECTORY ${DOCS_DIR}/html
-    DESTINATION ${CMAKE_INSTALL_DOCDIR}
-    DIRECTORY_PERMISSIONS OWNER_WRITE WORLD_READ WORLD_EXECUTE
-    )
+install(DIRECTORY ${DOCS_DIR}/html
+        DESTINATION ${CMAKE_INSTALL_DOCDIR}
+        DIRECTORY_PERMISSIONS OWNER_WRITE WORLD_READ WORLD_EXECUTE
+        )

@@ -82,16 +82,16 @@ format:
   - If the statement spelling length (including space and
   - parenthesis) is smaller than this amount, then force reject
   - nested layouts.
-  min_prefix_chars: 4
+  min_prefix_chars: 8
   _help_max_prefix_chars:
   - If the statement spelling length (including space and
   - parenthesis) is larger than the tab width by more than this
   - amount, then force reject un-nested layouts.
-  max_prefix_chars: 10
+  max_prefix_chars: 20
   _help_max_lines_hwrap:
   - If a candidate layout is wrapped horizontally but it exceeds
   - this many lines, then reject the layout.
-  max_lines_hwrap: 2
+  max_lines_hwrap: 3
   _help_line_ending:
   - What style line endings to use in the output.
   line_ending: unix
@@ -220,7 +220,7 @@ lint:
   max_statement_spacing: 2
   max_returns: 6
   max_branches: 12
-  max_arguments: 5
+  max_arguments: 8
   max_localvars: 15
   max_statements: 50
 _help_encode: Options affecting file encoding

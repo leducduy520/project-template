@@ -29,7 +29,7 @@
                     "value": "g++.exe"
                 }
             },
-            "condition":{
+            "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Windows"
@@ -37,16 +37,21 @@
         },
         {
             "name": "ubuntu",
-            "inherits":"windows",
+            "inherits": "windows",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
                 "CMAKE_CXX_COMPILER": "g++"
             },
-            "condition":{
+            "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Linux"
             }
+        },
+        {
+            "name": "msvc",
+            "inherits": "windows",
+            "generator": "Visual Studio 17 2022"
         }
     ],
     "buildPresets": [
@@ -58,8 +63,7 @@
             "targets": [
                 "all"
             ],
-            "condition":
-            {
+            "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Windows"
@@ -88,8 +92,7 @@
             "name": "ubuntu",
             "configurePreset": "ubuntu",
             "inherits": "windows",
-            "condition":
-            {
+            "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Linux"
@@ -98,7 +101,9 @@
         {
             "name": "ubuntu-docs",
             "configurePreset": "ubuntu",
-            "inherits": ["ubuntu"],
+            "inherits": [
+                "ubuntu"
+            ],
             "targets": [
                 "gen_doc",
                 "gen_graph",
@@ -108,7 +113,9 @@
         {
             "name": "ubuntu-all",
             "configurePreset": "ubuntu",
-            "inherits": ["ubuntu"],
+            "inherits": [
+                "ubuntu"
+            ],
             "targets": [
                 "all",
                 "gen_doc",
@@ -121,12 +128,12 @@
         {
             "name": "windows",
             "configurePreset": "windows",
-            "output":{
+            "output": {
                 "verbosity": "verbose",
-                "shortProgress":true,
-                "debug":true
+                "shortProgress": true,
+                "debug": true
             },
-            "execution":{
+            "execution": {
                 "jobs": 5
             }
         },

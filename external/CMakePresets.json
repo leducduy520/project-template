@@ -36,6 +36,15 @@
                 "CMAKE_CXX_COMPILER": "g++",
                 "CMAKE_C_COMPILER": "gcc"
             }
+        },
+        {
+            "name": "msvc",
+            "inherits": "base",
+            "generator": "Visual Studio 17 2022",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_C_COMPILER": "cl.exe"
+            }
         }
     ],
     "buildPresets": [
@@ -48,6 +57,11 @@
         {
             "name": "ubuntu",
             "configurePreset": "ubuntu",
+            "inherits": "windows"
+        },
+        {
+            "name": "msvc",
+            "configurePreset": "msvc",
             "inherits": "windows"
         }
     ]
