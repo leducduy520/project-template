@@ -2,7 +2,7 @@
 .git
 
 external/build
-external/catch2
+external/lib
 
 build/
 install/
