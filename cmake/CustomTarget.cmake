@@ -112,9 +112,10 @@ function(build_external_project)
 
     if(NOT EXISTS ${EX_PROJ_SUBDIR})
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${EX_PROJ_SUBDIR})
-        file(WRITE ${EX_PROJ_SUBDIR}/CMakeLists.txt
-            "project(${CMAKE_INSTALL_LIBDIR})\n")
     endif()
+
+    file(WRITE ${EX_PROJ_SUBDIR}/CMakeLists.txt
+        "project(${CMAKE_INSTALL_LIBDIR})\n")
 
     foreach(ITR RANGE ${EX_PROJ_SIZE})
         message("EX_ITR ${ITR}")
