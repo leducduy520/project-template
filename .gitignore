@@ -1,7 +1,9 @@
 .vs
 .git
 
-external/*
+external/CMakeLists.txt
+external/CMakePresets.txt
+external/lib/
 
 build/
 install/
