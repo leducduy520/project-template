@@ -10,8 +10,6 @@ jobs:
         steps:
             - name: update & install deps
               run: |
-                  sudo apt update
-                  sudo apt-get upgrade
                   sudo apt-get install gcc g++ gdb
                   sudo apt-get install make cmake
                   sudo apt-get install git doxygen
