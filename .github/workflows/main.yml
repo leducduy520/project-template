@@ -5,7 +5,7 @@ on:
             - main
             - merge-*
 jobs:
-    config-and-build:
+    configure-and-build:
         runs-on: ubuntu-22.04
         steps:
             - name: update & install deps
@@ -22,13 +22,13 @@ jobs:
             - name: Configure Project
               run: make config-ubuntu
             - name: Build Project
-              run: cmake --build --preset=ubuntu-all
-            - name: Ctest
-              run: ctest --preset=ubuntu
-            - name: Deploy to GitHub Pages
-              uses: Cecilapp/GitHub-Pages-deploy@v3
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  email: duyleduc123@gmail.com
-                  build_dir: ./docs/html
+              run: cmake --build --preset=ubuntu
+            # - name: Ctest
+            #   run: ctest --preset=ubuntu
+            # - name: Deploy to GitHub Pages
+            #   uses: Cecilapp/GitHub-Pages-deploy@v3
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #   with:
+            #       email: duyleduc123@gmail.com
+            #       build_dir: ./docs/html

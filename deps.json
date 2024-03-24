@@ -6,7 +6,7 @@
     },
     {
         "label": "SocketIO",
-        "repo": "https://github.com/socketio/socket.io-client-cpp",
-        "branch": "3.1.0"
+        "repo": "https://github.com/leducduy520/socket.io-client-cpp.git",
+        "branch": "dev-dld"
     }
 ]

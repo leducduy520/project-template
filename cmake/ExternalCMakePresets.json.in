@@ -1,9 +1,9 @@
 {
     "buildPresets": [
         {
-            "configurePreset": "windows",
+            "configurePreset": "@PRESET@",
             "jobs": 4,
-            "name": "windows",
+            "name": "@PRESET@",
             "verbose": true
         }
     ],
@@ -14,21 +14,21 @@
     },
     "configurePresets": [
         {
-            "binaryDir": "D:/build/project-template/out/build/windows/external",
+            "binaryDir": "@EXTERNAL_BINARY_DIR@",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "PRESET": "windows",
+                "CMAKE_BUILD_TYPE": "@CMAKE_BUILD_TYPE@",
+                "PRESET": "@PRESET@",
                 "CMAKE_CXX_COMPILER": {
                     "type": "FILEPATH",
-                    "value": "D:/_1_Phan_mem/msys64/mingw64/bin/g++.exe"
+                    "value": "@CMAKE_CXX_COMPILER@"
                 },
                 "CMAKE_C_COMPILER": {
                     "type": "FILEPATH",
-                    "value": "D:/_1_Phan_mem/msys64/mingw64/bin/gcc.exe"
+                    "value": "@CMAKE_C_COMPILER@"
                 }
             },
             "generator": "Ninja",
-            "name": "windows"
+            "name": "@PRESET@"
         }
     ],
     "version": 6

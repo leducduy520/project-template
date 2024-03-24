@@ -51,7 +51,10 @@ function(read_deps_json)
 
     string(JSON DEPS_LENGTH LENGTH ${DEPS_JSON_STRING})
     math(EXPR LAST_INDX "${DEPS_LENGTH} - 1" OUTPUT_FORMAT DECIMAL)
-    set(PKG_LAST_INDEX ${LAST_INDX} PARENT_SCOPE)
+    set(PKG_LAST_INDEX
+        ${LAST_INDX}
+        PARENT_SCOPE
+    )
 
     set(REPOS "")
     set(BRANCHES "")
@@ -84,9 +87,18 @@ function(read_deps_json)
         list(APPEND BRANCHES ${BRANCH})
     endforeach()
 
-    set(PKG_BRANCHES ${BRANCHES} PARENT_SCOPE)
-    set(PKG_LABELS ${LABELS} PARENT_SCOPE)
-    set(PKG_REPOS ${REPOS} PARENT_SCOPE)
+    set(PKG_BRANCHES
+        ${BRANCHES}
+        PARENT_SCOPE
+    )
+    set(PKG_LABELS
+        ${LABELS}
+        PARENT_SCOPE
+    )
+    set(PKG_REPOS
+        ${REPOS}
+        PARENT_SCOPE
+    )
 endfunction(read_deps_json)
 
 function(build_external_project)
@@ -108,20 +120,32 @@ function(build_external_project)
     set(EX_PROJ_SUBDIR ${EXTERNAL_DIR}/${CMAKE_INSTALL_LIBDIR})
 
     file(WRITE ${EXTERNAL_DIR}/CMakeLists.txt
-        "cmake_minimum_required(VERSION 3.27)\nproject(external)\ninclude(ExternalProject)\nadd_subdirectory(${CMAKE_INSTALL_LIBDIR})")
+        "cmake_minimum_required(VERSION 3.27)\nproject(external)\ninclude(ExternalProject)\nadd_subdirectory(${CMAKE_INSTALL_LIBDIR})"
+    )
 
     if(NOT EXISTS ${EX_PROJ_SUBDIR})
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${EX_PROJ_SUBDIR})
     endif()
 
-    file(WRITE ${EX_PROJ_SUBDIR}/CMakeLists.txt
-        "project(${CMAKE_INSTALL_LIBDIR})\n")
+    file(WRITE ${EX_PROJ_SUBDIR}/CMakeLists.txt "project(${CMAKE_INSTALL_LIBDIR})\n")
 
     foreach(ITR RANGE ${EX_PROJ_SIZE})
         message("EX_ITR ${ITR}")
-        list(GET EX_PROJ_REPOS ${ITR} EX_PROJ_REPO)
-        list(GET EX_PROJ_BRANCHES ${ITR} EX_PROJ_BRANCH)
-        list(GET EX_PROJ_LABELS ${ITR} EX_PROJ_LABEL)
+        list(GET
+            EX_PROJ_REPOS
+            ${ITR}
+            EX_PROJ_REPO
+        )
+        list(GET
+            EX_PROJ_BRANCHES
+            ${ITR}
+            EX_PROJ_BRANCH
+        )
+        list(GET
+            EX_PROJ_LABELS
+            ${ITR}
+            EX_PROJ_LABEL
+        )
 
         string(TOLOWER ${EX_PROJ_LABEL} EX_PROJ_LABEL_LOWER)
         set(EX_SUB_PROJ_DIR ${EX_PROJ_SUBDIR}/${EX_PROJ_LABEL_LOWER})
@@ -133,17 +157,18 @@ function(build_external_project)
 
         if(NOT EXISTS ${EX_SUB_PROJ_DIR})
             execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${EX_SUB_PROJ_DIR})
-
-            configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakeLists.txt.in
-                ${EX_SUB_PROJ_DIR}/CMakeLists.txt @ONLY
-            )
         endif()
 
-        file(APPEND ${EX_PROJ_SUBDIR}/CMakeLists.txt
-            "add_subdirectory(${EX_PROJ_LABEL_LOWER})\n")
+        configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakeLists.txt.in ${EX_SUB_PROJ_DIR}/CMakeLists.txt @ONLY)
+
+        file(APPEND ${EX_PROJ_SUBDIR}/CMakeLists.txt "add_subdirectory(${EX_PROJ_LABEL_LOWER})\n")
     endforeach()
 
-    execute_process(COMMAND ${CMAKE_COMMAND} --fresh -S . -B ${EXTERNAL_BINARY_DIR} --preset=${PRESET}
+    configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakePresets.json.in
+        ${EXTERNAL_DIR}/CMakePresets.json
+    )
+
+    execute_process(COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli --fresh --preset=${PRESET}
         WORKING_DIRECTORY ${EXTERNAL_DIR}
     )
 
@@ -152,7 +177,7 @@ function(build_external_project)
     set(ERROR)
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ${EXTERNAL_BINARY_DIR} --preset=${PRESET}
+        COMMAND ${CMAKE_COMMAND} --build --verbose --preset=${PRESET}
         WORKING_DIRECTORY ${EXTERNAL_DIR}
         RESULT_VARIABLE RESULT
         OUTPUT_VARIABLE OUTPUT

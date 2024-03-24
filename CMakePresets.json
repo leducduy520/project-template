@@ -10,7 +10,7 @@
                 "CMAKE_BUILD_TYPE": "Release",
                 "PRESET": "${presetName}",
                 "EXTERNAL_DIR": "${sourceDir}/external",
-                "EXTERNAL_BINARY_DIR": "${sourceDir}/external/build/${presetName}",
+                "EXTERNAL_BINARY_DIR": "${sourceDir}/out/build/${presetName}/external",
                 "DOCS_DIR": "${sourceDir}/docs",
                 "TOOLS_DIR": "${sourceDir}/tools"
             }
@@ -70,11 +70,24 @@
             }
         },
         {
+            "name": "windows-format",
+            "inherits": "windows",
+            "targets": [
+                "run_cmake_format"
+            ]
+        },
+        {
             "name": "windows-docs",
             "inherits": "windows",
             "targets": [
                 "gen_doc",
-                "gen_graph",
+                "gen_graph"
+            ]
+        },
+        {
+            "name": "windows-install",
+            "inherits": "windows",
+            "targets": [
                 "install"
             ]
         },
@@ -83,6 +96,7 @@
             "inherits": "windows",
             "targets": [
                 "all",
+                "run_cmake_format",
                 "gen_doc",
                 "gen_graph",
                 "install"
@@ -99,25 +113,37 @@
             }
         },
         {
+            "name": "ubuntu-format",
+            "configurePreset": "ubuntu",
+            "inherits": "ubuntu",
+            "targets": [
+                "run_cmake_format"
+            ]
+        },
+        {
             "name": "ubuntu-docs",
             "configurePreset": "ubuntu",
-            "inherits": [
-                "ubuntu"
-            ],
+            "inherits": "ubuntu",
             "targets": [
                 "gen_doc",
-                "gen_graph",
+                "gen_graph"
+            ]
+        },
+        {
+            "name": "ubuntu-install",
+            "configurePreset": "ubuntu",
+            "inherits": "ubuntu",
+            "targets": [
                 "install"
             ]
         },
         {
             "name": "ubuntu-all",
             "configurePreset": "ubuntu",
-            "inherits": [
-                "ubuntu"
-            ],
+            "inherits": "ubuntu",
             "targets": [
                 "all",
+                "run_cmake_format",
                 "gen_doc",
                 "gen_graph",
                 "install"
