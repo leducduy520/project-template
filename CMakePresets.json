@@ -11,6 +11,7 @@
                 "PRESET": "${presetName}",
                 "EXTERNAL_DIR": "${sourceDir}/external",
                 "EXTERNAL_BINARY_DIR": "${sourceDir}/out/build/${presetName}/external",
+                "EXTERNAL_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}/external",
                 "DOCS_DIR": "${sourceDir}/docs",
                 "TOOLS_DIR": "${sourceDir}/tools"
             }

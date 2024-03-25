@@ -164,11 +164,9 @@ function(build_external_project)
         file(APPEND ${EX_PROJ_SUBDIR}/CMakeLists.txt "add_subdirectory(${EX_PROJ_LABEL_LOWER})\n")
     endforeach()
 
-    configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakePresets.json.in
-        ${EXTERNAL_DIR}/CMakePresets.json
-    )
+    configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakePresets.json.in ${EXTERNAL_DIR}/CMakePresets.json)
 
-    execute_process(COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli --fresh --preset=${PRESET}
+    execute_process(COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli --preset=${PRESET}
         WORKING_DIRECTORY ${EXTERNAL_DIR}
     )
 
