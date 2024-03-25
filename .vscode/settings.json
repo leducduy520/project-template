@@ -9,7 +9,7 @@
         "--verbose"
     ],
     "cmake.configureOnEdit": false,
-    "cmake.loggingLevel": "debug",
+    "cmake.loggingLevel": "info",
     "cmake.useCMakePresets": "always",
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file",

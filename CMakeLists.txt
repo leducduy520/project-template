@@ -29,16 +29,6 @@ foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/bin)
 endforeach()
 
-# CHECK_CXX_ACCEPTS_FLAG(<flags> <variable>)
-# check_cxx_accepts_flag(/W4 AVALIABLE)
-
-# if(AVALIABLE)
-#     list(APPEND CMAKE_MESSAGE_INDENT "NOTICE:")
-#     message(STATUS "/W4 is avaliable")
-#     list(POP_BACK CMAKE_MESSAGE_INDENT)
-#     set(CMAKE_CXX_FLAGS "/W4 /wd4530 /we4244")
-# endif()
-
 option(ENABLE_CMAKE_FORMAT "enable cmake format" ON)
 option(ENABLE_DOCUMENT_TARGET "enable document target" ON)
 

@@ -9,11 +9,26 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "PRESET": "${presetName}",
-                "EXTERNAL_DIR": "${sourceDir}/external",
-                "EXTERNAL_BINARY_DIR": "${sourceDir}/out/build/${presetName}/external",
-                "EXTERNAL_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}/external",
-                "DOCS_DIR": "${sourceDir}/docs",
-                "TOOLS_DIR": "${sourceDir}/tools"
+                "EXTERNAL_DIR": {
+                    "type": "PATH",
+                    "value": "${sourceDir}/external"
+                },
+                "EXTERNAL_BINARY_DIR": {
+                    "type": "PATH",
+                    "value": "${sourceDir}/out/build/${presetName}/external"
+                },
+                "EXTERNAL_INSTALL_PREFIX": {
+                    "type": "PATH",
+                    "value": "${sourceDir}/out/install/${presetName}/external"
+                },
+                "DOCS_DIR": {
+                    "type": "PATH",
+                    "value": "${sourceDir}/docs"
+                },
+                "TOOLS_DIR": {
+                    "type": "PATH",
+                    "value": "${sourceDir}/tools"
+                }
             }
         },
         {
@@ -60,7 +75,7 @@
             "name": "windows",
             "configurePreset": "windows",
             "configuration": "Release",
-            "jobs": 4,
+            "jobs": 8,
             "targets": [
                 "all"
             ],

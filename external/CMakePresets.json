@@ -2,7 +2,7 @@
     "buildPresets": [
         {
             "configurePreset": "windows",
-            "jobs": 4,
+            "jobs": 8,
             "name": "windows",
             "verbose": true
         }
@@ -14,17 +14,17 @@
     },
     "configurePresets": [
         {
-            "binaryDir": "E:/VSC/a1_C_plus_plus/project-template/out/build/windows/external",
+            "binaryDir": "D:/build/project-template/out/build/windows/external",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "PRESET": "windows",
                 "CMAKE_CXX_COMPILER": {
                     "type": "FILEPATH",
-                    "value": "C:/msys64/mingw64/bin/g++.exe"
+                    "value": "D:/_1_Phan_mem/msys64/mingw64/bin/g++.exe"
                 },
                 "CMAKE_C_COMPILER": {
                     "type": "FILEPATH",
-                    "value": "C:/msys64/mingw64/bin/gcc.exe"
+                    "value": "D:/_1_Phan_mem/msys64/mingw64/bin/gcc.exe"
                 }
             },
             "generator": "Ninja",

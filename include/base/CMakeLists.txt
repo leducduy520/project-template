@@ -1,11 +1,6 @@
 project(base_include)
 
-file(GLOB
-     HEADER_FILES
-     CONFIGURE_DEPENDS
-     "*.hpp"
-     "*.h"
-     )
+file(GLOB HEADER_FILES CONFIGURE_DEPENDS "*.hpp" "*.h")
 
 target_sources(base PRIVATE ${HEADER_FILES})
 

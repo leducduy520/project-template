@@ -2,7 +2,7 @@
     "buildPresets": [
         {
             "configurePreset": "@PRESET@",
-            "jobs": 4,
+            "jobs": 8,
             "name": "@PRESET@",
             "verbose": true
         }
