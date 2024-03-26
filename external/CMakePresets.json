@@ -14,7 +14,7 @@
     },
     "configurePresets": [
         {
-            "binaryDir": "D:/build/project-template/out/build/windows/external",
+            "binaryDir": "D:/build/sss/project-template/out/build/windows/external",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "PRESET": "windows",
