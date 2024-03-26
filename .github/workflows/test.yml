@@ -2,6 +2,9 @@ name: Udemy test
 on:
     issues:
         types: [opened, closed]
+    workflow_dispatch:
+    pull_request:
+        types: [assigned, opened, closed, edited, labeled]
 jobs:
     on_issues:
         runs-on: ubuntu-22.04
