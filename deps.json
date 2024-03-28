@@ -3,10 +3,5 @@
         "label": "Catch2",
         "repo": "https://github.com/leducduy520/Catch2",
         "branch": "dev_dld"
-    },
-    {
-        "label": "SocketIO",
-        "repo": "https://github.com/leducduy520/socket.io-client-cpp.git",
-        "branch": "dev-dld"
     }
 ]
