@@ -32,7 +32,7 @@ jobs:
       - name: Configure Project
         run: make config-ubuntu
       - name: Build Project
-        run: cmake --build --preset=ubuntu
+        run: cmake --workflow --preset=ubuntu
       # - name: Ctest
       #   run: ctest --preset=ubuntu
       # - name: Deploy to GitHub Pages
