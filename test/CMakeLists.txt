@@ -18,10 +18,8 @@ list(APPEND CMAKE_PREFIX_PATH ${EXTERNAL_INSTALL_PREFIX})
 add_executable(${PROJECT_NAME} test.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE base)
 
-find_package(sioclient REQUIRED)
 find_package(Catch2 REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE sioclient::sioclient)
 target_link_libraries(${PROJECT_NAME} PRIVATE Catch2::Catch2WithMain)
 
 load_cache(${EXTERNAL_BINARY_DIR} READ_WITH_PREFIX EXTERNAL_ catch2_SOURCE_DIR)

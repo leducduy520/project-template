@@ -5,7 +5,6 @@ external/CMakeLists.txt
 external/CMakePresets.txt
 external/lib/
 
-build/
-install/
+out/
 docs/html
 docs/graph

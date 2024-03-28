@@ -1,34 +1,44 @@
 name: Test project on push to main
 on:
-    push:
-        branches:
-            - main
-            - merge-*
+  push:
+    branches:
+      - main
+      - merge-*
+    paths:
+      - "**.c"
+      - "**.cpp"
+      - "**.hpp"
+      - "**.h"
+      - "**/CMakeLists.txt"
+      - "**.cmake"
+      - "./Makefile"
+      - "**/CMakePresets.json"
+      - "**.py"
 jobs:
-    configure-and-build:
-        runs-on: ubuntu-22.04
-        steps:
-            - name: update & install deps
-              run: |
-                  sudo apt-get install gcc g++ gdb
-                  sudo apt-get install make cmake
-                  sudo apt-get install git doxygen
-                  sudo apt-get install python3 python3-pip
-                  pip install cmake-format
-                  pip install ninja
-                  sudo apt-get install graphviz pkg-config
-            - name: Checkout
-              uses: actions/checkout@v4.1.2
-            - name: Configure Project
-              run: make config-ubuntu
-            - name: Build Project
-              run: cmake --build --preset=ubuntu
-            # - name: Ctest
-            #   run: ctest --preset=ubuntu
-            # - name: Deploy to GitHub Pages
-            #   uses: Cecilapp/GitHub-Pages-deploy@v3
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            #   with:
-            #       email: duyleduc123@gmail.com
-            #       build_dir: ./docs/html
+  configure-and-build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: update & install deps
+        run: |
+          sudo apt-get install gcc g++ gdb
+          sudo apt-get install make cmake
+          sudo apt-get install git doxygen
+          sudo apt-get install python3 python3-pip
+          pip install cmake-format
+          pip install ninja
+          sudo apt-get install graphviz pkg-config
+      - name: Checkout
+        uses: actions/checkout@v4.1.2
+      - name: Configure Project
+        run: make config-ubuntu
+      - name: Build Project
+        run: cmake --build --preset=ubuntu
+      # - name: Ctest
+      #   run: ctest --preset=ubuntu
+      # - name: Deploy to GitHub Pages
+      #   uses: Cecilapp/GitHub-Pages-deploy@v3
+      #   env:
+      #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #       email: duyleduc123@gmail.com
+      #       build_dir: ./docs/html
