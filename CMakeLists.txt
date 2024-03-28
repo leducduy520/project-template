@@ -50,12 +50,6 @@ include(CTest)
 enable_testing()
 add_subdirectory(test)
 
-install(
-    FILES ${DOCS_DIR}/graph/graph.png
-    DESTINATION ${CMAKE_INSTALL_DOCDIR}
-)
+install(FILES ${DOCS_DIR}/graph/graph.png DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
-install(
-    DIRECTORY ${DOCS_DIR}/html
-    DESTINATION ${CMAKE_INSTALL_DOCDIR}
-)
+install(DIRECTORY ${DOCS_DIR}/html DESTINATION ${CMAKE_INSTALL_DOCDIR})
