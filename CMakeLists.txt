@@ -5,7 +5,7 @@ project(
     DuyApp
     VERSION 0.0.1
     LANGUAGES C CXX
-)
+    )
 
 include(GNUInstallDirs)
 include(FetchContent)
