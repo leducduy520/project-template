@@ -5,7 +5,7 @@ project(
     DuyApp
     VERSION 0.0.1
     LANGUAGES C CXX
-    )
+)
 
 include(GNUInstallDirs)
 include(FetchContent)
@@ -53,11 +53,9 @@ add_subdirectory(test)
 install(
     FILES ${DOCS_DIR}/graph/graph.png
     DESTINATION ${CMAKE_INSTALL_DOCDIR}
-    PERMISSIONS OWNER_WRITE WORLD_READ WORLD_EXECUTE
-    )
+)
 
 install(
     DIRECTORY ${DOCS_DIR}/html
     DESTINATION ${CMAKE_INSTALL_DOCDIR}
-    DIRECTORY_PERMISSIONS OWNER_WRITE WORLD_READ WORLD_EXECUTE
-    )
+)
