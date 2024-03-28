@@ -2,7 +2,7 @@
 .git
 
 external/CMakeLists.txt
-external/CMakePresets.txt
+external/CMakePresets.json
 external/lib/
 
 out/
