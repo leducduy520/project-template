@@ -82,12 +82,12 @@ format:
         - If the statement spelling length (including space and
         - parenthesis) is smaller than this amount, then force reject
         - nested layouts.
-    min_prefix_chars: 8
+    min_prefix_chars: 6
     _help_max_prefix_chars:
         - If the statement spelling length (including space and
         - parenthesis) is larger than the tab width by more than this
         - amount, then force reject un-nested layouts.
-    max_prefix_chars: 20
+    max_prefix_chars: 10
     _help_max_lines_hwrap:
         - If a candidate layout is wrapped horizontally but it exceeds
         - this many lines, then reject the layout.

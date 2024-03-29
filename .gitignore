@@ -2,10 +2,9 @@
 .git
 
 external/CMakeLists.txt
-external/CMakePresets.txt
+external/CMakePresets.json
 external/lib/
 
-build/
-install/
+out/
 docs/html
 docs/graph

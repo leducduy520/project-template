@@ -176,13 +176,49 @@
                 "debug": true
             },
             "execution": {
-                "jobs": 5
+                "jobs": 8
             }
         },
         {
             "name": "ubuntu",
             "configurePreset": "ubuntu",
             "inherits": "windows"
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "windows",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "windows"
+                },
+                {
+                    "type": "build",
+                    "name": "windows-all"
+                },
+                {
+                    "type": "test",
+                    "name": "windows"
+                }
+            ]
+        },
+        {
+            "name": "ubuntu",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "ubuntu"
+                },
+                {
+                    "type": "build",
+                    "name": "ubuntu-all"
+                },
+                {
+                    "type": "test",
+                    "name": "ubuntu"
+                }
+            ]
         }
     ]
 }
