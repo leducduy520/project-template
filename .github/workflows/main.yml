@@ -38,7 +38,7 @@ jobs:
         run: cmake --workflow --preset=ubuntu
       - name: Publish
         id: publish
-        run: find out/install/ubuntu/**.cmake -type f -execdir echo 'config_files={}' >> $GITHUB_OUTPUT ';'
+        run: find out/install/ubuntu/external/lib/cmake/Catch2/*.cmake -type f -execdir echo 'config_files={}' >> $GITHUB_OUTPUT ';'
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
