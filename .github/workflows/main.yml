@@ -18,6 +18,8 @@ on:
 jobs:
   configure-and-build:
     runs-on: ubuntu-22.04
+    outputs:
+      config_files: ${{ steps.publish.outputs.config_files }}
     steps:
       - name: update & install deps
         run: |
@@ -34,6 +36,9 @@ jobs:
         run: make config-ubuntu
       - name: Build Project
         run: cmake --workflow --preset=ubuntu
+      - name: Publish
+        id: publish
+        run: find out/install/ubuntu/**.cmake -type f -execdir echo 'config_files={}' >> $GITHUB_OUTPUT ';'
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -47,6 +52,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: install-product
+      - name: test output
+        run: echo '${{ needs.configure-and-build.outputs.config_files }}'
       - name: Check directory
         run: ls
       - name: Run app
@@ -64,6 +71,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: install-product
+      - name: test output
+        run: echo '${{ needs.configure-and-build.outputs.config_files }}'
       - name: Check directory
         run: ls
       - name: Run test
