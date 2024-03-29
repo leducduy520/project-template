@@ -50,7 +50,10 @@ jobs:
       - name: Check directory
         run: ls
       - name: Run app
-        run: ./bin/app
+        run: |
+          cd ./bin/app
+          chmod a+x app
+          ./app
 
   execute-test:
     runs-on: ubuntu-latest
@@ -63,7 +66,10 @@ jobs:
       - name: Check directory
         run: ls
       - name: Run test
-        run: ./bin/Catch-test
+        run: |
+          cd ./bin
+          chmod a+x Catch-test
+          ./Catch-test
 
       # - name: Ctest
       #   run: ctest --preset=ubuntu
