@@ -51,8 +51,9 @@ jobs:
         run: ls
       - name: Run app
         run: |
-          cd ./bin/app
+          cd ./bin
           chmod a+x app
+          export LD_LIBRARY_PATH=$PWD/../lib
           ./app
 
   execute-test:
@@ -69,6 +70,7 @@ jobs:
         run: |
           cd ./bin
           chmod a+x Catch-test
+          export LD_LIBRARY_PATH=$PWD/../lib
           ./Catch-test
 
       # - name: Ctest
