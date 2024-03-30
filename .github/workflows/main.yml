@@ -17,7 +17,7 @@ on:
       - ".github/workflows/**"
 jobs:
   configure-and-build:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     outputs:
       config_files: ${{ steps.publish.outputs.config_files }}
     steps:
@@ -45,7 +45,7 @@ jobs:
           name: install-product
           path: out/install/ubuntu/**
   execute-app:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: configure-and-build
     steps:
       - name: Download artifact
@@ -64,7 +64,7 @@ jobs:
           ./app
 
   execute-test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: configure-and-build
     steps:
       - name: Download artifact
