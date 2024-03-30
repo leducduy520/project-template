@@ -1,0 +1,20 @@
+name: Outputs test
+on:
+  workflow_dispatch:
+jobs:
+  Publish_output:
+    runs-on: ubuntu-latest
+    outputs:
+      tool_files: ${{steps.publish.outputs.tool_files}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.2
+      - name: Publish
+        id: publish
+        run: find cmake/*.cmake -type f -execdir echo 'config_files={}' >> $GITHUB_OUTPUT ';'
+  Express_ouput:
+    runs-on: ubuntu-latest
+    needs: Publish_output
+    steps:
+      - name: Print
+        run: echo 'tool files are ${{needs.Publish_output.outputs.tool_files}}'

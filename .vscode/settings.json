@@ -11,8 +11,7 @@
     "cmake.configureOnEdit": false,
     "cmake.loggingLevel": "info",
     "cmake.useCMakePresets": "always",
-    "editor.formatOnSave": true,
-    "editor.formatOnSaveMode": "file",
+    "yaml.format.enable": true,
     "[yaml]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 2,
@@ -23,6 +22,5 @@
             "comments": false,
             "strings": true
         }
-    },
-    "editorconfig.generateAuto": true
+    }
 }
