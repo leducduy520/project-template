@@ -1,6 +1,5 @@
 name: Test project on push to main
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
@@ -18,21 +17,19 @@ on:
       - ".github/workflows/**"
 jobs:
   configure-and-build:
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     outputs:
       config_files: ${{ steps.publish.outputs.config_files }}
     steps:
-      # - name: update & install deps
-      #   run: |
-      #     sudo apt update
-      #     sudo apt upgrade
-      #     sudo apt-get install gcc g++ gdb
-      #     sudo apt-get install make cmake
-      #     sudo apt-get install git doxygen
-      #     sudo apt-get install python3 python3-pip
-      #     pip install cmake-format
-      #     pip install ninja
-      #     sudo apt-get install graphviz pkg-config
+      - name: update & install deps
+        run: |
+          sudo apt-get install gcc g++ gdb
+          sudo apt-get install make cmake
+          sudo apt-get install git doxygen
+          sudo apt-get install python3 python3-pip
+          pip install cmake-format
+          pip install ninja
+          sudo apt-get install graphviz pkg-config
       - name: Checkout
         uses: actions/checkout@v4.1.2
       - name: Configure Project
@@ -48,7 +45,7 @@ jobs:
           name: install-product
           path: out/install/ubuntu/**
   execute-app:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: configure-and-build
     steps:
       - name: Download artifact
@@ -67,7 +64,7 @@ jobs:
           ./app
 
   execute-test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: configure-and-build
     steps:
       - name: Download artifact
