@@ -15,7 +15,7 @@ on:
       - "./Makefile"
       - "**/CMakePresets.json"
       - "**.py"
-      - ".github/workflows/**"
+      - ".github/workflows/main.yml"
 jobs:
   configure-and-build:
     runs-on: ubuntu-22.04
