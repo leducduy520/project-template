@@ -17,5 +17,7 @@ jobs:
     steps:
       - name: Download
         uses: actions/download-artifact@v3
+        with:
+          name: product
       - name: Check a result
         run: ls
