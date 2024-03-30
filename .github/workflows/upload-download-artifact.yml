@@ -11,7 +11,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: product
-          path: cmake/**
+          path: cmake
   Download:
     runs-on: ubuntu-latest
     steps:
