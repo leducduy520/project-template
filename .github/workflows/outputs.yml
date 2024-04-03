@@ -4,10 +4,10 @@ on:
 jobs:
   Publish_output:
     runs-on: ubuntu-latest
-    outputs:
-      tool_files: ${{steps.publish.outputs.tool_files}}
     env:
       EVENT_NAME: ${{ github.event_name }}
+    outputs:
+      tool_files: ${{steps.publish.outputs.tool_files}}
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.2
