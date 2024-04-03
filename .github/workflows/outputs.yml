@@ -5,7 +5,7 @@ jobs:
   Publish_output:
     runs-on: ubuntu-latest
     env:
-      EVENT_NAME: ${{ github.event_name }}
+      EVENT_DETAIL: ${{github.event_name}}
     outputs:
       tool_files: ${{steps.publish.outputs.tool_files}}
     steps:
@@ -16,8 +16,9 @@ jobs:
         run: find cmake/*.cmake -type f -exec echo 'tool_files={}' >> $GITHUB_OUTPUT ';'
       - name: Check event
         run: |
-          echo "$EVENT_NAME"
-          echo "${{ github.event_name }}"
+          echo "$EVENT_DETAIL"
+          echo "${{github.event}}"
+          echo "${{github}}"
   Express_ouput:
     runs-on: ubuntu-latest
     needs: Publish_output
