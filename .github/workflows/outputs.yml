@@ -5,7 +5,7 @@ jobs:
   Publish_output:
     runs-on: ubuntu-latest
     env:
-      EVENT_DETAIL: ${{ github.event }}
+      EVENT_DETAIL: ${{github.event}}
     outputs:
       tool_files: ${{steps.publish.outputs.tool_files}}
     steps:
