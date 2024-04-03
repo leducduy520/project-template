@@ -19,6 +19,7 @@ jobs:
           echo "$EVENT_DETAIL"
   Express_ouput:
     runs-on: ubuntu-latest
+    if: ${{github.event.sender.site_admin}}
     needs: Publish_output
     steps:
       - name: Print
