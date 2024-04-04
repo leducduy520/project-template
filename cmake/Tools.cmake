@@ -16,21 +16,21 @@ function(add_cmake_format_target)
 
         foreach(cmake_file ${CMAKE_FILES})
             list(APPEND
-                FORMATTING_COMMANDS
-                COMMAND
-                cmake-format
-                -c
-                ${CMAKE_SOURCE_DIR}/.cmake-format.yaml
-                -i
-                ${cmake_file}
-            )
+                 FORMATTING_COMMANDS
+                 COMMAND
+                 cmake-format
+                 -c
+                 ${CMAKE_SOURCE_DIR}/.cmake-format.yaml
+                 -i
+                 ${cmake_file}
+                 )
         endforeach()
 
         add_custom_target(
             run_cmake_format
             COMMAND ${FORMATTING_COMMANDS}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        )
+            )
     else()
         message(WARNING "CMAKE_FORMAT NOT FOUND")
     endif()

@@ -42,7 +42,7 @@ jobs:
         id: docs_gen
         run: cmake --build --preset=ubuntu-docs
       - name: Installing project
-        if: ${{always() && steps.build.conclusion.success}}
+        if: ${{always()}} && steps.build.conclusion.success
         run: cmake --build --preset=ubuntu-install
       - name: Authen and Execution
         run: |

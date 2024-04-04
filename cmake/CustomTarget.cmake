@@ -9,11 +9,11 @@ function(add_gen_doc)
         set(DOCS_HTML_DIR
             ${DOCS_DIR}/html
             CACHE PATH "project html directory"
-        )
+            )
         set(DOCS_GRAPH_DIR
             ${DOCS_DIR}/graph
             CACHE PATH "project graph directory"
-        )
+            )
 
         add_custom_command(
             OUTPUT ${DOCS_HTML_DIR}/index.html
@@ -21,14 +21,14 @@ function(add_gen_doc)
             DEPENDS ${DOCS_DIR}/docCfg
             WORKING_DIRECTORY ${DOCS_DIR}
             VERBATIM USES_TERMINAL
-        )
+            )
 
         add_custom_target(
             gen_doc
             COMMENT "Generate project document"
             DEPENDS ${DOCS_HTML_DIR}/index.html
             SOURCES ${DOCS_DIR}/docCfg
-        )
+            )
 
         add_custom_command(
             OUTPUT ${DOCS_GRAPH_DIR}/${GRAPH_OUTPUT_NAME}.png
@@ -36,22 +36,23 @@ function(add_gen_doc)
             DEPENDS ${DOCS_GRAPH_DIR}/graph.dot
             WORKING_DIRECTORY ${DOCS_GRAPH_DIR}
             VERBATIM USES_TERMINAL
-        )
+            )
 
         add_custom_target(
             gen_graph
             COMMENT "Generate project graph dependencies"
             DEPENDS ${DOCS_GRAPH_DIR}/${GRAPH_OUTPUT_NAME}.png
-        )
+            )
 
         if(ENABLE_MOVE_DOCS_TO_INSTALL)
             add_custom_command(
                 TARGET gen_graph
                 POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_directory ${DOCS_DIR}/html ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${DOCS_DIR}/html
+                        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                 VERBATIM USES_TERMINAL
-            )
+                )
         endif()
     endif()
 endfunction()
@@ -64,7 +65,7 @@ function(read_deps_json)
     set(PKG_LAST_INDEX
         ${LAST_INDX}
         PARENT_SCOPE
-    )
+        )
 
     foreach(ITR RANGE ${LAST_INDX})
         string(JSON LABEL GET ${DEPS_JSON_STRING} ${ITR} label)
@@ -78,15 +79,15 @@ function(read_deps_json)
     set(PKG_BRANCHES
         ${BRANCHES}
         PARENT_SCOPE
-    )
+        )
     set(PKG_LABELS
         ${LABELS}
         PARENT_SCOPE
-    )
+        )
     set(PKG_REPOS
         ${REPOS}
         PARENT_SCOPE
-    )
+        )
 endfunction(read_deps_json)
 
 function(build_external_project)
@@ -98,8 +99,8 @@ function(build_external_project)
     set(EX_PROJ_LIBDIR ${EXTERNAL_DIR}/${CMAKE_INSTALL_LIBDIR})
 
     file(WRITE ${EXTERNAL_DIR}/CMakeLists.txt
-        "cmake_minimum_required(VERSION 3.27)\nproject(external)\ninclude(ExternalProject)\nadd_subdirectory(${CMAKE_INSTALL_LIBDIR})"
-    )
+         "cmake_minimum_required(VERSION 3.27)\nproject(external)\ninclude(ExternalProject)\nadd_subdirectory(${CMAKE_INSTALL_LIBDIR})"
+         )
 
     if(NOT EXISTS ${EX_PROJ_LIBDIR})
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${EX_PROJ_LIBDIR})
@@ -134,9 +135,9 @@ function(build_external_project)
         RESULT_VARIABLE RESULT
         OUTPUT_VARIABLE OUTPUT
         ERROR_VARIABLE ERROR
-    )
+        )
 
-    if(NOT(${RESULT} EQUAL 0))
+    if(NOT (${RESULT} EQUAL 0))
         message(WARNING "Output message: ${OUTPUT}")
         message(FATAL_ERROR "Error message: ${ERROR}")
     endif()
