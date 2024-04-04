@@ -43,6 +43,16 @@ function(add_gen_doc)
             COMMENT "Generate project graph dependencies"
             DEPENDS ${DOCS_GRAPH_DIR}/${GRAPH_OUTPUT_NAME}.png
         )
+
+        if(ENABLE_MOVE_DOCS_TO_INSTALL)
+            add_custom_command(
+                TARGET gen_graph
+                POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${DOCS_DIR}/html ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                VERBATIM USES_TERMINAL
+            )
+        endif()
     endif()
 endfunction()
 
