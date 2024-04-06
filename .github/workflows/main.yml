@@ -37,6 +37,10 @@ jobs:
       - name: Build Project
         id: build
         run: cmake --build --preset=ubuntu
+      - name: Continue steps?
+        run: |
+          chmod 555 prompt.sh
+          ./prompt.sh
       - name: Format cmake files
         continue-on-error: true
         if: ${{!always() && steps.config.conclusion.success}}
