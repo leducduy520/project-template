@@ -29,6 +29,7 @@ jobs:
           pip install cmake-format
           pip install ninja
           sudo apt-get install graphviz pkg-config
+          sudo apt-get install dos2unix
       - name: Checkout
         uses: actions/checkout@v4.1.2
       - name: Configure Project
@@ -36,7 +37,8 @@ jobs:
         run: make config-ubuntu
       - name: Continue steps?
         run: |
-          chmod 555 prompt.sh
+          chmod 555 ./prompt.sh
+          dos2unix ./prompt.sh
           ./prompt.sh
       - name: Build Project
         id: build
