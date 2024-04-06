@@ -39,6 +39,7 @@ jobs:
         run: cmake --build --preset=ubuntu
       - name: Format cmake files
         continue-on-error: true
+        if: ${{!cancelled()}} && ${{steps.config.conclusion.success}}
         run: cmake --build --preset=ubuntu-format
       - name: Generating docs
         id: docs_gen
@@ -49,9 +50,9 @@ jobs:
         if: ${{steps.build.outcome.success}}
         run: |
           cmake --build --preset=ubuntu-install
-          echo "install_success=yes" >> "$GITHUB_OUTPUT"
+          echo "install_success=true" >> "$GITHUB_OUTPUT"
       - name: Authen and Execution
-        if: ${{!cancelled()}} && ${{steps.install.outputs.install_success == 'yes' }}
+        if: ${{!cancelled()}} && ${{steps.install.outputs.install_success == 'true' }}
         run: |
           cd out/install/ubuntu/bin
           chmod a+x app Catch-test
@@ -59,8 +60,8 @@ jobs:
           ./Catch-test
           ./app
       - name: Upload artifact
-        if: ${{!cancelled()}} && ${{steps.install.outputs.install_success == 'yes' }}
+        if: ${{!cancelled()}} && ${{steps.install.outputs.install_success == 'true' }}
         uses: actions/upload-artifact@v3
         with:
           name: app
-          path: docs
+          path: out/install/ubuntu
