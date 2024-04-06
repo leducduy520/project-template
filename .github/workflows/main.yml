@@ -45,8 +45,13 @@ jobs:
         if: ${{!cancelled()}} && ${{steps.config.conclusion.success}}
         run: cmake --build --preset=ubuntu-docs
       - name: Installing project
-        run: cmake --build --preset=ubuntu-install
+        id: install
+        if: ${{steps.build.outcome.success}}
+        run: |
+          cmake --build --preset=ubuntu-install
+          echo "install_success=1" >> "$GITHUB_OUTPUT"
       - name: Authen and Execution
+        if: ${{steps.install.outputs.install_success}} == 1
         run: |
           cd out/install/ubuntu/bin
           chmod a+x app Catch-test
