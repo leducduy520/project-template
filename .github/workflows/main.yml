@@ -36,9 +36,9 @@ jobs:
         run: make config-ubuntu
       - name: Build Project
         id: build
-        continue-on-error: true
         run: cmake --build --preset=ubuntu
       - name: Format cmake files
+        continue-on-error: true
         run: cmake --build --preset=ubuntu-format
       - name: Generating docs
         id: docs_gen
@@ -49,12 +49,18 @@ jobs:
         if: ${{steps.build.outcome.success}}
         run: |
           cmake --build --preset=ubuntu-install
-          echo "install_success=10" >> "$GITHUB_OUTPUT"
+          echo "install_success=yes" >> "$GITHUB_OUTPUT"
       - name: Authen and Execution
-        if: ${{steps.install.outputs.install_success == '10' }}
+        if: ${{!cancelled()}} && ${{steps.install.outputs.install_success == 'yes' }}
         run: |
           cd out/install/ubuntu/bin
           chmod a+x app Catch-test
           export LD_LIBRARY_PATH=$PWD/../lib
           ./Catch-test
           ./app
+      - name: Upload artifact
+        if: ${{!cancelled()}} && ${{steps.install.outputs.install_success == 'yes' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: app
+          path: docs
