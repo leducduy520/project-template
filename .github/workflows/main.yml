@@ -52,7 +52,7 @@ jobs:
           cmake --build --preset=ubuntu-install
           echo "install_success=1" >> "$GITHUB_OUTPUT"
       - name: Authen and Execution
-        if: ${{!cancelled()}} && ${{steps.install.outputs.install_success == '1' }}
+        if: ${{steps.install.outputs.install_success == '1' }}
         run: |
           cd out/install/ubuntu/bin
           chmod a+x app Catch-test
@@ -60,7 +60,7 @@ jobs:
           ./Catch-test
           ./app
       - name: Upload artifact
-        if: ${{!cancelled()}} && ${{steps.install.outputs.install_success == '1' }}
+        if: ${{steps.install.outputs.install_success == '1' }}
         uses: actions/upload-artifact@v3
         with:
           name: app
