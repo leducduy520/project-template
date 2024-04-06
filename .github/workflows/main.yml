@@ -32,15 +32,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.2
       - name: Configure Project
+        id: config
         run: make config-ubuntu
       - name: Build Project
         id: build
+        continue-on-error: true
         run: cmake --build --preset=ubuntu
       - name: Format cmake files
         run: cmake --build --preset=ubuntu-format
       - name: Generating docs
         id: docs_gen
-        if: ${{always()}} && steps.build.conclusion.success
+        if: ${{!cancelled()}} && ${{steps.config.conclusion.success}}
         run: cmake --build --preset=ubuntu-docs
       - name: Installing project
         run: cmake --build --preset=ubuntu-install
