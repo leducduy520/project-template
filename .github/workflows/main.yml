@@ -45,11 +45,11 @@ jobs:
         run: cmake --build --preset=ubuntu
       - name: Format cmake files
         continue-on-error: true
-        if: ${{!always() && steps.config.conclusion.success}}
+        if: ${{always() && steps.config.conclusion.success}}
         run: cmake --build --preset=ubuntu-format
       - name: Generating docs
         continue-on-error: true
-        if: ${{!always() && steps.config.conclusion.success}}
+        if: ${{always() && steps.config.conclusion.success}}
         run: cmake --build --preset=ubuntu-docs
       - name: Installing project
         id: install
