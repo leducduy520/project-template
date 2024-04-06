@@ -51,7 +51,7 @@ jobs:
           cmake --build --preset=ubuntu-install
           echo "install_success=10" >> "$GITHUB_OUTPUT"
       - name: Authen and Execution
-        if: ${{steps.install.outputs.install_success}} == "10"
+        if: ${{steps.install.outputs.install_success == '10' }}
         run: |
           cd out/install/ubuntu/bin
           chmod a+x app Catch-test
