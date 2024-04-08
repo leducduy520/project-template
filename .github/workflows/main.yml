@@ -1,6 +1,11 @@
 name: Test project on push to main
 on:
   workflow_dispatch:
+    inputs:
+      try-run:
+        description: "Try run app and test"
+        required: true
+        type: boolean
   push:
     branches:
       - main
@@ -19,6 +24,8 @@ on:
 jobs:
   configure-and-build:
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
     steps:
       - name: update & install deps
         run: |
@@ -29,16 +36,51 @@ jobs:
           pip install cmake-format
           pip install ninja
           sudo apt-get install graphviz pkg-config
+          sudo apt-get install dos2unix
       - name: Checkout
         uses: actions/checkout@v4.1.2
       - name: Configure Project
+        id: config
         run: make config-ubuntu
+      - name: Continue steps?
+        run: |
+          chmod 555 ./prompt.sh
+          dos2unix ./prompt.sh
+          ./prompt.sh
       - name: Build Project
-        run: cmake --workflow --preset=ubuntu
+        id: build
+        run: cmake --build --preset=ubuntu
+      - name: Format cmake files
+        continue-on-error: true
+        if: ${{always() && steps.config.outcome == 'success'}}
+        run: cmake --build --preset=ubuntu-format
+      - name: Generating docs
+        continue-on-error: true
+        id: document
+        if: ${{always() && steps.config.outcome == 'success'}}
+        run: cmake --build --preset=ubuntu-docs
+      - name: Installing project
+        id: install
+        if: ${{steps.build.outcome == 'success'}}
+        run: |
+          cmake --build --preset=ubuntu-install
       - name: Authen and Execution
+        if: ${{success() && steps.install.outcome == 'success' && (github.ref_name == 'main' || github.event_name == 'workflow_dispatch' && inputs.try-run)}}
         run: |
           cd out/install/ubuntu/bin
           chmod a+x app Catch-test
           export LD_LIBRARY_PATH=$PWD/../lib
           ./Catch-test
           ./app
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app
+          path: out/install/ubuntu
+      - name: Deloy GitHub Page
+        if: ${{always() && steps.document.outcome == 'success' && github.ref_name == 'main'}}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY  }}
+          publish_dir: ./docs/html
+          destination_dir: ./publish

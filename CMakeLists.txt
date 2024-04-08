@@ -32,6 +32,7 @@ endforeach()
 
 option(ENABLE_CMAKE_FORMAT "enable cmake format" ON)
 option(ENABLE_DOCUMENT_TARGET "enable document target" ON)
+option(ENABLE_MOVE_DOCS_TO_INSTALL "enable moving files in docs directory to the install directory" ON)
 
 set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDERR)
 set(GRAPH_OUTPUT_NAME graph)
@@ -49,7 +50,3 @@ add_subdirectory(app)
 include(CTest)
 enable_testing()
 add_subdirectory(test)
-
-install(FILES ${DOCS_DIR}/graph/graph.png DESTINATION ${CMAKE_INSTALL_DOCDIR})
-
-install(DIRECTORY ${DOCS_DIR}/html DESTINATION ${CMAKE_INSTALL_DOCDIR})
