@@ -19,6 +19,8 @@ on:
 jobs:
   configure-and-build:
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
     steps:
       - name: update & install deps
         run: |
@@ -56,6 +58,12 @@ jobs:
         if: ${{steps.build.outcome.success}}
         run: |
           cmake --build --preset=ubuntu-install
+      - name: Deloy GitHub Page
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY  }}
+          publish_dir: ./docs/html
+          destination_dir: ./publish
       - name: Authen and Execution
         run: |
           cd out/install/ubuntu/bin
