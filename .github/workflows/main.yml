@@ -1,6 +1,11 @@
 name: Test project on push to main
 on:
   workflow_dispatch:
+    inputs:
+      try-run:
+        description: "Try run app and test"
+        required: true
+        type: boolean
   push:
     branches:
       - main
@@ -51,20 +56,16 @@ jobs:
         run: cmake --build --preset=ubuntu-format
       - name: Generating docs
         continue-on-error: true
+        id: document
         if: ${{always() && steps.config.outcome == 'success'}}
         run: cmake --build --preset=ubuntu-docs
       - name: Installing project
         id: install
-        if: ${{steps.build.outcome.success}}
+        if: ${{steps.build.outcome == 'success'}}
         run: |
           cmake --build --preset=ubuntu-install
-      - name: Deloy GitHub Page
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY  }}
-          publish_dir: ./docs/html
-          destination_dir: ./publish
       - name: Authen and Execution
+        if: ${{success() && steps.install.outcome == 'success' && (github.ref_name == 'main' || github.event_name == 'workflow_dispatch' && inputs.try-run)}}
         run: |
           cd out/install/ubuntu/bin
           chmod a+x app Catch-test
@@ -76,3 +77,10 @@ jobs:
         with:
           name: app
           path: out/install/ubuntu
+      - name: Deloy GitHub Page
+        if: ${{always() && steps.document.outcome == 'success' && github.ref_name == 'main'}}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY  }}
+          publish_dir: ./docs/html
+          destination_dir: ./publish
