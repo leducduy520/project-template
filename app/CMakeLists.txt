@@ -2,7 +2,7 @@ project(app)
 
 add_executable(${PROJECT_NAME} app.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE bases)
+target_link_libraries(${PROJECT_NAME} PRIVATE base)
 
 install(
         TARGETS ${PROJECT_NAME}
