@@ -10,17 +10,5 @@
     ],
     "cmake.configureOnEdit": false,
     "cmake.loggingLevel": "info",
-    "cmake.useCMakePresets": "always",
-    "[yaml]": {
-        "editor.insertSpaces": true,
-        "editor.tabSize": 2,
-        "editor.autoIndent": "none",
-        "editor.defaultFormatter": "vscode.github",
-        "diffEditor.ignoreTrimWhitespace": false,
-        "editor.quickSuggestions": {
-            "other": true,
-            "comments": false,
-            "strings": true
-        }
-    }
+    "cmake.useCMakePresets": "always"
 }
