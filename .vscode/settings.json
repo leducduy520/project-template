@@ -15,7 +15,7 @@
         "editor.insertSpaces": true,
         "editor.tabSize": 2,
         "editor.autoIndent": "none",
-        "editor.defaultFormatter": "redhat.vscode-yaml",
+        "editor.defaultFormatter": "vscode.github",
         "diffEditor.ignoreTrimWhitespace": false,
         "editor.quickSuggestions": {
             "other": true,
