@@ -1,7 +1,6 @@
 #include "base.hpp"
 
-Base::Base(const uint16_t &X, const uint16_t &Y)
-    : x(X), y(Y)
+Base::Base(const uint16_t &X, const uint16_t &Y) : x(X), y(Y)
 {
 }
 

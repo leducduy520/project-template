@@ -10,5 +10,14 @@
     ],
     "cmake.configureOnEdit": false,
     "cmake.loggingLevel": "info",
-    "cmake.useCMakePresets": "always"
+    "cmake.useCMakePresets": "always",
+    "[cmake]": {
+        "editor.formatOnSave": false,
+        "editor.quickSuggestions": {
+            "strings": true
+        }
+    },
+    "files.associations": {
+        "memory": "cpp"
+    }
 }

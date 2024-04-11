@@ -11,6 +11,15 @@ private:
     uint16_t x, y;
 
 public:
+    /**
+     * @brief Construct a new Base object
+     * 
+     * @param X 
+     * @param Y 
+     * !asdad
+     * TODO
+     * decr
+     */
     Base(const uint16_t &X, const uint16_t &Y);
     Base(const Base &other);
     const bool operator==(const Base &other)
