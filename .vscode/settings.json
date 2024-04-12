@@ -13,6 +13,7 @@
     "cmake.useCMakePresets": "always",
     "[cmake]": {
         "editor.formatOnSave": false,
+        "editor.defaultFormatter": "josetr.cmake-language-support-vscode",
         "editor.quickSuggestions": {
             "strings": true
         }
