@@ -63,7 +63,7 @@ function(read_deps_json)
     string(JSON DEPS_LENGTH LENGTH ${DEPS_JSON_STRING})
     math(EXPR LAST_INDX "${DEPS_LENGTH} - 1" OUTPUT_FORMAT DECIMAL)
     
-    if(NOT LAST_INDX OR ${LAST_INDX} STREQUAL "-1")
+    if(${LAST_INDX} STREQUAL "-1")
         message("deps.json is empty or parsed unsuccessfully")
         set(PKG_LAST_INDEX
         NO_FOUND
@@ -76,7 +76,7 @@ function(read_deps_json)
         ${LAST_INDX}
         PARENT_SCOPE
         )
-        
+
     foreach(ITR RANGE ${LAST_INDX})
         string(JSON LABEL GET ${DEPS_JSON_STRING} ${ITR} label)
         list(APPEND LABELS ${LABEL})
