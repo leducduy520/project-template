@@ -4,13 +4,15 @@ read_deps_json()
 
 build_external_project(
     BRANCHES
-    ${PKG_BRANCHES}
+        ${PKG_BRANCHES}
     LABELS
-    ${PKG_LABELS}
+        ${PKG_LABELS}
     REPOS
-    ${PKG_REPOS}
-    SIZE
-    ${PKG_LAST_INDEX}
+        ${PKG_REPOS}
+    FIRST_INDX
+        0
+    LAST_INDX
+        ${PKG_LAST_INDEX}
     )
 
 list(APPEND CMAKE_PREFIX_PATH ${EXTERNAL_INSTALL_PREFIX})

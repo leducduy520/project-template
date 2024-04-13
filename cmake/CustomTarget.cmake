@@ -62,11 +62,21 @@ function(read_deps_json)
 
     string(JSON DEPS_LENGTH LENGTH ${DEPS_JSON_STRING})
     math(EXPR LAST_INDX "${DEPS_LENGTH} - 1" OUTPUT_FORMAT DECIMAL)
+    
+    if(NOT LAST_INDX OR ${LAST_INDX} STREQUAL "-1")
+        message("deps.json is empty or parsed unsuccessfully")
+        set(PKG_LAST_INDEX
+        NO_FOUND
+        PARENT_SCOPE
+        )
+        return()
+    endif()
+    
     set(PKG_LAST_INDEX
         ${LAST_INDX}
         PARENT_SCOPE
         )
-
+        
     foreach(ITR RANGE ${LAST_INDX})
         string(JSON LABEL GET ${DEPS_JSON_STRING} ${ITR} label)
         list(APPEND LABELS ${LABEL})
@@ -92,15 +102,25 @@ endfunction(read_deps_json)
 
 function(build_external_project)
     set(multiValueArgs REPOS BRANCHES LABELS)
-    set(oneValueArgs SIZE)
+    set(oneValueArgs FIRST_INDX LAST_INDX)
 
     cmake_parse_arguments(EX_PROJ "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    set(EX_PROJ_LIBDIR ${EXTERNAL_DIR}/${CMAKE_INSTALL_LIBDIR})
+    if(${EX_PROJ_LAST_INDX} MATCHES "(-1|NO_FOUND)")
+        message("Packages list's last index is not found")
+        return()
+    endif()
+
+    if(${EX_PROJ_LAST_INDX} MATCHES "(-1|NO_FOUND)")
+        set(EX_PROJ_FIRST_INDX 0)
+    endif()
 
     file(WRITE ${EXTERNAL_DIR}/CMakeLists.txt
-         "cmake_minimum_required(VERSION 3.27)\nproject(external)\ninclude(ExternalProject)\nadd_subdirectory(${CMAKE_INSTALL_LIBDIR})"
-         )
+    "cmake_minimum_required(VERSION 3.27)\nproject(external)\ninclude(ExternalProject)\nadd_subdirectory(${CMAKE_INSTALL_LIBDIR})"
+    )
+    
+    set(EX_PROJ_LIBDIR ${EXTERNAL_DIR}/${CMAKE_INSTALL_LIBDIR})
+    set(ALL_LIB_HAS_CACHE ON)
 
     if(NOT EXISTS ${EX_PROJ_LIBDIR})
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${EX_PROJ_LIBDIR})
@@ -108,7 +128,7 @@ function(build_external_project)
 
     file(WRITE ${EX_PROJ_LIBDIR}/CMakeLists.txt "project(${CMAKE_INSTALL_LIBDIR})\n")
 
-    foreach(ITR RANGE ${EX_PROJ_SIZE})
+    foreach(ITR RANGE ${EX_PROJ_FIRST_INDX} ${EX_PROJ_LAST_INDX})
         list(GET EX_PROJ_REPOS ${ITR} EX_PROJ_REPO)
         list(GET EX_PROJ_BRANCHES ${ITR} EX_PROJ_BRANCH)
         list(GET EX_PROJ_LABELS ${ITR} EX_PROJ_LABEL)
@@ -123,9 +143,35 @@ function(build_external_project)
         configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakeLists.txt.in ${EX_SUB_PROJ_DIR}/CMakeLists.txt @ONLY)
 
         file(APPEND ${EX_PROJ_LIBDIR}/CMakeLists.txt "add_subdirectory(${EX_PROJ_LABEL_LOWER})\n")
-    endforeach()
 
+        if(NOT EXISTS ${EXTERNAL_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${EX_PROJ_LABEL_LOWER}/build/CMakeCache.txt)
+            set(ALL_LIB_HAS_CACHE OFF)
+        endif()
+    endforeach()
+    
     configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakePresets.json.in ${EXTERNAL_DIR}/CMakePresets.json)
+
+    file(READ ${CMAKE_SOURCE_DIR}/external_cache.json EXTERNAL_CACHE_JSON)
+    file(MD5 deps.json deps_MD5)
+    file(MD5 ${EXTERNAL_DIR}/CMakeLists.txt cmakelists_MD5)
+    file(MD5 ${EXTERNAL_DIR}/CMakePresets.json cmakepresets_MD5)
+
+    if(EXISTS ${EXTERNAL_BINARY_DIR}/CMakeCache.txt AND ALL_LIB_HAS_CACHE)
+        string(JSON deps_OUTPUT GET ${EXTERNAL_CACHE_JSON} deps_MD5)
+        string(JSON cmakelists_OUTPUT GET ${EXTERNAL_CACHE_JSON} cmakelists_MD5)
+        string(JSON cmakepresets_OUTPUT GET ${EXTERNAL_CACHE_JSON} cmakepresets_MD5)
+        if((${deps_OUTPUT} STREQUAL ${deps_MD5}) AND 
+            (${cmakelists_OUTPUT} STREQUAL ${cmakelists_MD5}) AND
+            (${cmakepresets_OUTPUT} STREQUAL ${cmakepresets_MD5}))
+            return()
+        endif()
+    endif()
+
+    string(JSON EXTERNAL_CACHE_JSON SET ${EXTERNAL_CACHE_JSON} deps_MD5 "\"${deps_MD5}\"")
+    string(JSON EXTERNAL_CACHE_JSON SET ${EXTERNAL_CACHE_JSON} cmakelists_MD5 "\"${cmakelists_MD5}\"")
+    string(JSON EXTERNAL_CACHE_JSON SET ${EXTERNAL_CACHE_JSON} cmakepresets_MD5 "\"${cmakepresets_MD5}\"")
+    file(WRITE ${CMAKE_SOURCE_DIR}/external_cache.json ${EXTERNAL_CACHE_JSON})
+
 
     execute_process(COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli --preset=${PRESET} WORKING_DIRECTORY ${EXTERNAL_DIR})
 
