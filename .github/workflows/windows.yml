@@ -26,3 +26,11 @@ jobs:
         run: ls
       - name: Configure
         run: make config-win
+      - name: Format
+        run: cmake --build --preset=windows-format
+      - name: Docs
+        run: cmake --build --preset=windows-docs
+      - name: Install
+        run: cmake --build --preset=windows-install
+      - name: Test
+        run: ctest --preset=windows
