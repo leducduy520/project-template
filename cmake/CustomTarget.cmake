@@ -62,16 +62,16 @@ function(read_deps_json)
 
     string(JSON DEPS_LENGTH LENGTH ${DEPS_JSON_STRING})
     math(EXPR LAST_INDX "${DEPS_LENGTH} - 1" OUTPUT_FORMAT DECIMAL)
-    
+
     if(${LAST_INDX} STREQUAL "-1")
         message("deps.json is empty or parsed unsuccessfully")
         set(PKG_LAST_INDEX
-        NO_FOUND
-        PARENT_SCOPE
-        )
+            NO_FOUND
+            PARENT_SCOPE
+            )
         return()
     endif()
-    
+
     set(PKG_LAST_INDEX
         ${LAST_INDX}
         PARENT_SCOPE
@@ -116,9 +116,9 @@ function(build_external_project)
     endif()
 
     file(WRITE ${EXTERNAL_DIR}/CMakeLists.txt
-    "cmake_minimum_required(VERSION 3.27)\nproject(external)\ninclude(ExternalProject)\nadd_subdirectory(${CMAKE_INSTALL_LIBDIR})"
-    )
-    
+         "cmake_minimum_required(VERSION 3.27)\nproject(external)\ninclude(ExternalProject)\nadd_subdirectory(${CMAKE_INSTALL_LIBDIR})"
+         )
+
     set(EX_PROJ_LIBDIR ${EXTERNAL_DIR}/${CMAKE_INSTALL_LIBDIR})
     set(ALL_LIB_HAS_CACHE ON)
 
@@ -148,11 +148,11 @@ function(build_external_project)
             set(ALL_LIB_HAS_CACHE OFF)
         endif()
     endforeach()
-    
+
     configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakePresets.json.in ${EXTERNAL_DIR}/CMakePresets.json)
 
     file(READ ${CMAKE_SOURCE_DIR}/external_cache.json EXTERNAL_CACHE_JSON)
-    file(MD5 deps.json deps_MD5)
+    file(MD5 ${CMAKE_SOURCE_DIR}/deps.json deps_MD5)
     file(MD5 ${EXTERNAL_DIR}/CMakeLists.txt cmakelists_MD5)
     file(MD5 ${EXTERNAL_DIR}/CMakePresets.json cmakepresets_MD5)
 
@@ -160,9 +160,10 @@ function(build_external_project)
         string(JSON deps_OUTPUT GET ${EXTERNAL_CACHE_JSON} deps_MD5)
         string(JSON cmakelists_OUTPUT GET ${EXTERNAL_CACHE_JSON} cmakelists_MD5)
         string(JSON cmakepresets_OUTPUT GET ${EXTERNAL_CACHE_JSON} cmakepresets_MD5)
-        if((${deps_OUTPUT} STREQUAL ${deps_MD5}) AND 
-            (${cmakelists_OUTPUT} STREQUAL ${cmakelists_MD5}) AND
-            (${cmakepresets_OUTPUT} STREQUAL ${cmakepresets_MD5}))
+        if((${deps_OUTPUT} STREQUAL ${deps_MD5})
+           AND (${cmakelists_OUTPUT} STREQUAL ${cmakelists_MD5})
+           AND (${cmakepresets_OUTPUT} STREQUAL ${cmakepresets_MD5})
+           )
             return()
         endif()
     endif()
@@ -171,7 +172,6 @@ function(build_external_project)
     string(JSON EXTERNAL_CACHE_JSON SET ${EXTERNAL_CACHE_JSON} cmakelists_MD5 "\"${cmakelists_MD5}\"")
     string(JSON EXTERNAL_CACHE_JSON SET ${EXTERNAL_CACHE_JSON} cmakepresets_MD5 "\"${cmakepresets_MD5}\"")
     file(WRITE ${CMAKE_SOURCE_DIR}/external_cache.json ${EXTERNAL_CACHE_JSON})
-
 
     execute_process(COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli --preset=${PRESET} WORKING_DIRECTORY ${EXTERNAL_DIR})
 
