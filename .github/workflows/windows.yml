@@ -15,7 +15,7 @@ jobs:
       - name: install dos2unix
         run: choco install dos2unix
       - name: install doxygen
-        run: choco install doxygen.install
+        run: choco install doxygen.portable
       - name: install cmake-format
         run: |
           pip install cmake-format
