@@ -82,12 +82,17 @@ function(read_deps_json)
         list(APPEND LABELS ${LABEL})
         string(JSON REPO GET ${DEPS_JSON_STRING} ${ITR} repo)
         list(APPEND REPOS ${REPO})
-        string(JSON BRANCH GET ${DEPS_JSON_STRING} ${ITR} branch)
-        list(APPEND BRANCHES ${BRANCH})
+        string(JSON TAG GET ${DEPS_JSON_STRING} ${ITR} tag)
+        list(APPEND TAGS ${TAG})
+        string(JSON SHALLOW ERROR_VARIABLE ERROR GET ${DEPS_JSON_STRING} ${ITR} shallow)
+        if(ERROR)
+            set(SHALLOW FALSE)
+        endif()
+        list(APPEND SHALLOWS ${SHALLOW})
     endforeach()
 
-    set(PKG_BRANCHES
-        ${BRANCHES}
+    set(PKG_TAGS
+        ${TAGS}
         PARENT_SCOPE
         )
     set(PKG_LABELS
@@ -98,13 +103,27 @@ function(read_deps_json)
         ${REPOS}
         PARENT_SCOPE
         )
+    set(PKG_SHALLOWS
+        ${SHALLOWS}
+        PARENT_SCOPE
+        )
 endfunction(read_deps_json)
 
 function(build_external_project)
-    set(multiValueArgs REPOS BRANCHES LABELS)
+    set(multiValueArgs REPOS TAGS LABELS SHALLOWS)
     set(oneValueArgs FIRST_INDX LAST_INDX)
-
+    set(options READ_FROM_JSON)
     cmake_parse_arguments(EX_PROJ "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(EX_PROJ_READ_FROM_JSON)
+        read_deps_json()
+        set(EX_PROJ_REPOS ${PKG_REPOS})
+        set(EX_PROJ_TAGS ${PKG_TAGS})
+        set(EX_PROJ_LABELS ${PKG_LABELS})
+        set(EX_PROJ_SHALLOWS ${PKG_SHALLOWS})
+        set(EX_PROJ_FIRST_INDX 0)
+        set(EX_PROJ_LAST_INDX ${PKG_LAST_INDEX})
+    endif(EX_PROJ_READ_FROM_JSON)
 
     if(${EX_PROJ_LAST_INDX} MATCHES "(-1|NO_FOUND)")
         message("Packages list's last index is not found")
@@ -130,8 +149,9 @@ function(build_external_project)
 
     foreach(ITR RANGE ${EX_PROJ_FIRST_INDX} ${EX_PROJ_LAST_INDX})
         list(GET EX_PROJ_REPOS ${ITR} EX_PROJ_REPO)
-        list(GET EX_PROJ_BRANCHES ${ITR} EX_PROJ_BRANCH)
+        list(GET EX_PROJ_TAGS ${ITR} EX_PROJ_BRANCH)
         list(GET EX_PROJ_LABELS ${ITR} EX_PROJ_LABEL)
+        list(GET EX_PROJ_SHALLOWS ${ITR} EX_PROJ_SHALLOW)
 
         string(TOLOWER ${EX_PROJ_LABEL} EX_PROJ_LABEL_LOWER)
         set(EX_SUB_PROJ_DIR ${EX_PROJ_LIBDIR}/${EX_PROJ_LABEL_LOWER})
@@ -156,7 +176,7 @@ function(build_external_project)
     file(MD5 ${EXTERNAL_DIR}/CMakeLists.txt cmakelists_MD5)
     file(MD5 ${EXTERNAL_DIR}/CMakePresets.json cmakepresets_MD5)
 
-    if(EXISTS ${EXTERNAL_BINARY_DIR}/CMakeCache.txt AND ALL_LIB_HAS_CACHE)
+    if(EXISTS ${EXTERNAL_BINARY_DIR}/CMakeCache.txt AND ALL_LIB_HAS_CACHE AND (NOT EX_PROJ_READ_FROM_JSON))
         string(JSON deps_OUTPUT GET ${EXTERNAL_CACHE_JSON} deps_MD5)
         string(JSON cmakelists_OUTPUT GET ${EXTERNAL_CACHE_JSON} cmakelists_MD5)
         string(JSON cmakepresets_OUTPUT GET ${EXTERNAL_CACHE_JSON} cmakepresets_MD5)
