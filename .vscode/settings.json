@@ -11,6 +11,9 @@
     "cmake.configureOnEdit": false,
     "cmake.loggingLevel": "info",
     "cmake.useCMakePresets": "always",
+    "cmake.ctest.allowParallelJobs": true,
+    "cmake.cmakePath": "${env:msys_root}\\ucrt64\\bin\\cmake.exe",
+    "cmake.format.allowOptionalArgumentIndentation": true,
     "[cmake]": {
         "editor.formatOnSave": false,
         "editor.defaultFormatter": "josetr.cmake-language-support-vscode",
@@ -48,10 +51,15 @@
         "Git Bash": {
             "source": "Git Bash"
         },
-        "bash (MSYS2)": {
-            "path": "E:\\Software\\msys64\\usr\\bin\\bash.exe",
-            "args": ["--login", "-i"],
-            "env": { "CHERE_INVOKING": "1" }
+        "MSYS2": {
+            "path": "cmd.exe",
+            "args": [
+                "/c",
+                "${env:msys_root}\\msys2_shell.cmd -defterm -here -no-start -msys"
+            ],
+            "env": {
+                "CHERE_INVOKING": "1"
+            }
         },
         "MSYS2 UCRT": {
             "path": "cmd.exe",
@@ -60,5 +68,6 @@
                 "${env:msys_root}\\msys2_shell.cmd -defterm -here -no-start -ucrt64"
             ]
         }
-    }
+    },
+    "terminal.integrated.defaultProfile.windows": "MSYS2 UCRT"
 }

@@ -29,10 +29,10 @@ function(add_gen_doc)
             DEPENDS ${DOCS_HTML_DIR}/index.html
             SOURCES ${DOCS_DIR}/docCfg
             )
-
+        
         add_custom_command(
             OUTPUT ${DOCS_GRAPH_DIR}/${GRAPH_OUTPUT_NAME}.png
-            COMMAND dot -v -Tpng graph.dot -o ${GRAPH_OUTPUT_NAME}.png
+            COMMAND ${DOXYGEN_DOT_EXECUTABLE} -v -Tpng graph.dot -o ${GRAPH_OUTPUT_NAME}.png
             DEPENDS ${DOCS_GRAPH_DIR}/graph.dot
             WORKING_DIRECTORY ${DOCS_GRAPH_DIR}
             VERBATIM USES_TERMINAL
@@ -47,6 +47,14 @@ function(add_gen_doc)
         if(ENABLE_MOVE_DOCS_TO_INSTALL)
             add_custom_command(
                 TARGET gen_graph
+                POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${DOCS_DIR}/graph
+                        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                VERBATIM USES_TERMINAL
+                )
+            add_custom_command(
+                TARGET gen_doc
                 POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_directory ${DOCS_DIR}/html
                         ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}
