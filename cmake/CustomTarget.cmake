@@ -84,7 +84,16 @@ function(read_deps_json)
         list(APPEND REPOS ${REPO})
         string(JSON TAG GET ${DEPS_JSON_STRING} ${ITR} tag)
         list(APPEND TAGS ${TAG})
-        string(JSON SHALLOW ERROR_VARIABLE ERROR GET ${DEPS_JSON_STRING} ${ITR} shallow)
+        string(
+            JSON
+            SHALLOW
+            ERROR_VARIABLE
+            ERROR
+            GET
+            ${DEPS_JSON_STRING}
+            ${ITR}
+            shallow
+            )
         if(ERROR)
             set(SHALLOW FALSE)
         endif()
@@ -174,7 +183,7 @@ function(build_external_project)
     file(READ ${CMAKE_SOURCE_DIR}/external_cache.json EXTERNAL_CACHE_JSON)
     file(MD5 ${EXTERNAL_DIR}/CMakeLists.txt cmakelists_MD5)
     file(MD5 ${EXTERNAL_DIR}/CMakePresets.json cmakepresets_MD5)
-    
+
     if(EXISTS ${EXTERNAL_BINARY_DIR}/CMakeCache.txt AND ALL_LIB_HAS_CACHE)
         string(JSON cmakelists_OUTPUT GET ${EXTERNAL_CACHE_JSON} cmakelists_MD5)
         string(JSON cmakepresets_OUTPUT GET ${EXTERNAL_CACHE_JSON} cmakepresets_MD5)
@@ -182,14 +191,14 @@ function(build_external_project)
             file(MD5 ${CMAKE_SOURCE_DIR}/deps.json deps_MD5)
             string(JSON deps_OUTPUT GET ${EXTERNAL_CACHE_JSON} deps_MD5)
             if((${deps_OUTPUT} STREQUAL ${deps_MD5})
-                AND (${cmakelists_OUTPUT} STREQUAL ${cmakelists_MD5})
-                AND (${cmakepresets_OUTPUT} STREQUAL ${cmakepresets_MD5})
-                )
+               AND (${cmakelists_OUTPUT} STREQUAL ${cmakelists_MD5})
+               AND (${cmakepresets_OUTPUT} STREQUAL ${cmakepresets_MD5})
+               )
                 return()
             endif()
             string(JSON EXTERNAL_CACHE_JSON SET ${EXTERNAL_CACHE_JSON} deps_MD5 "\"${deps_MD5}\"")
         endif()
-        
+
     endif()
 
     string(JSON EXTERNAL_CACHE_JSON SET ${EXTERNAL_CACHE_JSON} cmakelists_MD5 "\"${cmakelists_MD5}\"")

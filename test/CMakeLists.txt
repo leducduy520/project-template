@@ -1,8 +1,6 @@
 project(Catch-test)
 
-build_external_project(
-    READ_FROM_JSON
-    )
+build_external_project(READ_FROM_JSON)
 
 list(APPEND CMAKE_PREFIX_PATH ${EXTERNAL_INSTALL_PREFIX})
 
