@@ -17,7 +17,7 @@ function(add_gen_doc)
 
         add_custom_command(
             OUTPUT ${DOCS_HTML_DIR}/index.html
-            COMMAND doxygen ./docCfg
+            COMMAND ${DOXYGEN_EXECUTABLE} ./docCfg
             DEPENDS ${DOCS_DIR}/docCfg
             WORKING_DIRECTORY ${DOCS_DIR}
             VERBATIM USES_TERMINAL
@@ -29,7 +29,7 @@ function(add_gen_doc)
             DEPENDS ${DOCS_HTML_DIR}/index.html
             SOURCES ${DOCS_DIR}/docCfg
             )
-        
+
         add_custom_command(
             OUTPUT ${DOCS_GRAPH_DIR}/${GRAPH_OUTPUT_NAME}.png
             COMMAND ${DOXYGEN_DOT_EXECUTABLE} -v -Tpng graph.dot -o ${GRAPH_OUTPUT_NAME}.png
