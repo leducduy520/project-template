@@ -11,6 +11,8 @@ find_package(Catch2 REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Catch2::Catch2WithMain)
 
+set_target_properties(${PROJECT_NAME} PROPERTIES INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+
 load_cache(${EXTERNAL_BINARY_DIR} READ_WITH_PREFIX EXTERNAL_ catch2_SOURCE_DIR)
 list(APPEND CMAKE_MODULE_PATH ${EXTERNAL_catch2_SOURCE_DIR}/extras)
 include(Catch)
