@@ -1,6 +1,4 @@
 {
-    "cmake.automaticReconfigure": false,
-    "cmake.clearOutputBeforeBuild": false,
     "cmake.configureArgs": [
         "--graphviz=${workspaceFolder}/docs/graph/graph.dot",
         "--no-warn-unused-cli"
@@ -8,49 +6,15 @@
     "cmake.buildArgs": [
         "--verbose"
     ],
-    "cmake.configureOnEdit": false,
-    "cmake.loggingLevel": "info",
+    "cmake.allowUnsupportedPresetsVersions": true,
     "cmake.useCMakePresets": "always",
     "cmake.ctest.allowParallelJobs": true,
     "cmake.cmakePath": "${env:msys_root}\\ucrt64\\bin\\cmake.exe",
     "cmake.format.allowOptionalArgumentIndentation": true,
-    "[cmake]": {
-        "editor.formatOnSave": false,
-        "editor.defaultFormatter": "josetr.cmake-language-support-vscode",
-        "editor.quickSuggestions": {
-            "strings": true
-        }
-    },
-    "[yaml]": {
-        "editor.insertSpaces": true,
-        "editor.tabSize": 2,
-        "editor.autoIndent": "keep",
-        "diffEditor.ignoreTrimWhitespace": false,
-        "editor.quickSuggestions": {
-            "other": true,
-            "comments": false,
-            "strings": true
-        }
-    },
     "files.associations": {
         "memory": "cpp"
     },
     "terminal.integrated.profiles.windows": {
-        "PowerShell": {
-            "source": "PowerShell",
-            "icon": "terminal-powershell"
-        },
-        "Command Prompt": {
-            "path": [
-                "${env:windir}\\Sysnative\\cmd.exe",
-                "${env:windir}\\System32\\cmd.exe"
-            ],
-            "args": [],
-            "icon": "terminal-cmd"
-        },
-        "Git Bash": {
-            "source": "Git Bash"
-        },
         "MSYS2": {
             "path": "cmd.exe",
             "args": [

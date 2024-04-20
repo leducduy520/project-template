@@ -2,14 +2,28 @@
     "version": 6,
     "configurePresets": [
         {
+            "name": "environment",
+            "hidden": true,
+            "environment": {
+                "BUILD_TYPE": "Release",
+                "EXTERNAL_NAME": "external",
+                "OUR_DIR_NAME": "out",
+                "INSTALL_DIR_NAME": "install",
+                "BUILD_DIR_NAME": "build",
+                "DOC_DIR_NAME": "docs",
+                "TOOL_DIR_NAME": "tools"
+            }
+        },
+        {
             "name": "base",
             "hidden": true,
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
+            "binaryDir": "${sourceDir}/$env{OUR_DIR_NAME}/$env{BUILD_DIR_NAME}/${presetName}",
+            "installDir": "${sourceDir}/$env{OUR_DIR_NAME}/$env{INSTALL_DIR_NAME}/${presetName}",
+            "inherits": "environment",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": {
                     "type": "STRING",
-                    "value": "Release"
+                    "value": "$env{BUILD_TYPE}"
                 },
                 "PRESET": {
                     "type": "STRING",
@@ -17,23 +31,23 @@
                 },
                 "EXTERNAL_DIR": {
                     "type": "PATH",
-                    "value": "${sourceDir}/external"
+                    "value": "${sourceDir}/$env{EXTERNAL_NAME}"
                 },
                 "EXTERNAL_BINARY_DIR": {
                     "type": "PATH",
-                    "value": "${sourceDir}/out/build/${presetName}/external"
+                    "value": "${sourceDir}/$env{OUR_DIR_NAME}/$env{BUILD_DIR_NAME}/${presetName}/$env{EXTERNAL_NAME}"
                 },
                 "EXTERNAL_INSTALL_PREFIX": {
                     "type": "PATH",
-                    "value": "${sourceDir}/out/install/${presetName}/external"
+                    "value": "${sourceDir}/$env{OUR_DIR_NAME}/$env{INSTALL_DIR_NAME}/${presetName}/$env{EXTERNAL_NAME}"
                 },
                 "DOCS_DIR": {
                     "type": "PATH",
-                    "value": "${sourceDir}/docs"
+                    "value": "${sourceDir}/$env{DOC_DIR_NAME}"
                 },
                 "TOOLS_DIR": {
                     "type": "PATH",
-                    "value": "${sourceDir}/tools"
+                    "value": "${sourceDir}/$env{TOOL_DIR_NAME}"
                 }
             }
         },
@@ -60,6 +74,7 @@
         {
             "name": "ubuntu",
             "inherits": "windows",
+            "generator": "Unix Makefiles",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
                 "CMAKE_CXX_COMPILER": "g++"
@@ -78,13 +93,59 @@
     ],
     "buildPresets": [
         {
+            "name": "base",
+            "configurePreset": "base",
+            "hidden": true,
+            "inheritConfigureEnvironment": true,
+            "configuration": "Release",
+            "jobs": 6,
+            "targets": "all"
+        },
+        {
+            "name": "base-graphviz",
+            "configurePreset": "base",
+            "hidden": true,
+            "inherits": "base",
+            "targets": "gen-graph"
+        },
+        {
+            "name": "base-document",
+            "configurePreset": "base",
+            "hidden": true,
+            "inherits": "base",
+            "targets": "gen-doc"
+        },
+        {
+            "name": "base-format",
+            "configurePreset": "base",
+            "hidden": true,
+            "inherits": "base",
+            "targets": "run_cmake_format"
+        },
+        {
+            "name": "base-install",
+            "configurePreset": "base",
+            "hidden": true,
+            "inherits": "base",
+            "targets": "install"
+        },
+        {
+            "name": "base-complete",
+            "configurePreset": "base",
+            "hidden": true,
+            "inherits": "base",
+            "targets": [
+                "all",
+                "run_cmake_format",
+                "gen_graph",
+                "gen_doc",
+                "install"
+            ]
+        },
+        {
             "name": "windows",
             "configurePreset": "windows",
-            "configuration": "Release",
-            "jobs": 8,
-            "targets": [
-                "all"
-            ],
+            "inherits": "base",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
@@ -92,42 +153,49 @@
             }
         },
         {
-            "name": "windows-format",
-            "inherits": "windows",
-            "targets": [
-                "run_cmake_format"
+            "name": "windows-graphviz",
+            "configurePreset": "windows",
+            "inherits": [
+                "base-graphviz",
+                "windows"
             ]
         },
         {
-            "name": "windows-docs",
-            "inherits": "windows",
-            "targets": [
-                "gen_doc",
-                "gen_graph"
+            "name": "windows-document",
+            "configurePreset": "windows",
+            "inherits": [
+                "base-document",
+                "windows"
+            ]
+        },
+        {
+            "name": "windows-format",
+            "configurePreset": "windows",
+            "inherits": [
+                "base-format",
+                "windows"
             ]
         },
         {
             "name": "windows-install",
-            "inherits": "windows",
-            "targets": [
-                "install"
+            "configurePreset": "windows",
+            "inherits": [
+                "base-install",
+                "windows"
             ]
         },
         {
-            "name": "windows-all",
-            "inherits": "windows",
-            "targets": [
-                "all",
-                "run_cmake_format",
-                "gen_doc",
-                "gen_graph",
-                "install"
+            "name": "windows-complete",
+            "configurePreset": "windows",
+            "inherits": [
+                "base-complete",
+                "windows"
             ]
         },
         {
             "name": "ubuntu",
             "configurePreset": "ubuntu",
-            "inherits": "windows",
+            "inherits": "base",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
@@ -135,47 +203,51 @@
             }
         },
         {
-            "name": "ubuntu-format",
+            "name": "ubuntu-graphviz",
             "configurePreset": "ubuntu",
-            "inherits": "ubuntu",
-            "targets": [
-                "run_cmake_format"
+            "inherits": [
+                "base-graphviz",
+                "ubuntu"
             ]
         },
         {
-            "name": "ubuntu-docs",
+            "name": "ubuntu-document",
             "configurePreset": "ubuntu",
-            "inherits": "ubuntu",
-            "targets": [
-                "gen_doc",
-                "gen_graph"
+            "inherits": [
+                "base-document",
+                "ubuntu"
+            ]
+        },
+        {
+            "name": "ubuntu-format",
+            "configurePreset": "ubuntu",
+            "inherits": [
+                "base-format",
+                "ubuntu"
             ]
         },
         {
             "name": "ubuntu-install",
             "configurePreset": "ubuntu",
-            "inherits": "ubuntu",
-            "targets": [
-                "install"
+            "inherits": [
+                "base-install",
+                "ubuntu"
             ]
         },
         {
-            "name": "ubuntu-all",
+            "name": "ubuntu-complete",
             "configurePreset": "ubuntu",
-            "inherits": "ubuntu",
-            "targets": [
-                "all",
-                "run_cmake_format",
-                "gen_doc",
-                "gen_graph",
-                "install"
+            "inherits": [
+                "base-complete",
+                "ubuntu"
             ]
         }
     ],
     "testPresets": [
         {
-            "name": "windows",
-            "configurePreset": "windows",
+            "name": "base",
+            "configurePreset": "base",
+            "hidden": true,
             "output": {
                 "verbosity": "verbose",
                 "shortProgress": true,
@@ -186,9 +258,24 @@
             }
         },
         {
+            "name": "windows",
+            "configurePreset": "windows",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
             "name": "ubuntu",
             "configurePreset": "ubuntu",
-            "inherits": "windows"
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
         }
     ],
     "workflowPresets": [
@@ -201,7 +288,7 @@
                 },
                 {
                     "type": "build",
-                    "name": "windows-all"
+                    "name": "windows-complete"
                 },
                 {
                     "type": "test",
@@ -218,7 +305,7 @@
                 },
                 {
                     "type": "build",
-                    "name": "ubuntu-all"
+                    "name": "ubuntu-complete"
                 },
                 {
                     "type": "test",
