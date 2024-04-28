@@ -27,7 +27,7 @@
                     "value": "@CMAKE_C_COMPILER@"
                 }
             },
-            "generator": "Ninja",
+            "generator": "@CMAKE_GENERATOR@",
             "name": "@PRESET@"
         }
     ],

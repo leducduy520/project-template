@@ -43,6 +43,8 @@ add_cmake_format_target()
 include(CustomTarget)
 add_gen_doc()
 
+build_external_project(READ_FROM_JSON SUB_PROJECT)
+
 add_subdirectory(src)
 add_subdirectory(include)
 add_subdirectory(app)

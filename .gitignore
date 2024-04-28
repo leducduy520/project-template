@@ -1,9 +1,7 @@
 .vs
 .git
 
-external/CMakeLists.txt
-external/CMakePresets.json
-external/lib/
+external/**
 
 out/
 docs/html

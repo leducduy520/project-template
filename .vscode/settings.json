@@ -3,35 +3,20 @@
         "--graphviz=${workspaceFolder}/docs/graph/graph.dot",
         "--no-warn-unused-cli"
     ],
-    "cmake.buildArgs": [
-        "--verbose"
-    ],
     "cmake.allowUnsupportedPresetsVersions": true,
     "cmake.useCMakePresets": "always",
     "cmake.ctest.allowParallelJobs": true,
-    "cmake.cmakePath": "${env:msys_root}\\ucrt64\\bin\\cmake.exe",
-    "cmake.format.allowOptionalArgumentIndentation": true,
+    "[cmake]": {
+        "editor.quickSuggestions": {
+            "strings": true
+        },
+        "editor.defaultFormatter": "cheshirekow.cmake-format",
+    },
+    "cmakeFormat.args": [
+        "--config-file",
+        "${workspaceFolder}/.cmake-format.yaml"
+    ],
     "files.associations": {
         "memory": "cpp"
-    },
-    "terminal.integrated.profiles.windows": {
-        "MSYS2": {
-            "path": "cmd.exe",
-            "args": [
-                "/c",
-                "${env:msys_root}\\msys2_shell.cmd -defterm -here -no-start -msys"
-            ],
-            "env": {
-                "CHERE_INVOKING": "1"
-            }
-        },
-        "MSYS2 UCRT": {
-            "path": "cmd.exe",
-            "args": [
-                "/c",
-                "${env:msys_root}\\msys2_shell.cmd -defterm -here -no-start -ucrt64"
-            ]
-        }
-    },
-    "terminal.integrated.defaultProfile.windows": "MSYS2 UCRT"
+    }
 }
