@@ -17,7 +17,7 @@ function(add_gen_doc)
 
         add_custom_command(
             OUTPUT ${DOCS_HTML_DIR}/index.html
-            COMMAND doxygen ./docCfg
+            COMMAND ${DOXYGEN_EXECUTABLE} ./docCfg
             DEPENDS ${DOCS_DIR}/docCfg
             WORKING_DIRECTORY ${DOCS_DIR}
             VERBATIM USES_TERMINAL
@@ -32,7 +32,7 @@ function(add_gen_doc)
 
         add_custom_command(
             OUTPUT ${DOCS_GRAPH_DIR}/${GRAPH_OUTPUT_NAME}.png
-            COMMAND dot -v -Tpng graph.dot -o ${GRAPH_OUTPUT_NAME}.png
+            COMMAND ${DOXYGEN_DOT_EXECUTABLE} -v -Tpng graph.dot -o ${GRAPH_OUTPUT_NAME}.png
             DEPENDS ${DOCS_GRAPH_DIR}/graph.dot
             WORKING_DIRECTORY ${DOCS_GRAPH_DIR}
             VERBATIM USES_TERMINAL
@@ -48,6 +48,14 @@ function(add_gen_doc)
             add_custom_command(
                 TARGET gen_graph
                 POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${DOCS_DIR}/graph
+                        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                VERBATIM USES_TERMINAL
+                )
+            add_custom_command(
+                TARGET gen_doc
+                POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_directory ${DOCS_DIR}/html
                         ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -62,6 +70,16 @@ function(read_deps_json)
 
     string(JSON DEPS_LENGTH LENGTH ${DEPS_JSON_STRING})
     math(EXPR LAST_INDX "${DEPS_LENGTH} - 1" OUTPUT_FORMAT DECIMAL)
+
+    if(${LAST_INDX} STREQUAL "-1")
+        message("deps.json is empty or parsed unsuccessfully")
+        set(PKG_LAST_INDEX
+            NO_FOUND
+            PARENT_SCOPE
+            )
+        return()
+    endif()
+
     set(PKG_LAST_INDEX
         ${LAST_INDX}
         PARENT_SCOPE
@@ -72,12 +90,26 @@ function(read_deps_json)
         list(APPEND LABELS ${LABEL})
         string(JSON REPO GET ${DEPS_JSON_STRING} ${ITR} repo)
         list(APPEND REPOS ${REPO})
-        string(JSON BRANCH GET ${DEPS_JSON_STRING} ${ITR} branch)
-        list(APPEND BRANCHES ${BRANCH})
+        string(JSON TAG GET ${DEPS_JSON_STRING} ${ITR} tag)
+        list(APPEND TAGS ${TAG})
+        string(
+            JSON
+            SHALLOW
+            ERROR_VARIABLE
+            ERROR
+            GET
+            ${DEPS_JSON_STRING}
+            ${ITR}
+            shallow
+            )
+        if(ERROR)
+            set(SHALLOW FALSE)
+        endif()
+        list(APPEND SHALLOWS ${SHALLOW})
     endforeach()
 
-    set(PKG_BRANCHES
-        ${BRANCHES}
+    set(PKG_TAGS
+        ${TAGS}
         PARENT_SCOPE
         )
     set(PKG_LABELS
@@ -88,44 +120,87 @@ function(read_deps_json)
         ${REPOS}
         PARENT_SCOPE
         )
+    set(PKG_SHALLOWS
+        ${SHALLOWS}
+        PARENT_SCOPE
+        )
 endfunction(read_deps_json)
 
-function(build_external_project)
-    set(multiValueArgs REPOS BRANCHES LABELS)
-    set(oneValueArgs SIZE)
+macro(build_external_project)
+    set(multiValueArgs REPOS TAGS LABELS SHALLOWS)
+    set(oneValueArgs FIRST_INDX LAST_INDX)
+    set(options READ_FROM_JSON SUB_PROJECT)
+    cmake_parse_arguments(EXTERNAL "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    cmake_parse_arguments(EX_PROJ "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    if(EXTERNAL_READ_FROM_JSON)
+        read_deps_json()
+        set(EXTERNAL_REPOS ${PKG_REPOS})
+        set(EXTERNAL_TAGS ${PKG_TAGS})
+        set(EXTERNAL_LABELS ${PKG_LABELS})
+        set(EXTERNAL_SHALLOWS ${PKG_SHALLOWS})
+        set(EXTERNAL_FIRST_INDX 0)
+        set(EXTERNAL_LAST_INDX ${PKG_LAST_INDEX})
+    endif(EXTERNAL_READ_FROM_JSON)
 
-    set(EX_PROJ_LIBDIR ${EXTERNAL_DIR}/${CMAKE_INSTALL_LIBDIR})
+    if(EXTERNAL_SUB_PROJECT)
+        set(EXTERNAL_ADD_FILE ${CMAKE_SOURCE_DIR}/cmake/ExternalAddSub.txt.in)
+    else(EXTERNAL_SUB_PROJECT)
+        set(EXTERNAL_ADD_FILE ${CMAKE_SOURCE_DIR}/cmake/ExternalAdd.txt.in)
+    endif(EXTERNAL_SUB_PROJECT)
 
-    file(WRITE ${EXTERNAL_DIR}/CMakeLists.txt
-         "cmake_minimum_required(VERSION 3.27)\nproject(external)\ninclude(ExternalProject)\nadd_subdirectory(${CMAKE_INSTALL_LIBDIR})"
-         )
-
-    if(NOT EXISTS ${EX_PROJ_LIBDIR})
-        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${EX_PROJ_LIBDIR})
+    if(${EXTERNAL_LAST_INDX} MATCHES "(-1|NO_FOUND)")
+        message("Packages list's last index is not found")
+        return()
     endif()
 
-    file(WRITE ${EX_PROJ_LIBDIR}/CMakeLists.txt "project(${CMAKE_INSTALL_LIBDIR})\n")
+    if(${EXTERNAL_LAST_INDX} MATCHES "(-1|NO_FOUND)")
+        set(EXTERNAL_FIRST_INDX 0)
+    endif()
 
-    foreach(ITR RANGE ${EX_PROJ_SIZE})
-        list(GET EX_PROJ_REPOS ${ITR} EX_PROJ_REPO)
-        list(GET EX_PROJ_BRANCHES ${ITR} EX_PROJ_BRANCH)
-        list(GET EX_PROJ_LABELS ${ITR} EX_PROJ_LABEL)
+    file(WRITE ${EXTERNAL_DIR}/CMakeLists.txt
+         "cmake_minimum_required(VERSION 3.27)\nproject(external)\ninclude(ExternalProject)"
+         )
 
-        string(TOLOWER ${EX_PROJ_LABEL} EX_PROJ_LABEL_LOWER)
-        set(EX_SUB_PROJ_DIR ${EX_PROJ_LIBDIR}/${EX_PROJ_LABEL_LOWER})
+    foreach(ITR RANGE ${EXTERNAL_FIRST_INDX} ${EXTERNAL_LAST_INDX})
+        list(GET EXTERNAL_REPOS ${ITR} EXTERNAL_REPO)
+        list(GET EXTERNAL_TAGS ${ITR} EXTERNAL_BRANCH)
+        list(GET EXTERNAL_LABELS ${ITR} EXTERNAL_LABEL)
+        list(GET EXTERNAL_SHALLOWS ${ITR} EXTERNAL_SHALLOW)
 
-        if(NOT EXISTS ${EX_SUB_PROJ_DIR})
-            execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${EX_SUB_PROJ_DIR})
-        endif()
-
-        configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakeLists.txt.in ${EX_SUB_PROJ_DIR}/CMakeLists.txt @ONLY)
-
-        file(APPEND ${EX_PROJ_LIBDIR}/CMakeLists.txt "add_subdirectory(${EX_PROJ_LABEL_LOWER})\n")
+        configure_file(${EXTERNAL_ADD_FILE} ${EXTERNAL_DIR}/ExternalAdd-${EXTERNAL_LABELS}.txt @ONLY)
+        file(READ ${EXTERNAL_DIR}/ExternalAdd-${EXTERNAL_LABELS}.txt EXTERNAL_ADD_STRING)
+        file(REMOVE ${EXTERNAL_DIR}/ExternalAdd-${EXTERNAL_LABELS}.txt)
+        file(APPEND ${EXTERNAL_DIR}/CMakeLists.txt "\n${EXTERNAL_ADD_STRING}\n")
     endforeach()
 
     configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakePresets.json.in ${EXTERNAL_DIR}/CMakePresets.json)
+
+    if(NOT EXTERNAL_SUB_PROJECT)
+        file(READ ${CMAKE_SOURCE_DIR}/external_cache.json EXTERNAL_CACHE_JSON)
+        file(MD5 ${EXTERNAL_DIR}/CMakeLists.txt cmakelists_MD5)
+        file(MD5 ${EXTERNAL_DIR}/CMakePresets.json cmakepresets_MD5)
+
+        if(EXISTS ${EXTERNAL_BINARY_DIR}/CMakeCache.txt)
+            string(JSON cmakelists_OUTPUT GET ${EXTERNAL_CACHE_JSON} cmakelists_MD5)
+            string(JSON cmakepresets_OUTPUT GET ${EXTERNAL_CACHE_JSON} cmakepresets_MD5)
+            if(EXTERNAL_READ_FROM_JSON)
+                file(MD5 ${CMAKE_SOURCE_DIR}/deps.json deps_MD5)
+                string(JSON deps_OUTPUT GET ${EXTERNAL_CACHE_JSON} deps_MD5)
+                if((${deps_OUTPUT} STREQUAL ${deps_MD5})
+                   AND (${cmakelists_OUTPUT} STREQUAL ${cmakelists_MD5})
+                   AND (${cmakepresets_OUTPUT} STREQUAL ${cmakepresets_MD5})
+                   )
+                    return()
+                endif()
+                string(JSON EXTERNAL_CACHE_JSON SET ${EXTERNAL_CACHE_JSON} deps_MD5 "\"${deps_MD5}\"")
+            endif()
+
+        endif()
+
+        string(JSON EXTERNAL_CACHE_JSON SET ${EXTERNAL_CACHE_JSON} cmakelists_MD5 "\"${cmakelists_MD5}\"")
+        string(JSON EXTERNAL_CACHE_JSON SET ${EXTERNAL_CACHE_JSON} cmakepresets_MD5 "\"${cmakepresets_MD5}\"")
+        file(WRITE ${CMAKE_SOURCE_DIR}/external_cache.json ${EXTERNAL_CACHE_JSON})
+    endif(NOT EXTERNAL_SUB_PROJECT)
 
     execute_process(COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli --preset=${PRESET} WORKING_DIRECTORY ${EXTERNAL_DIR})
 
@@ -133,12 +208,18 @@ function(build_external_project)
         COMMAND ${CMAKE_COMMAND} --build --preset=${PRESET}
         WORKING_DIRECTORY ${EXTERNAL_DIR}
         RESULT_VARIABLE RESULT
-        OUTPUT_VARIABLE OUTPUT
         ERROR_VARIABLE ERROR
         )
 
     if(NOT (${RESULT} EQUAL 0))
-        message(WARNING "Output message: ${OUTPUT}")
         message(FATAL_ERROR "Error message: ${ERROR}")
     endif()
-endfunction()
+
+    if(EXTERNAL_SUB_PROJECT)
+        foreach(ITR RANGE ${EXTERNAL_FIRST_INDX} ${EXTERNAL_LAST_INDX})
+            list(GET EXTERNAL_LABELS ${ITR} EXTERNAL_LABEL)
+            add_subdirectory(${EXTERNAL_DIR}/${EXTERNAL_LABEL}/src)
+        endforeach()
+    endif(EXTERNAL_SUB_PROJECT)
+
+endmacro()

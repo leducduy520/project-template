@@ -6,7 +6,7 @@ function(add_cmake_format_target)
     set(ROOT_CMAKE_FILES "${CMAKE_SOURCE_DIR}/CMakeLists.txt")
     file(GLOB_RECURSE CMAKE_FILES_TXT "*/CMakeLists.txt")
     file(GLOB_RECURSE CMAKE_FILES_C "cmake/*.cmake")
-    list(FILTER CMAKE_FILES_TXT EXCLUDE REGEX "${CMAKE_SOURCE_DIR}/(build|external|tool)/.*")
+    list(FILTER CMAKE_FILES_TXT EXCLUDE REGEX "${CMAKE_SOURCE_DIR}/(build|external|tools|.github)/.*")
     set(CMAKE_FILES ${ROOT_CMAKE_FILES} ${CMAKE_FILES_TXT} ${CMAKE_FILES_C})
     find_program(CMAKE_FORMAT cmake-format)
 

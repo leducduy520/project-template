@@ -1,26 +1,22 @@
 {
-    "cmake.automaticReconfigure": false,
-    "cmake.clearOutputBeforeBuild": false,
     "cmake.configureArgs": [
         "--graphviz=${workspaceFolder}/docs/graph/graph.dot",
         "--no-warn-unused-cli"
     ],
-    "cmake.buildArgs": [
-        "--verbose"
-    ],
-    "cmake.configureOnEdit": false,
-    "cmake.loggingLevel": "info",
+    "cmake.allowUnsupportedPresetsVersions": true,
     "cmake.useCMakePresets": "always",
-    "[yaml]": {
-        "editor.insertSpaces": true,
-        "editor.tabSize": 2,
-        "editor.autoIndent": "none",
-        "editor.defaultFormatter": "redhat.vscode-yaml",
-        "diffEditor.ignoreTrimWhitespace": false,
+    "cmake.ctest.allowParallelJobs": true,
+    "[cmake]": {
         "editor.quickSuggestions": {
-            "other": true,
-            "comments": false,
             "strings": true
-        }
+        },
+        "editor.defaultFormatter": "cheshirekow.cmake-format",
+    },
+    "cmakeFormat.args": [
+        "--config-file",
+        "${workspaceFolder}/.cmake-format.yaml"
+    ],
+    "files.associations": {
+        "memory": "cpp"
     }
 }
