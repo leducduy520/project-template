@@ -106,14 +106,14 @@
             "configurePreset": "base",
             "hidden": true,
             "inherits": "base",
-            "targets": "gen-graph"
+            "targets": "gen_graph"
         },
         {
             "name": "base-document",
             "configurePreset": "base",
             "hidden": true,
             "inherits": "base",
-            "targets": "gen-doc"
+            "targets": "gen_doc"
         },
         {
             "name": "base-format",
