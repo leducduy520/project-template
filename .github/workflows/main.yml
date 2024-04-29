@@ -57,7 +57,7 @@ jobs:
         continue-on-error: true
         id: document
         if: ${{always() && steps.config.outcome == 'success'}}
-        run: cmake --build --preset=ubuntu-docs
+        run: cmake --build --preset=ubuntu-document
       - name: Installing project
         id: install
         if: ${{steps.build.outcome == 'success'}}
@@ -68,7 +68,6 @@ jobs:
         run: |
           cd out/install/ubuntu/bin
           chmod a+x app Catch-test
-          export LD_LIBRARY_PATH=$PWD/../lib
           ./Catch-test
           ./app
       - name: Upload artifact
