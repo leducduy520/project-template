@@ -29,7 +29,7 @@ jobs:
       - name: Format
         run: cmake --build --preset=windows-format
       - name: Docs
-        run: cmake --build --preset=windows-docs
+        run: cmake --build --preset=windows-document
       - name: Install
         run: cmake --build --preset=windows-install
       - name: Test
