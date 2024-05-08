@@ -21,6 +21,10 @@ public:
      * decr
      */
     Base(const uint16_t &X, const uint16_t &Y);
+    /**
+     * @brief 
+     * @param other 
+     */
     Base(const Base &other);
     const bool operator==(const Base &other)
     {
@@ -38,5 +42,5 @@ public:
         }
         return false;
     }
-    ~Base();
+    ~Base() = default;
 };

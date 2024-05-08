@@ -6,5 +6,5 @@ using namespace std;
 int main()
 {
     cout << "Hello!!!\n";
-    Base b(0, 0);
+    Base const b_obj(0, 0);
 }
