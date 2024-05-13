@@ -14,9 +14,9 @@ include(TestCXXAcceptsFlag)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MESSAGE_LOG_LEVEL VERBOSE)
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 if(WIN32)
@@ -49,6 +49,4 @@ add_subdirectory(src)
 add_subdirectory(include)
 add_subdirectory(app)
 
-include(CTest)
-enable_testing()
 add_subdirectory(test)
