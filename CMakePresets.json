@@ -35,11 +35,11 @@
                 },
                 "EXTERNAL_BINARY_DIR": {
                     "type": "PATH",
-                    "value": "${sourceDir}/$env{EXTERNAL_NAME}/$env{OUR_DIR_NAME}/$env{BUILD_DIR_NAME}/${presetName}"
+                    "value": "${sourceDir}/$env{EXTERNAL_NAME}/$env{BUILD_DIR_NAME}/${presetName}"
                 },
                 "EXTERNAL_INSTALL_PREFIX": {
                     "type": "PATH",
-                    "value": "${sourceDir}/$env{EXTERNAL_NAME}/$env{OUR_DIR_NAME}/$env{INSTALL_DIR_NAME}/${presetName}"
+                    "value": "${sourceDir}/$env{EXTERNAL_NAME}/$env{INSTALL_DIR_NAME}/${presetName}"
                 },
                 "DOCS_DIR": {
                     "type": "PATH",
