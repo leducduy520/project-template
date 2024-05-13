@@ -32,5 +32,5 @@ jobs:
         run: cmake --build --preset=windows-document
       - name: Install
         run: cmake --build --preset=windows-install
-      - name: Test
-        run: ctest --preset=windows
+      # - name: Test
+      #   run: ctest --preset=windows

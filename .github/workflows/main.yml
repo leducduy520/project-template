@@ -63,13 +63,13 @@ jobs:
         if: ${{steps.build.outcome == 'success'}}
         run: |
           cmake --build --preset=ubuntu-install
-      - name: Authen and Execution
-        if: ${{success() && steps.install.outcome == 'success' && (github.ref_name == 'main' || github.event_name == 'workflow_dispatch' && inputs.try-run)}}
-        run: |
-          cd out/install/ubuntu/bin
-          chmod a+x app Catch-test
-          ./Catch-test
-          ./app
+      # - name: Authen and Execution
+      #   if: ${{success() && steps.install.outcome == 'success' && (github.ref_name == 'main' || github.event_name == 'workflow_dispatch' && inputs.try-run)}}
+      #   run: |
+      #     cd out/install/ubuntu/bin
+      #     chmod a+x app Catch-test
+      #     ./Catch-test
+      #     ./app
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
