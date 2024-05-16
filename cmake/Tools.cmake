@@ -1,8 +1,4 @@
-function(add_cmake_format_target)
-    if(NOT ${ENABLE_CMAKE_FORMAT})
-        return()
-    endif()
-
+if(${ENABLE_CMAKE_FORMAT})
     set(ROOT_CMAKE_FILES "${CMAKE_SOURCE_DIR}/CMakeLists.txt")
     file(GLOB_RECURSE CMAKE_FILES_TXT "*/CMakeLists.txt")
     file(GLOB_RECURSE CMAKE_FILES_C "cmake/*.cmake")
@@ -31,7 +27,7 @@ function(add_cmake_format_target)
             COMMAND ${FORMATTING_COMMANDS}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             )
-    else()
+    else(CMAKE_FORMAT)
         message(WARNING "CMAKE_FORMAT NOT FOUND")
-    endif()
-endfunction()
+    endif(CMAKE_FORMAT)
+endif(${ENABLE_CMAKE_FORMAT})
