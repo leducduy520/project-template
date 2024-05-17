@@ -1,17 +1,10 @@
+#include <iostream>
+
 #include "base.hpp"
 
-Base::Base(const uint16_t &X, const uint16_t &Y) : x(X), y(Y)
-{
-}
+using namespace std;
 
-Base::Base(const Base &other)
+base::base()
 {
-    if (this != &other)
-    {
-        x = other.x;
-        y = other.y;
-    }
-}
-Base::~Base()
-{
+    cout << "Hello form base\n";
 }

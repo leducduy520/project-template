@@ -16,7 +16,47 @@
         "--config-file",
         "${workspaceFolder}/.cmake-format.yaml"
     ],
+    "[yaml]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "keep",
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": true
+        }
+    },
+    "cmake.configureOnEdit": false,
+    "cmake.configureOnOpen": false,
     "files.associations": {
-        "memory": "cpp"
+        "memory": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "exception": "cpp",
+        "format": "cpp",
+        "functional": "cpp",
+        "future": "cpp",
+        "ios": "cpp",
+        "iterator": "cpp",
+        "limits": "cpp",
+        "mutex": "cpp",
+        "random": "cpp",
+        "ranges": "cpp",
+        "regex": "cpp",
+        "sstream": "cpp",
+        "stdexcept": "cpp",
+        "system_error": "cpp",
+        "type_traits": "cpp",
+        "typeinfo": "cpp",
+        "variant": "cpp",
+        "vector": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "xutility": "cpp"
     }
 }

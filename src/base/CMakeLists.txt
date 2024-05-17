@@ -1,5 +1,30 @@
-project(base_src)
+project(${BASE_NAME})
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS "*.cpp" "*.c")
+file(GLOB HEADER_FILES CONFIGURE_DEPENDS "*.hpp" "*.h")
 
-add_library(base SHARED ${SRC_FILES})
+add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${HEADER_FILES})
+
+target_include_directories(
+    ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    )
+
+install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}-targets
+    RUNTIME CONFIGURATIONS "Debug" "Release"
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+            COMPONENT Runtime
+    ARCHIVE CONFIGURATIONS "Debug" "Release"
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            COMPONENT Development
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT PublicHeader
+    )
+
+install(
+    EXPORT ${PROJECT_NAME}-targets
+    DESTINATION ${INSTALL_CONFIG_DIR}
+    NAMESPACE ZooClass::
+    )
