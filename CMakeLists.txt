@@ -1,17 +1,22 @@
 cmake_minimum_required(VERSION 3.26)
 
 # set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+option(ENABLE_CMAKE_FORMAT "enable cmake format" ON)
+option(ENABLE_DOCUMENT_TARGET "enable document target" ON)
+option(ENABLE_INSTALL_GRAPH_AND_DOC "enable moving files in docs directory to the install directory" ON)
+option(ENABLE_TEST_EXEC "enable build test executable" ON)
 
 if(PROJECT_NAME)
     set(SUBPROJECT ON)
 else(PROJECT_NAME)
     set(SUBPROJECT OFF)
-    project(
-        ZooClass
-        VERSION 0.0.1
-        LANGUAGES C CXX
-        )
 endif()
+
+project(
+    ZooClass
+    VERSION 0.0.1
+    LANGUAGES C CXX
+    )
 
 include(GNUInstallDirs)
 include(FetchContent)
@@ -25,15 +30,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MESSAGE_LOG_LEVEL VERBOSE)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDERR)
+set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDOUT)
 
 set(INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 set(GRAPH_OUTPUT_NAME graph)
 set(BASE_NAME base)
-
-option(ENABLE_CMAKE_FORMAT "enable cmake format" ON)
-option(ENABLE_DOCUMENT_TARGET "enable document target" ON)
-option(ENABLE_INSTALL_GRAPH_AND_DOC "enable moving files in docs directory to the install directory" ON)
 
 if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -55,7 +56,12 @@ include(External)
 build_external_project(READ_FROM_JSON SUB_PROJECT)
 
 add_subdirectory(src)
-add_subdirectory(test)
+
+if(ENABLE_TEST_EXEC)
+    include(CTest)
+    enable_testing()
+    add_subdirectory(test)
+endif(ENABLE_TEST_EXEC)
 
 if(NOT SUBPROJECT)
     configure_package_config_file(
