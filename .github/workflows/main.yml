@@ -27,10 +27,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: build project
-        uses: "./.github/workflows/reusable-ubuntu.yml"
+        uses: ./.github/workflows/reusable-ubuntu.yml
         with:
           target: ${{inputs.target}}
       - name: Upload artifact
