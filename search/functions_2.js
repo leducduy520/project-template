@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['operator_21_3d_19',['operator!=',['../classBase.html#a4e071b25ae18ce5c0908cc752fdebbb8',1,'Base']]],
-  ['operator_3d_3d_20',['operator==',['../classBase.html#ad47a802344feaa0dab6d6973ff8224e3',1,'Base']]]
+  ['_7ebase_12',['~base',['../classbase.html#addd79bab26943d8d5919ab84b1bb0a8d',1,'base']]]
 ];
