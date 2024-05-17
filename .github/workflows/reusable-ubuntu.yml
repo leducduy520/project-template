@@ -21,8 +21,6 @@ jobs:
           pip install ninja
           sudo apt-get install graphviz pkg-config
           sudo apt-get install dos2unix
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Configure
         run: make config-ubuntu
       - name: Build
