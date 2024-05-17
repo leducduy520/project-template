@@ -1,0 +1,14 @@
+name: Environment testing
+on:
+  push: 
+    branches:
+      - dev*
+jobs:
+  Print-secrets-in-environment:
+    runs-on: ubuntu-latest
+    environment: testing
+    steps:
+      - name: Print secret
+        run: echo "${{secrets.TEST_SECRET}}"
+
+  
