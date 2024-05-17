@@ -1,0 +1,22 @@
+name: Output Example
+on: 
+  workflow_dispatch:
+  push:
+    branches: [dev*]
+jobs:
+  Generate-Output:
+    runs-on: ubuntu-latest
+    outputs:
+      list-file: ${{ steps.out.outputs.list-file }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Make Output
+        id: out
+        run: echo "list-file=$(ls)" >> $GITHUB_OUTPUT
+  Print-Output:
+    runs-on: ubuntu-latest
+    needs: ["Generate-Output"]
+    steps:
+      - name: Print
+        run: echo ${{ needs.Generate-Output.outputs.list-file }}

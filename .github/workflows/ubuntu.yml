@@ -1,0 +1,33 @@
+name: Test on Ubuntu
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev*]
+jobs:
+  Configuration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: update & install deps
+        run: |
+          sudo apt-get install gcc g++ gdb
+          sudo apt-get install make cmake
+          sudo apt-get install git doxygen
+          sudo apt-get install python3 python3-pip
+          pip install cmake-format
+          pip install ninja
+          sudo apt-get install graphviz pkg-config
+          sudo apt-get install dos2unix
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Check folder
+        run: ls
+      - name: Configure
+        run: make config-ubuntu
+      - name: Format
+        run: cmake --build --preset=ubuntu-format
+      - name: Docs
+        run: cmake --build --preset=ubuntu-document
+      - name: Install
+        run: cmake --build --preset=ubuntu-install
+      - name: Test
+        run: ctest --preset=ubuntu
