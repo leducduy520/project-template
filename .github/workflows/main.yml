@@ -2,10 +2,11 @@ name: Test project on push to main
 on:
   workflow_dispatch:
     inputs:
-      try-run:
-        description: "Try run app and test"
+      target:
+        description: "Target to be built"
         required: true
-        type: boolean
+        type: "string"
+        default: "format"
   push:
     branches:
       - main
@@ -26,57 +27,16 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: update & install deps
-        run: |
-          sudo apt-get install gcc g++ gdb
-          sudo apt-get install make cmake
-          sudo apt-get install git doxygen
-          sudo apt-get install python3 python3-pip
-          pip install cmake-format
-          pip install ninja
-          sudo apt-get install graphviz pkg-config
-          sudo apt-get install dos2unix
-      - name: Checkout
-        uses: actions/checkout@v4.1.2
-      - name: Configure Project
-        id: config
-        run: make config-ubuntu
-      - name: Continue steps?
-        run: |
-          chmod 555 ./prompt.sh
-          dos2unix ./prompt.sh
-          ./prompt.sh
-      - name: Build Project
-        id: build
-        run: cmake --build --preset=ubuntu
-      - name: Format cmake files
-        continue-on-error: true
-        if: ${{always() && steps.config.outcome == 'success'}}
-        run: cmake --build --preset=ubuntu-format
-      - name: Generating docs
-        continue-on-error: true
-        id: document
-        if: ${{always() && steps.config.outcome == 'success'}}
-        run: cmake --build --preset=ubuntu-document
-      - name: Installing project
-        id: install
-        if: ${{steps.build.outcome == 'success'}}
-        run: |
-          cmake --build --preset=ubuntu-install
-      # - name: Authen and Execution
-      #   if: ${{success() && steps.install.outcome == 'success' && (github.ref_name == 'main' || github.event_name == 'workflow_dispatch' && inputs.try-run)}}
-      #   run: |
-      #     cd out/install/ubuntu/bin
-      #     chmod a+x app Catch-test
-      #     ./Catch-test
-      #     ./app
+      - name: build project
+        uses: "./.github/workflows/reusable-ubuntu.yml"
+        with:
+          target: ${{inputs.target}}
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: app
           path: out/install/ubuntu
       - name: Deloy GitHub Page
-        if: ${{always() && steps.document.outcome == 'success' && github.ref_name == 'main'}}
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,8 +1,12 @@
-name: Test on Ubuntu
+name: Reusable Ubuntu Build Workflow
 on:
-  push:
-    branches: [dev*]
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      target:
+        description: "Target to be built"
+        required: true
+        type: "string"
+        default: "complete"
 jobs:
   Configuration:
     runs-on: ubuntu-latest
@@ -19,15 +23,8 @@ jobs:
           sudo apt-get install dos2unix
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Check folder
-        run: ls
       - name: Configure
         run: make config-ubuntu
-      - name: Format
-        run: cmake --build --preset=ubuntu-format
-      - name: Docs
-        run: cmake --build --preset=ubuntu-document
-      - name: Install
-        run: cmake --build --preset=ubuntu-install
-      - name: Test
-        run: ctest --preset=ubuntu
+      - name: Build
+        run: cmake --build --preset=ubuntu-${{inputs.target}}
+    
