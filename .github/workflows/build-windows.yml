@@ -1,0 +1,35 @@
+name: Reusable Ubuntu Build Workflow
+on:
+  workflow_call:
+    inputs:
+      target:
+        description: "Target to be built"
+        required: true
+        type: "string"
+        default: "complete"
+jobs:
+  Configuration:
+    runs-on: windows-latest
+    steps:
+      - name: install graphviz
+        run: choco install graphviz
+      - name: install ninja
+        run: choco install ninja
+      - name: install make
+        run: choco install make
+      - name: install dos2unix
+        run: choco install dos2unix
+      - name: install doxygen
+        run: choco install doxygen.portable
+      - name: install cmake-format
+        run: |
+          pip install cmake-format
+          pip install PyYAML
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Check folder
+        run: ls
+      - name: Configure
+        run: make config-win
+      - name: Build
+        run: cmake --build --preset=windows-${{inputs.target}}

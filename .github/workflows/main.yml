@@ -4,9 +4,9 @@ on:
     inputs:
       target:
         description: "Target to be built"
-        required: true
+        required: false
         type: "string"
-        default: "format"
+        default: "complete"
   push:
     branches:
       - main
@@ -22,8 +22,12 @@ on:
       - "**.py"
       - ".github/workflows/main.yml"
 jobs:
-  configure-and-build:
-    uses: ./.github/workflows/reusable-ubuntu.yml
+  build-ubuntu:
+    uses: ./.github/workflows/build-ubuntu.yml
+    with:
+      target: ${{inputs.target}}
+  build-windows:
+    uses: ./.github/workflows/build-windows.yml
     with:
       target: ${{inputs.target}}
     # runs-on: ubuntu-22.04
