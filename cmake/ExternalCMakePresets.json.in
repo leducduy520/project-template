@@ -14,7 +14,7 @@
     },
     "configurePresets": [
         {
-            "binaryDir": "@EXTERNAL_BINARY_DIR@",
+            "binaryDir": "@EXTERNAL_DIR@/Packages/@PKG_LABEL@/build",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "@CMAKE_BUILD_TYPE@",
                 "PRESET": "@PRESET@",

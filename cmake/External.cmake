@@ -34,7 +34,7 @@ function(read_deps_json IPKGS_LABEL IPKGS_REPO IPKGS_TAG IPKGS_SHALLOW IPKGS_LAS
 endfunction(read_deps_json)
 
 macro(build_external_project)
-    set(multiValueArgs REPO TAG LABEL SHALLOW)
+    set(multiValueArgs REPO TAG LABEL SHALLOW CONFIGURE_COMMAND CMAKE_AGRS BUILD_COMMAND INSTALL_COMMAND)
     set(oneValueArgs FIRST_INDX LAST_INDX)
     set(options READ_FROM_JSON SUB_PROJECT)
     cmake_parse_arguments(PKGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -50,7 +50,7 @@ macro(build_external_project)
         set(MODULE_STRING "include(FetchContent)")
     else(PKGS_SUB_PROJECT)
         set(PKGS_ADD_FILE ${CMAKE_SOURCE_DIR}/cmake/ExternalAdd.txt.in)
-        set(MODULE_STRING "include(ExternalProject)\nset_directory_properties(PROPERTIES EP_BASE )")
+        set(MODULE_STRING "include(ExternalProject)\nset_directory_properties(PROPERTIES EP_BASE ${EXTERNAL_DIR}/EP_BASE)")
     endif(PKGS_SUB_PROJECT)
 
     if(${PKGS_LAST_INDX} MATCHES "-1")
@@ -58,47 +58,80 @@ macro(build_external_project)
         return()
     endif()
 
-    if(${PKGS_FIRST_INDX} STREQUAL "-1")
+    if(${PKGS_FIRST_INDX} MATCHES "-1")
         set(PKGS_FIRST_INDX 0)
     endif()
 
-    set(INIT_STRING "cmake_minimum_required(VERSION 3.27)\nproject(external)\n${MODULE_STRING}\n")
-    file(WRITE ${EXTERNAL_DIR}/CMakeLists.txt ${INIT_STRING})
-    unset(INIT_STRING)
+    # message(${PKGS_REPO})
+    # message(${PKGS_TAG})
+    # message(${PKGS_LABEL})
+    # message(${PKGS_SHALLOW})
+    # message("${PKGS_CONFIGURE_COMMAND}")
+    # message("${PKGS_CMAKE_AGRS}")
+    # message(${PKGS_BUILD_COMMAND})
+    # message(${PKGS_INSTALL_COMMAND})
+    # message(FATAL_ERROR "STOP")
 
     foreach(ITR RANGE ${PKGS_FIRST_INDX} ${PKGS_LAST_INDX})
         list(GET PKGS_REPO ${ITR} PKG_REPO)
         list(GET PKGS_TAG ${ITR} PKG_TAG)
         list(GET PKGS_LABEL ${ITR} PKG_LABEL)
         list(GET PKGS_SHALLOW ${ITR} PKG_SHALLOW)
+        list(GET PKGS_CONFIGURE_COMMAND ${ITR} PKG_CONFIGURE_COMMAND)
+        list(GET PKGS_CMAKE_AGRS ${ITR} PKG_CMAKE_AGRS)
+        list(GET PKGS_BUILD_COMMAND ${ITR} PKG_BUILD_COMMAND)
+        list(GET PKGS_INSTALL_COMMAND ${ITR} PKG_INSTALL_COMMAND)
 
-        configure_file(${PKGS_ADD_FILE} ${EXTERNAL_DIR}/ExternalAdd-${PKG_LABEL}.txt @ONLY)
-        file(READ ${EXTERNAL_DIR}/ExternalAdd-${PKG_LABEL}.txt PKGS_ADD_STRING)
-        file(REMOVE ${EXTERNAL_DIR}/ExternalAdd-${PKG_LABEL}.txt)
-        file(APPEND ${EXTERNAL_DIR}/CMakeLists.txt "${PKGS_ADD_STRING}\n")
+        set(INIT_STRING "cmake_minimum_required(VERSION 3.27)\nproject(build-${PKG_LABEL})\n${MODULE_STRING}\n")
+        file(WRITE ${EXTERNAL_DIR}/Packages/${PKG_LABEL}/CMakeLists.txt ${INIT_STRING})
+        unset(INIT_STRING)
+
+        configure_file(${PKGS_ADD_FILE} ${EXTERNAL_DIR}/Packages/${PKG_LABEL}/ExternalAdd.txt @ONLY)
+        file(READ ${EXTERNAL_DIR}/Packages/${PKG_LABEL}/ExternalAdd.txt PKGS_ADD_STRING)
+        file(REMOVE ${EXTERNAL_DIR}/Packages/${PKG_LABEL}/ExternalAdd.txt)
+
+        if(NOT PKGS_SUB_PROJECT)
+            message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ${ITR}")
+            string(FIND ${PKGS_ADD_STRING} ")" POS)
+            string(SUBSTRING ${PKGS_ADD_STRING} 0 ${POS} PKGS_ADD_STRING)
+            if(PKG_CONFIGURE_COMMAND)
+                string(APPEND PKGS_ADD_STRING "\tCONFIGURE_COMMAND ${PKG_CONFIGURE_COMMAND}\n")
+            endif(PKG_CONFIGURE_COMMAND)
+            if(PKG_CMAKE_AGRS)
+                string(APPEND PKGS_ADD_STRING "\tCMAKE_ARGS ${PKG_CMAKE_AGRS}\n")
+            endif(PKG_CMAKE_AGRS)
+            if(PKG_BUILD_COMMAND)
+                string(APPEND PKGS_ADD_STRING "\tBUILD_COMMAND ${PKG_BUILD_COMMAND}\n")
+            endif(PKG_BUILD_COMMAND)
+            if(PKG_INSTALL_COMMAND)
+                string(APPEND PKGS_ADD_STRING "\tINSTALL_COMMAND ${PKG_INSTALL_COMMAND}\n")
+            endif(PKG_INSTALL_COMMAND)
+            string(APPEND PKGS_ADD_STRING "\t)")
+        endif(NOT PKGS_SUB_PROJECT)
+        
+        file(APPEND ${EXTERNAL_DIR}/Packages/${PKG_LABEL}/CMakeLists.txt "${PKGS_ADD_STRING}\n")
+
+        if(NOT PKGS_SUB_PROJECT)
+            configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakePresets.json.in ${EXTERNAL_DIR}/Packages/${PKG_LABEL}/CMakePresets.json)
+
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli --preset=${PRESET} WORKING_DIRECTORY ${EXTERNAL_DIR}/Packages/${PKG_LABEL}
+                )
+
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} --build --preset=${PRESET}
+                WORKING_DIRECTORY ${EXTERNAL_DIR}/Packages/${PKG_LABEL}
+                RESULT_VARIABLE RESULT
+                ERROR_VARIABLE ERROR
+                )
+
+            if(NOT (${RESULT} EQUAL 0))
+                message(FATAL_ERROR "Error message: ${ERROR}")
+            endif()
+
+        else(NOT PKGS_SUB_PROJECT)
+            add_subdirectory(${EXTERNAL_DIR}/Packages/${PKG_LABEL})
+
+        endif(NOT PKGS_SUB_PROJECT)
     endforeach()
-
-    if(NOT PKGS_SUB_PROJECT)
-        configure_file(${CMAKE_SOURCE_DIR}/cmake/ExternalCMakePresets.json.in ${EXTERNAL_DIR}/CMakePresets.json)
-
-        execute_process(
-            COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli --preset=${PRESET} WORKING_DIRECTORY ${EXTERNAL_DIR}
-            )
-
-        execute_process(
-            COMMAND ${CMAKE_COMMAND} --build --preset=${PRESET}
-            WORKING_DIRECTORY ${EXTERNAL_DIR}
-            RESULT_VARIABLE RESULT
-            ERROR_VARIABLE ERROR
-            )
-
-        if(NOT (${RESULT} EQUAL 0))
-            message(FATAL_ERROR "Error message: ${ERROR}")
-        endif()
-
-    else(NOT PKGS_SUB_PROJECT)
-        add_subdirectory(${EXTERNAL_DIR})
-
-    endif(NOT PKGS_SUB_PROJECT)
-
 endmacro()
