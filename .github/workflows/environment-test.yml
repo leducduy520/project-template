@@ -1,8 +1,6 @@
 name: Environment testing
 on:
-  push: 
-    branches:
-      - dev*
+  workflow_dispatch:
 jobs:
   Print-secrets-in-environment:
     runs-on: ubuntu-latest
@@ -10,5 +8,3 @@ jobs:
     steps:
       - name: Print secret
         run: echo "${{secrets.TEST_SECRET}}"
-
-  

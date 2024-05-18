@@ -1,8 +1,6 @@
 name: Output Example
-on: 
+on:
   workflow_dispatch:
-  push:
-    branches: [dev*]
 jobs:
   Generate-Output:
     runs-on: ubuntu-latest

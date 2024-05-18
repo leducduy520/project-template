@@ -1,8 +1,6 @@
 name: Matrix testing
 on:
-  push:
-    branches:
-      - "dev*"
+  workflow_dispatch:
 jobs:
   Matrix-Run:
     strategy:

@@ -1,7 +1,6 @@
 name: Concurrency testing
 on:
-  push: 
-    branches: ["dev*"]
+  workflow_dispatch:
 jobs:
   Job-1:
     runs-on: ubuntu-latest
@@ -17,4 +16,3 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-   
