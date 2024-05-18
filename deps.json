@@ -3,6 +3,7 @@
         "label": "Catch2",
         "repo": "https://github.com/catchorg/Catch2.git",
         "tag": "devel",
-        "shallow": true
+        "shallow": true,
+        "find_pkg_args": ""
     }
 ]

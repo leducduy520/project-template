@@ -12,11 +12,7 @@ else(PROJECT_NAME)
     set(SUBPROJECT OFF)
 endif()
 
-project(
-    ZooClass
-    VERSION 0.0.1
-    LANGUAGES C CXX
-    )
+project(ZooClass VERSION 0.0.1 LANGUAGES C CXX)
 
 include(GNUInstallDirs)
 include(FetchContent)
@@ -73,7 +69,8 @@ if(NOT SUBPROJECT)
         "${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake" COMPATIBILITY SameMajorVersion
         )
 
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake
-                  ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake DESTINATION ${INSTALL_CONFIG_DIR}
-            )
+    install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake
+        DESTINATION ${INSTALL_CONFIG_DIR}
+        )
 endif(NOT SUBPROJECT)
