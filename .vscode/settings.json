@@ -57,6 +57,9 @@
         "xlocmon": "cpp",
         "xlocnum": "cpp",
         "xloctime": "cpp",
-        "xutility": "cpp"
-    }
+        "xutility": "cpp",
+        "iostream": "cpp"
+    },
+    "cmake.clearOutputBeforeBuild": false,
+    "cmake.ctest.parallelJobs": 8
 }

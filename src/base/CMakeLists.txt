@@ -29,11 +29,11 @@ build_external_project(
         "ON"
         "ON"
     CONFIGURE_COMMAND 
-        "meson setup ./ ${EXTERNAL_DIR}/EP_BASE/Source/IniReader --prefix ${CMAKE_CURRENT_BINARY_DIR}/IniReader"
+        "meson setup ./ ${EXTERNAL_DIR}/EP_BASE/Source/IniReader --prefix <INSTALL_DIR>"
         "OFF"
     CMAKE_AGRS
         "OFF"
-        "\"-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/csv2\" \"-DCMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@\""
+        "\"-DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>\" \"-DCMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@\""
     BUILD_COMMAND 
         "meson compile"
         "OFF"
@@ -42,14 +42,15 @@ build_external_project(
         "OFF"
 )
 
-set(ENV{PKG_CONFIG_PATH} "${CMAKE_CURRENT_BINARY_DIR}/IniReader/lib/pkgconfig")
+set(ENV{PKG_CONFIG_PATH} "${EXTERNAL_DIR}/EP_BASE/Install/IniReader/lib/pkgconfig")
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBINI REQUIRED IMPORTED_TARGET INIReader)
-target_link_libraries(${PROJECT_NAME} PkgConfig::LIBINI)
+target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::LIBINI)
 
-list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/csv2)
+list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_DIR}/EP_BASE/Install/CSV2")
 find_package(csv2 REQUIRED)
-target_link_libraries(${PROJECT_NAME} csv2::csv2)
+target_link_libraries(${PROJECT_NAME} PUBLIC csv2::csv2)
+
 
 install(
     TARGETS ${PROJECT_NAME}
@@ -60,3 +61,12 @@ install(
     )
 
 install(EXPORT ${PROJECT_NAME}-targets DESTINATION ${INSTALL_CONFIG_DIR} NAMESPACE ZooClass::)
+
+# install(IMPORTED_RUNTIME_ARTIFACTS ${PROJECT_NAME} RUNTIME_DEPENDENCY_SET _deps)
+# install(RUNTIME_DEPENDENCY_SET _deps
+#     PRE_INCLUDE_REGEXES "lib[Ii][Nn][Ii]"
+#     PRE_EXCLUDE_REGEXES "ext-ms-*" "api-ms-*" "[Aa][Zz][Uu][Rr][Ee]" "libstdc"
+#     POST_INCLUDE_REGEXES ".*external/.*\\.dll"
+#     POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+#     DIRECTORIES "${EXTERNAL_DIR}/EP_BASE/Install/IniReader/lib" "${EXTERNAL_DIR}/EP_BASE/Install/IniReader/bin" "${EXTERNAL_DIR}/EP_BASE/Install/IniReader"
+# )
