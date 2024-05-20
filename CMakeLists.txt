@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.26)
 option(ENABLE_CMAKE_FORMAT "enable cmake format" ON)
 option(ENABLE_DOCUMENT_TARGET "enable document target" ON)
 option(ENABLE_INSTALL_GRAPH_AND_DOC "enable moving files in docs directory to the install directory" ON)
-option(ENABLE_TEST_EXEC "enable build test executable" ON)
+option(ENABLE_TEST_EXEC "enable build test executable" OFF)
 
 if(PROJECT_NAME)
     set(SUBPROJECT ON)
@@ -19,7 +19,7 @@ include(FetchContent)
 include(TestCXXAcceptsFlag)
 include(CMakePackageConfigHelpers)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -49,9 +49,11 @@ include(Tools)
 include(GraphAndDoc)
 include(External)
 
-build_external_project(READ_FROM_JSON SUB_PROJECT)
+# build_external_project(READ_FROM_JSON SUB_PROJECT)
 
-add_subdirectory(src)
+# add_subdirectory(src)
+
+add_subdirectory(app)
 
 if(ENABLE_TEST_EXEC)
     include(CTest)
@@ -59,18 +61,18 @@ if(ENABLE_TEST_EXEC)
     add_subdirectory(test)
 endif(ENABLE_TEST_EXEC)
 
-if(NOT SUBPROJECT)
-    configure_package_config_file(
-        ${CMAKE_CURRENT_LIST_DIR}/cmake/ZooClassConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake
-        INSTALL_DESTINATION ${INSTALL_CONFIG_DIR}
-        )
+# if(NOT SUBPROJECT)
+#     configure_package_config_file(
+#         ${CMAKE_CURRENT_LIST_DIR}/cmake/ZooClassConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake
+#         INSTALL_DESTINATION ${INSTALL_CONFIG_DIR}
+#         )
 
-    write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake" COMPATIBILITY SameMajorVersion
-        )
+#     write_basic_package_version_file(
+#         "${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake" COMPATIBILITY SameMajorVersion
+#         )
 
-    install(
-        FILES ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake
-        DESTINATION ${INSTALL_CONFIG_DIR}
-        )
-endif(NOT SUBPROJECT)
+#     install(
+#         FILES ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake
+#         DESTINATION ${INSTALL_CONFIG_DIR}
+#         )
+# endif(NOT SUBPROJECT)
