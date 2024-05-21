@@ -12,35 +12,35 @@ target_include_directories(
     )
 
 build_external_project(
-    FIRST_INDEX 
-        "0"
-    LAST_INDX 
-        "1"
-    REPO 
-        "https://github.com/benhoyt/inih.git"
-        "https://github.com/p-ranav/csv2.git"
-    LABEL 
-        "IniReader"
-        "CSV2"
-    TAG 
-        "master"
-        "master"
+    FIRST_INDEX
+    "0"
+    LAST_INDX
+    "1"
+    REPO
+    "https://github.com/benhoyt/inih.git"
+    "https://github.com/p-ranav/csv2.git"
+    LABEL
+    "IniReader"
+    "CSV2"
+    TAG
+    "master"
+    "master"
     SHALLOW
-        "ON"
-        "ON"
-    CONFIGURE_COMMAND 
-        "meson setup ./ ${EXTERNAL_DIR}/EP_BASE/Source/IniReader --prefix <INSTALL_DIR>"
-        "OFF"
+    "ON"
+    "ON"
+    CONFIGURE_COMMAND
+    "meson setup ./ ${EXTERNAL_DIR}/EP_BASE/Source/IniReader --prefix <INSTALL_DIR>"
+    "OFF"
     CMAKE_AGRS
-        "OFF"
-        "\"-DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>\" \"-DCMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@\""
-    BUILD_COMMAND 
-        "meson compile"
-        "OFF"
-    INSTALL_COMMAND 
-        "meson install"
-        "OFF"
-)
+    "OFF"
+    "\"-DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>\" \"-DCMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@\""
+    BUILD_COMMAND
+    "meson compile"
+    "OFF"
+    INSTALL_COMMAND
+    "meson install"
+    "OFF"
+    )
 
 set(ENV{PKG_CONFIG_PATH} "${EXTERNAL_DIR}/EP_BASE/Install/IniReader/lib/pkgconfig")
 find_package(PkgConfig REQUIRED)
@@ -50,7 +50,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::LIBINI)
 list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_DIR}/EP_BASE/Install/CSV2")
 find_package(csv2 REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC csv2::csv2)
-
 
 install(
     TARGETS ${PROJECT_NAME}

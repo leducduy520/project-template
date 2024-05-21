@@ -1,3 +1,4 @@
+project(@PKG_LABEL@)
 FetchContent_Declare(
     @PKG_LABEL@
     GIT_REPOSITORY @PKG_REPO@
