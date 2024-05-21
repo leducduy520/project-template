@@ -51,9 +51,18 @@ include(Tools)
 include(GraphAndDoc)
 include(External)
 
-# build_external_project(READ_FROM_JSON SUB_PROJECT)
+build_external_project(READ_FROM_JSON SUB_PROJECT)
 
-# add_subdirectory(src)
+build_external_project(
+    LABEL
+    "wise_enum"
+    REPO
+    "https://github.com/quicknir/wise_enum.git"
+    TAG
+    "3.1.0"
+    SHALLOW
+    "ON"
+    )
 
 add_subdirectory(app)
 

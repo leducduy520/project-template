@@ -6,10 +6,6 @@ target_include_directories(
     )
 
 build_external_project(
-    FIRST_INDEX
-    0
-    LAST_INDEX
-    0
     LABEL
     "yaml"
     REPO
@@ -18,13 +14,17 @@ build_external_project(
     "0.8.0"
     SHALLOW
     "ON"
-    CMAKE_AGRS
-    "\"-DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>\" \"-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}\" \"-DYAML_BUILD_SHARED_LIBS=ON\" \"-DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}\" \"-DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}\""
     )
 
 list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_DIR}/EP_BASE/Install/yaml")
 find_package(yaml-cpp REQUIRED)
 target_link_libraries(base PUBLIC yaml-cpp::yaml-cpp)
+
+list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_DIR}/EP_BASE/Install/wise_enum")
+find_package(WiseEnum REQUIRED)
+target_link_libraries(base PUBLIC WiseEnum::wise_enum)
+
+target_link_libraries(base PRIVATE pprint)
 
 add_executable(app main.cpp)
 target_link_libraries(app PRIVATE base)
