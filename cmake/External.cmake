@@ -40,7 +40,8 @@ macro(build_external_project)
         LABEL
         SHALLOW
         CONFIGURE_COMMAND
-        CMAKE_AGRS
+        CMAKE_ARGS
+        CMAKE_ARGS_MORE
         BUILD_COMMAND
         INSTALL_COMMAND
         )
@@ -48,20 +49,27 @@ macro(build_external_project)
     set(options READ_FROM_JSON SUB_PROJECT)
     cmake_parse_arguments(PKGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    if(${PKGS_LAST_INDX} MATCHES "-1")
-        message(FATAL_ERROR "Last index is '-1'")
-        return()
-    elseif((NOT PKGS_LAST_INDX) AND (NOT ${PKGS_LAST_INDX} MATCHES "0"))
-        set(PKGS_LAST_INDX 0)
-    endif()
-
-    if(${PKGS_FIRST_INDX} MATCHES "-1" OR ((NOT PKGS_FIRST_INDX) AND (NOT ${PKGS_FIRST_INDX} MATCHES "0")))
-        set(PKGS_FIRST_INDX 0)
-    endif()
-
     if(PKGS_READ_FROM_JSON)
         read_deps_json(PKGS_LABEL PKGS_REPO PKGS_TAG PKGS_SHALLOW PKGS_LAST_INDX)
         set(PKGS_FIRST_INDX 0)
+
+        if(PKGS_LAST_INDX LESS 0 OR PKGS_LAST_INDX LESS ${PKGS_FIRST_INDX})
+            message(FATAL_ERROR "Last index is '-1'")
+            return()
+        endif()
+    else()
+        if(PKGS_FIRST_INDX LESS 0 OR "${PKGS_FIRST_INDX}" STREQUAL "")
+            set(PKGS_FIRST_INDX 0)
+        endif()
+
+        if(PKGS_LAST_INDX LESS 0 OR PKGS_LAST_INDX LESS ${PKGS_FIRST_INDX} OR "${PKGS_LAST_INDX}" STREQUAL "")
+            list(LENGTH PKGS_REPO PKGS_LAST_INDX)
+            if(PKGS_LAST_INDX LESS 0 OR PKGS_LAST_INDX LESS ${PKGS_FIRST_INDX})
+                set(PKGS_LAST_INDX ${PKGS_FIRST_INDX})
+            else()
+                math(EXPR PKGS_LAST_INDX "${PKGS_LAST_INDX} - 1" OUTPUT_FORMAT DECIMAL)
+            endif()
+        endif()
     endif(PKGS_READ_FROM_JSON)
 
     if(PKGS_SUB_PROJECT)
@@ -95,7 +103,8 @@ macro(build_external_project)
         list(GET PKGS_LABEL ${ITR} PKG_LABEL)
         list(GET PKGS_SHALLOW ${ITR} PKG_SHALLOW)
         list(GET PKGS_CONFIGURE_COMMAND ${ITR} PKG_CONFIGURE_COMMAND)
-        list(GET PKGS_CMAKE_AGRS ${ITR} PKG_CMAKE_AGRS)
+        list(GET PKGS_CMAKE_ARGS ${ITR} PKG_CMAKE_ARGS)
+        list(GET PKGS_CMAKE_ARGS_MORE ${ITR} PKG_CMAKE_ARGS_MORE)
         list(GET PKGS_BUILD_COMMAND ${ITR} PKG_BUILD_COMMAND)
         list(GET PKGS_INSTALL_COMMAND ${ITR} PKG_INSTALL_COMMAND)
 
@@ -104,24 +113,30 @@ macro(build_external_project)
             file(READ ${CMAKE_LISTS_FILE_DIR}/${PKG_LABEL}/CMakeLists.txt PKGS_ADD_STRING)
             string(FIND ${PKGS_ADD_STRING} ")" POS REVERSE)
             string(SUBSTRING ${PKGS_ADD_STRING} 0 ${POS} PKGS_ADD_STRING)
+
             if(PKG_CONFIGURE_COMMAND)
                 string(APPEND PKGS_ADD_STRING "\tCONFIGURE_COMMAND ${PKG_CONFIGURE_COMMAND}\n")
             endif(PKG_CONFIGURE_COMMAND)
-            if(PKG_CMAKE_AGRS)
-                string(APPEND PKGS_ADD_STRING "\tCMAKE_ARGS ${PKG_CMAKE_AGRS}\n")
-            else(PKG_CMAKE_AGRS)
+
+            if(PKG_CMAKE_ARGS)
+                string(APPEND PKGS_ADD_STRING "\tCMAKE_ARGS ${PKG_CMAKE_ARGS} ${PKG_CMAKE_ARGS_MORE}\n")
+            else(PKG_CMAKE_ARGS)
                 string(
                     APPEND
                     PKGS_ADD_STRING
-                    "\tCMAKE_ARGS \"-DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>\" \"-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}\" \"-DYAML_BUILD_SHARED_LIBS=ON\" \"-DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}\" \"-DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}\"\n"
+                    "\tCMAKE_ARGS \"-DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>\" \"-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}\" \"-DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}\" \"-DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}\"  ${PKG_CMAKE_ARGS_MORE}\n"
                     )
-            endif(PKG_CMAKE_AGRS)
+                list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_DIR}/EP_BASE/Install/${PKG_LABEL}")
+            endif(PKG_CMAKE_ARGS)
+
             if(PKG_BUILD_COMMAND)
                 string(APPEND PKGS_ADD_STRING "\tBUILD_COMMAND ${PKG_BUILD_COMMAND}\n")
             endif(PKG_BUILD_COMMAND)
+
             if(PKG_INSTALL_COMMAND)
                 string(APPEND PKGS_ADD_STRING "\tINSTALL_COMMAND ${PKG_INSTALL_COMMAND}\n")
             endif(PKG_INSTALL_COMMAND)
+
             string(APPEND PKGS_ADD_STRING "\t)")
             file(WRITE ${CMAKE_LISTS_FILE_DIR}/${PKG_LABEL}/CMakeLists.txt "${PKGS_ADD_STRING}")
         endif()

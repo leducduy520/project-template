@@ -8,19 +8,24 @@ target_include_directories(
 build_external_project(
     LABEL
     "yaml"
+    "wise_enum"
     REPO
     "https://github.com/jbeder/yaml-cpp.git"
+    "https://github.com/quicknir/wise_enum.git"
     TAG
     "0.8.0"
+    "3.1.0"
     SHALLOW
     "ON"
+    "ON"
+    CMAKE_ARGS_MORE
+    "\"-DYAML_BUILD_SHARED_LIBS=ON\""
+    "OFF"
     )
 
-list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_DIR}/EP_BASE/Install/yaml")
 find_package(yaml-cpp REQUIRED)
 target_link_libraries(base PUBLIC yaml-cpp::yaml-cpp)
 
-list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_DIR}/EP_BASE/Install/wise_enum")
 find_package(WiseEnum REQUIRED)
 target_link_libraries(base PUBLIC WiseEnum::wise_enum)
 
