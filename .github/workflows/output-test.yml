@@ -19,4 +19,4 @@ jobs:
       - name: Print
         run: echo ${{ needs.Generate-Output.outputs.list-file }}
       - name: Print Github object
-        run: echo ${{toJson(github)}}
+        run: echo "${{ toJson(github) }}"
