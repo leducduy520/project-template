@@ -74,13 +74,13 @@ macro(build_external_project)
 
     if(PKGS_SUB_PROJECT)
         set(PKGS_ADD_FILE ${CMAKE_SOURCE_DIR}/cmake/ExternalAddSub.txt.in)
-        set(MODULE_STRING "cmake_minimum_required(VERSION 3.27)\nproject(subproject)\ninclude(FetchContent)\n")
+        set(MODULE_STRING "cmake_minimum_required(VERSION 3.25)\nproject(subproject)\ninclude(FetchContent)\n")
         set(CMAKE_LISTS_FILE_DIR ${EXTERNAL_DIR}/Packages/sub-project)
         file(MAKE_DIRECTORY ${EXTERNAL_DIR}/Packages/sub-project)
     else(PKGS_SUB_PROJECT)
         set(PKGS_ADD_FILE ${CMAKE_SOURCE_DIR}/cmake/ExternalAdd.txt.in)
         set(MODULE_STRING
-            "cmake_minimum_required(VERSION 3.27)\nproject(subproject)\ninclude(ExternalProject)\nset_directory_properties(PROPERTIES EP_BASE ${EXTERNAL_DIR}/EP_BASE)\n"
+            "cmake_minimum_required(VERSION 3.25)\nproject(subproject)\ninclude(ExternalProject)\nset_directory_properties(PROPERTIES EP_BASE ${EXTERNAL_DIR}/EP_BASE)\n"
             )
         set(CMAKE_LISTS_FILE_DIR ${EXTERNAL_DIR}/Packages/non-sub-project)
         file(MAKE_DIRECTORY ${EXTERNAL_DIR}/Packages/non-sub-project)
