@@ -7,6 +7,6 @@ private:
 public:
     base(/* args */);
     ~base();
-    void dosomething();
+    static void dosomething();
 };
 #endif
