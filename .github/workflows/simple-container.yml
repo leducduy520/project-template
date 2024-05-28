@@ -5,4 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/leducduy520/projecttemplate:latest
+    steps:
+      - name: Hello
+        run: echo "Hello"
   
