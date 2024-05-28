@@ -13,8 +13,5 @@ include(Catch)
 catch_discover_tests(${PROJECT_NAME})
 
 install(
-    TARGETS ${PROJECT_NAME}
-    RUNTIME CONFIGURATIONS Debug Release
-            DESTINATION ${CMAKE_INSTALL_BINDIR}
-            COMPONENT Runtime
+    TARGETS ${PROJECT_NAME} RUNTIME CONFIGURATIONS Debug Release DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
     )

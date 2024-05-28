@@ -1,7 +1,12 @@
-name: Test on Windows
+name: Reusable Ubuntu Build Workflow
 on:
-  workflow_dispatch:
-
+  workflow_call:
+    inputs:
+      target:
+        description: "Target to be built"
+        required: true
+        type: "string"
+        default: "complete"
 jobs:
   Configuration:
     runs-on: windows-latest
@@ -22,15 +27,7 @@ jobs:
           pip install PyYAML
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Check folder
-        run: ls
       - name: Configure
         run: make config-win
-      - name: Format
-        run: cmake --build --preset=windows-format
-      - name: Docs
-        run: cmake --build --preset=windows-document
-      - name: Install
-        run: cmake --build --preset=windows-install
-      - name: Test
-        run: ctest --preset=windows
+      - name: Build
+        run: cmake --build --preset=windows-${{inputs.target}}

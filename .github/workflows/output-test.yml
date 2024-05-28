@@ -1,8 +1,6 @@
 name: Output Example
-on: 
+on:
   workflow_dispatch:
-  push:
-    branches: [dev*]
 jobs:
   Generate-Output:
     runs-on: ubuntu-latest
@@ -20,3 +18,5 @@ jobs:
     steps:
       - name: Print
         run: echo ${{ needs.Generate-Output.outputs.list-file }}
+      - name: Print Github object
+        run: echo "${{ toJson(github) }}"

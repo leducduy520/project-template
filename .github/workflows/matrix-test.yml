@@ -1,0 +1,13 @@
+name: Matrix testing
+on:
+  workflow_dispatch:
+jobs:
+  Matrix-Run:
+    strategy:
+      matrix:
+        version: [10, 11, 12]
+        os: [ubuntu, windows, mac]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run matrix
+        run: echo "this app version ${{matrix.version}} run on os ${{matrix.os}}"

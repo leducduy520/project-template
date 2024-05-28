@@ -1,14 +1,8 @@
 if(ENABLE_DOCUMENT_TARGET)
     find_package(Doxygen REQUIRED COMPONENTS dot doxygen)
     if(Doxygen_FOUND)
-        set(DOCS_HTML_DIR
-            ${DOCS_DIR}/html
-            CACHE PATH "project html directory"
-            )
-        set(DOCS_GRAPH_DIR
-            ${DOCS_DIR}/graph
-            CACHE PATH "project graph directory"
-            )
+        set(DOCS_HTML_DIR ${DOCS_DIR}/html CACHE PATH "project html directory")
+        set(DOCS_GRAPH_DIR ${DOCS_DIR}/graph CACHE PATH "project graph directory")
 
         add_custom_command(
             OUTPUT ${DOCS_HTML_DIR}/index.html
@@ -34,9 +28,7 @@ if(ENABLE_DOCUMENT_TARGET)
             )
 
         add_custom_target(
-            gen_graph
-            COMMENT "Generate project graph dependencies"
-            DEPENDS ${DOCS_GRAPH_DIR}/${GRAPH_OUTPUT_NAME}.png
+            gen_graph COMMENT "Generate project graph dependencies" DEPENDS ${DOCS_GRAPH_DIR}/${GRAPH_OUTPUT_NAME}.png
             )
 
         if(ENABLE_INSTALL_GRAPH_AND_DOC)

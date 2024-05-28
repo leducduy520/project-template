@@ -1,0 +1,10 @@
+name: Environment testing
+on:
+  workflow_dispatch:
+jobs:
+  Print-secrets-in-environment:
+    runs-on: ubuntu-latest
+    environment: testing
+    steps:
+      - name: Print secret
+        run: echo "${{secrets.TEST_SECRET}}"

@@ -1,0 +1,13 @@
+name: Test if condition
+on:
+  workflow_dispatch:
+env:
+  ENABLE: true
+jobs:
+  Print-If:
+    if: ${{github.ref == 'refs/heads/dev2'}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print
+        if: ${{env.ENABLE}}
+        run: echo "Enaable printing step!!!"
