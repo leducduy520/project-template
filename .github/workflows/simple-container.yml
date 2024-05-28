@@ -6,6 +6,18 @@ jobs:
     container:
       image: ghcr.io/leducduy520/projecttemplate:latest
     steps:
-      - name: Hello
-        run: echo "Hello"
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Check folder
+        run: ls
+      - name: Configure
+        run: make config-ubuntu
+      - name: Format
+        run: cmake --build --preset=ubuntu-format
+      - name: Docs
+        run: cmake --build --preset=ubuntu-document
+      - name: Install
+        run: cmake --build --preset=ubuntu-install
+      - name: Test
+        run: ctest --preset=ubuntu
   
