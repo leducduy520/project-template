@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  projecttemplate:
-    image: projecttemplate
-    build:
-      context: .
-      dockerfile: ./Dockerfile

@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.25)
 
 # set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 option(ENABLE_CMAKE_FORMAT "enable cmake format" ON)
-option(ENABLE_DOCUMENT_TARGET "enable document target" ON)
-option(ENABLE_INSTALL_GRAPH_AND_DOC "enable moving files in docs directory to the install directory" ON)
+option(ENABLE_DOCUMENT_TARGET "enable document target" OFF)
+option(ENABLE_INSTALL_GRAPH_AND_DOC "enable moving files in docs directory to the install directory" OFF)
 option(ENABLE_TEST_EXEC "enable build test executable" OFF)
 
 if(PROJECT_NAME)
@@ -12,7 +12,7 @@ else(PROJECT_NAME)
     set(SUBPROJECT OFF)
 endif()
 
-project(ZooClass VERSION 0.0.1 LANGUAGES C CXX)
+project(GraphicApp VERSION 0.0.1 LANGUAGES C CXX)
 
 include(GNUInstallDirs)
 include(FetchContent)
@@ -35,7 +35,7 @@ set(SUBPROJECT_FIRST_TOUCH OFF)
 set(NONSUBPROJECT_FIRST_TOUCH OFF)
 
 if(WIN32)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    # set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 else()
     set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 endif()
@@ -49,9 +49,7 @@ endforeach()
 
 include(Tools)
 include(GraphAndDoc)
-include(External)
-
-build_external_project(READ_FROM_JSON SUB_PROJECT)
+# include(External)
 
 add_subdirectory(app)
 
