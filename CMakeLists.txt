@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.25)
 
 # set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 option(ENABLE_CMAKE_FORMAT "enable cmake format" ON)
-option(ENABLE_DOCUMENT_TARGET "enable document target" OFF)
-option(ENABLE_INSTALL_GRAPH_AND_DOC "enable moving files in docs directory to the install directory" OFF)
+option( "enable document target" OFF)
+option(ENABLE_IENABLE_DOCUMENT_TARGETNSTALL_GRAPH_AND_DOC "enable moving files in docs directory to the install directory" OFF)
 option(ENABLE_TEST_EXEC "enable build test executable" OFF)
 
 if(PROJECT_NAME)

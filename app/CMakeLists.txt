@@ -1,5 +1,5 @@
 project(app)
-add_executable(app main.cpp)
+add_executable(app main.cpp entity.cc ball.cc background.cc paddle.cc brick.cc)
 
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -16,5 +16,12 @@ if(WIN32)
         PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:app>
         VERBATIM)
 endif()
+
+add_custom_command(
+    TARGET app
+    COMMENT "Copy resources"
+    POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${CMAKE_CURRENT_LIST_DIR}/resources $<TARGET_FILE_DIR:app>/resources
+    VERBATIM
+)
 
 install(TARGETS app)

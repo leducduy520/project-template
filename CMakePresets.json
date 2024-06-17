@@ -5,7 +5,7 @@
             "name": "environment",
             "hidden": true,
             "environment": {
-                "BUILD_TYPE": "Release",
+                "BUILD_TYPE": "Debug",
                 "EXTERNAL_NAME": "external",
                 "OUR_DIR_NAME": "out",
                 "INSTALL_DIR_NAME": "install",
@@ -97,7 +97,7 @@
             "configurePreset": "base",
             "hidden": true,
             "inheritConfigureEnvironment": true,
-            "configuration": "Release",
+            "configuration": "Debug",
             "jobs": 6,
             "targets": "all"
         },
@@ -241,6 +241,17 @@
                 "base-complete",
                 "ubuntu"
             ]
+        },
+        {
+            "name": "msvc",
+            "configurePreset": "msvc",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "targets": "ALL_BUILD"
         }
     ],
     "testPresets": [
