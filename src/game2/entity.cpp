@@ -1,4 +1,4 @@
-#include "entity.h"
+#include "entity.hpp"
 
 // Helper function to get the bounding box of a sprite
 sf::FloatRect entity::get_bounding_box() const noexcept
@@ -24,7 +24,7 @@ float entity::y() const noexcept
 }
 
 void entity::destroy() noexcept
-{   
+{
     destroyed = true;
 }
 

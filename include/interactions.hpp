@@ -2,18 +2,28 @@
 
 #define __INTERACTIONS__
 
-#include "ball.h"
-#include "paddle.h"
-#include "brick.h"
+#include "ball.hpp"
+#include "brick.hpp"
+#include "paddle.hpp"
 
-bool is_interacting(const entity *e1, const entity *e2)
+#ifdef _WIN32
+  #ifdef GAME_1_EXPORTS
+    #define GAME_1_API __declspec(dllexport)
+  #else
+    #define GAME_1_API __declspec(dllimport)
+  #endif
+#else
+  #define GAME_1_API
+#endif
+
+bool  is_interacting(const entity *e1, const entity *e2)
 {
     auto box1 = e1->get_bounding_box();
     auto box2 = e2->get_bounding_box();
     return box1.intersects(box2);
 }
 
-void handle_interaction(ball &b, const paddle &p)
+void  handle_interaction(ball &b, const paddle &p)
 {
     if (is_interacting(&b, &p))
     {
@@ -29,9 +39,9 @@ void handle_interaction(ball &b, const paddle &p)
     }
 }
 
-void handle_interaction(ball &b, brick &br)
+void  handle_interaction(ball &b, brick &br)
 {
-    if(is_interacting(&b, &br))
+    if (is_interacting(&b, &br))
     {
         br.destroy();
 
@@ -45,9 +55,9 @@ void handle_interaction(ball &b, brick &br)
 
         float min_x_overlap = from_left ? left_overlap : right_overlap;
         float min_y_overlap = from_top ? top_overlap : bottom_overlap;
-        if(min_x_overlap < min_y_overlap)
+        if (min_x_overlap < min_y_overlap)
         {
-            if(from_left)
+            if (from_left)
             {
                 b.move_left();
             }
@@ -58,7 +68,7 @@ void handle_interaction(ball &b, brick &br)
         }
         else
         {
-            if(from_top)
+            if (from_top)
             {
                 b.move_up();
             }

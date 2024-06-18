@@ -1,27 +1,12 @@
-project(app)
-add_executable(app main.cpp entity.cc ball.cc background.cc paddle.cc brick.cc)
+# Add source files for the executable
+add_executable(MySFMLApp main.cpp)
 
-FetchContent_Declare(SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 2.6.x)
-FetchContent_MakeAvailable(SFML)
+# Include directories
+target_include_directories(MySFMLApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
+# Link the GameManager library and SFML libraries
+target_link_libraries(MySFMLApp GameManager sfml-graphics sfml-window sfml-system)
 
-target_link_libraries(app PRIVATE sfml-graphics)
-
-if(WIN32)
-    add_custom_command(
-        TARGET app
-        COMMENT "Copy OpenAL DLL"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:app>
-        VERBATIM)
-endif()
-
-add_custom_command(
-    TARGET app
-    COMMENT "Copy resources"
-    POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${CMAKE_CURRENT_LIST_DIR}/resources $<TARGET_FILE_DIR:app>/resources
-    VERBATIM
-)
-
-install(TARGETS app)
+set_target_properties(MySFMLApp PROPERTIES 
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>/bin)

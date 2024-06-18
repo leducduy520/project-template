@@ -10,6 +10,7 @@ class entity
 protected:
     sf::Sprite sprite;
     bool destroyed{false};
+
 public:
     // Pure virtual functions
     // Concrete graphical entities must implement these functions
@@ -31,10 +32,10 @@ public:
     virtual void destroy() noexcept;
     virtual bool is_destroyed() const noexcept;
 
-    virtual float left()  const noexcept;
-    virtual float right()  const noexcept;
-    virtual float top()  const noexcept;
-    virtual float bottom()  const noexcept;
+    virtual float left() const noexcept;
+    virtual float right() const noexcept;
+    virtual float top() const noexcept;
+    virtual float bottom() const noexcept;
 
     // Virtual destructor
     virtual ~entity()

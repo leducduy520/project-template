@@ -1,16 +1,13 @@
-#include "paddle.h"
-
-sf::Texture paddle::texture;
+#include "paddle.hpp"
 
 paddle::paddle(float x, float y) : moving_entity()
 {
     texture.loadFromFile("resources/steel.png");
     sprite.setTexture(texture);
     sprite.setOrigin(get_centre());
-    sprite.setScale(0.2f, 0.06f);
+    sprite.setScale(constants::paddlle_width / get_bounding_box().width,
+                    constants::paddlle_height / get_bounding_box().height);
     sprite.setPosition(x, y - get_bounding_box().height / 2.0f);
-    std::cout << get_bounding_box().left << " " << get_bounding_box().top << std::endl;
-    std::cout << get_bounding_box().width << " " << get_bounding_box().height << std::endl;
     velocity = {0, 0};
 }
 
@@ -62,5 +59,3 @@ void paddle::print_info() const noexcept
     std::cout << "paddle bounding box: " << get_bounding_box().width << " " << get_bounding_box().height << '\n';
     std::cout << '\n';
 }
-
-

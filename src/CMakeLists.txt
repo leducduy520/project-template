@@ -1,3 +1,3 @@
 project(src)
 
-add_subdirectory(base)
+add_subdirectory(game2)

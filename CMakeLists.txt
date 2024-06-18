@@ -25,20 +25,18 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MESSAGE_LOG_LEVEL VERBOSE)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDOUT)
 
 set(INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 set(GRAPH_OUTPUT_NAME graph)
-set(BASE_NAME base)
-set(SUBPROJECT_FIRST_TOUCH OFF)
-set(NONSUBPROJECT_FIRST_TOUCH OFF)
 
-if(WIN32)
-    # set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-else()
-    set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
-endif()
+# if(WIN32)
+#     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+# else()
+#     set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+# endif()
 
 foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
     string(TOUPPER ${build_type} build_type_upper)
@@ -47,10 +45,16 @@ foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/bin)
 endforeach()
 
-include(Tools)
-include(GraphAndDoc)
+# include(Tools)
+# include(GraphAndDoc)
 # include(External)
 
+FetchContent_Declare(SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.6.x)
+FetchContent_MakeAvailable(SFML)
+
+add_subdirectory(src)
 add_subdirectory(app)
 
 if(ENABLE_TEST_EXEC)

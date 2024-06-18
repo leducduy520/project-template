@@ -1,11 +1,12 @@
 #ifndef __PADDLE__H
 #define __PADDLE__H
-#include "constants.h"
-#include "entity.h"
+
+#include "constants.hpp"
+#include "entity.hpp"
 
 class paddle : public moving_entity
 {
-    static sf::Texture texture;
+    sf::Texture texture;
 
 public:
     paddle(float x, float y);
