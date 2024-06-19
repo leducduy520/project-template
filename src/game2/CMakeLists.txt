@@ -1,32 +1,37 @@
-add_library(GameManager SHARED GameManager.cpp entity.cpp ball.cpp background.cpp paddle.cpp brick.cpp)
+project(pingpong_game)
 
-target_include_directories(GameManager PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCE_FILES)
+file(GLOB_RECURSE HEADER_FILE LIST_DIRECTORIES false "*.hpp")
+list(FILTER HEADER_FILE INCLUDE REGEX "Game")
 
-target_link_libraries(GameManager sfml-graphics sfml-window sfml-system)
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
-set_target_properties(GameManager PROPERTIES 
+target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+
+target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-system)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES 
     WINDOWS_EXPORT_ALL_SYMBOLS ON
-    PUBLIC_HEADER "include/GameManager.hpp")
-
+    PUBLIC_HEADER "${HEADER_FILE}")
 
 if(WIN32)
     add_custom_command(
-        TARGET GameManager
+        TARGET ${PROJECT_NAME}
         COMMENT "Copy OpenAL DLL"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:GameManager>
+        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>
         VERBATIM)
 endif()
 
 add_custom_command(
-    TARGET GameManager POST_BUILD
+    TARGET ${PROJECT_NAME} POST_BUILD
     COMMENT "Copy resources"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${CMAKE_CURRENT_SOURCE_DIR}/resources ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
     VERBATIM
 )
 
 install(
-    TARGETS GameManager
-    EXPORT GameManager-targets
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}-targets
     RUNTIME
         DESTINATION  ${CMAKE_INSTALL_BINDIR}
         COMPONENT Runtime
@@ -41,4 +46,4 @@ install(
         COMPONENT PublicHeader
 )
 
-install (DIRECTORY resources DESTINATION ${CMAKE_INSTALL_BINDIR}/resources)
+install (DIRECTORY resources DESTINATION ${CMAKE_INSTALL_BINDIR})

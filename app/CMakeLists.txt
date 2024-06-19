@@ -6,11 +6,7 @@ target_include_directories(MySFMLApp PRIVATE
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/game2)
 
 # Link the GameManager library and SFML libraries
-target_link_libraries(MySFMLApp GameManager sfml-graphics sfml-window sfml-system)
-
-set_target_properties(MySFMLApp PROPERTIES 
-    WINDOWS_EXPORT_ALL_SYMBOLS ON
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>/bin)
+target_link_libraries(MySFMLApp PRIVATE pingpong_game sfml-graphics sfml-window sfml-system)
 
 install(TARGETS MySFMLApp
     RUNTIME
