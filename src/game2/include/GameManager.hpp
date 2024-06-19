@@ -26,13 +26,18 @@ class game {
 
 	// Create the grid of bricks
 	// We will use an std::vector to store them
-	std::vector<brick> bricks;
+	wall bricks;
 
 	// Enum with allowed values for the game's state
 	enum class game_state { paused, running };
 
 	// Member to store the current state of the game
 	game_state state{game_state::running};
+
+	void eventHandler();
+	void update();
+	void render();
+
 public:
 	game();
 	

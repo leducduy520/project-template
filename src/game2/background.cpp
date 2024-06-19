@@ -1,13 +1,26 @@
 #include "background.hpp"
 
-background::background(float x, float y) : entity() {
-  // Load the texture
-  texture.loadFromFile("resources/background.jpg");
-  sprite.setTexture(texture);
+sf::Texture &background::getTexture()
+{
+    static sf::Texture texture;
+    static bool initialized = false;
+    if (!initialized) {
+        if (!texture.loadFromFile("resources/background.jpg")) {
+            std::cerr << "Get texture failed\n";
+        }
+        initialized = true;
+    }
+    return texture;
+}
 
-  // Set the initial position and velocity of the background
-  // Use (x, y) for the initial position of the background
-  sprite.setPosition(x, y);
+background::background(float x, float y) : entity()
+{
+    // Load the texture
+    sprite.setTexture(getTexture());
+
+    // Set the initial position and velocity of the background
+    // Use (x, y) for the initial position of the background
+    sprite.setPosition(x, y);
 }
 
 // Compute the background's new position

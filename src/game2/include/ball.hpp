@@ -6,24 +6,21 @@
 #include "constants.hpp"
 #include "entity.hpp"
 
-// Class to represent the bouncing ball
-// Inherits from moving_entity
 class ball : public moving_entity
 {
     // Private data members
-    sf::Texture texture;
+    static sf::Texture& getTexture();
 
 public:
     ball(float x, float y);
 
-    // Implement the pure virtual functions
     void update() override;
     void draw(sf::RenderWindow &window) override;
 
-    void move_up() noexcept override;
-    void move_down() noexcept override;
-    void move_left() noexcept override;
-    void move_right() noexcept override;
+    void move_up(const float ratio = 1.0f) noexcept override;
+    void move_down(const float ratio = 1.0f) noexcept override;
+    void move_left(const float ratio = 1.0f) noexcept override;
+    void move_right(const float ratio = 1.0f) noexcept override;
     void print_info() const noexcept override;
 };
 

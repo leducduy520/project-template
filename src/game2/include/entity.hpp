@@ -28,6 +28,8 @@ public:
     // Helper functions to get the position of the sprite
     float x() const noexcept;
     float y() const noexcept;
+    float width() const noexcept;
+    float height() const noexcept;
 
     virtual void destroy() noexcept;
     virtual bool is_destroyed() const noexcept;
@@ -36,6 +38,8 @@ public:
     virtual float right() const noexcept;
     virtual float top() const noexcept;
     virtual float bottom() const noexcept;
+
+    void set_position(const sf::Vector2f& pos) noexcept;
 
     // Virtual destructor
     virtual ~entity()
@@ -56,10 +60,10 @@ public:
     // float x();
     // float y();
 
-    virtual void move_up() noexcept = 0;
-    virtual void move_down() noexcept = 0;
-    virtual void move_left() noexcept = 0;
-    virtual void move_right() noexcept = 0;
+    virtual void move_up(const float ratio = 1.0f) noexcept = 0;
+    virtual void move_down(const float ratio = 1.0f) noexcept = 0;
+    virtual void move_left(const float ratio = 1.0f) noexcept = 0;
+    virtual void move_right(const float ratio = 1.0f) noexcept = 0;
     virtual void print_info() const noexcept = 0;
 
     // Pure virtual functions inherited from parent class

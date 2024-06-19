@@ -23,6 +23,16 @@ float entity::y() const noexcept
     return sprite.getPosition().y;
 }
 
+float entity::width() const noexcept
+{
+    return sprite.getGlobalBounds().width;
+}
+
+float entity::height() const noexcept
+{
+    return sprite.getGlobalBounds().height;
+}
+
 void entity::destroy() noexcept
 {
     destroyed = true;
@@ -51,4 +61,9 @@ float entity::top() const noexcept
 float entity::bottom() const noexcept
 {
     return sprite.getGlobalBounds().top + sprite.getGlobalBounds().height;
+}
+
+void entity::set_position(const sf::Vector2f &pos) noexcept
+{
+    sprite.setPosition(pos);
 }

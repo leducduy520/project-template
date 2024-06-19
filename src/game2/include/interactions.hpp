@@ -5,16 +5,9 @@
 #include "ball.hpp"
 #include "brick.hpp"
 #include "paddle.hpp"
+#include <cmath>
+#include <map>
 
-#ifdef _WIN32
-  #ifdef GAME_1_EXPORTS
-    #define GAME_1_API __declspec(dllexport)
-  #else
-    #define GAME_1_API __declspec(dllimport)
-  #endif
-#else
-  #define GAME_1_API
-#endif
 
 bool  is_interacting(const entity *e1, const entity *e2)
 {
@@ -23,18 +16,30 @@ bool  is_interacting(const entity *e1, const entity *e2)
     return box1.intersects(box2);
 }
 
+const std::pair<float, float> get_raito(const ball &b, const paddle &p)
+{
+    const float length{sqrt(powf(constants::ball_speed, 2.0f) * 2 )}; //8,48528137423857
+    const double angle{abs(b.x() - p.x()) / p.get_bounding_box().width * 75};
+    const double c = cos(angle * 3.14 / 180);
+    const double s = sqrt(1 - powf(c , 2.0f));
+    const float x_ratio = s * length / constants::ball_speed;
+    const float y_ratio = c * length / constants::ball_speed;
+    return std::make_pair(x_ratio, y_ratio);
+}
+
 void  handle_interaction(ball &b, const paddle &p)
 {
     if (is_interacting(&b, &p))
     {
-        b.move_up();
+        const auto [x_ratio, y_ratio] = get_raito(b, p);
+        b.move_up(y_ratio);
         if (b.x() < p.x())
         {
-            b.move_left();
+            b.move_left(x_ratio);
         }
         else
         {
-            b.move_right();
+            b.move_right(x_ratio);
         }
     }
 }

@@ -1,9 +1,21 @@
 #include "paddle.hpp"
 
+sf::Texture &paddle::getTexture()
+{
+    static sf::Texture texture;
+    static bool initialized = false;
+    if (!initialized) {
+        if (!texture.loadFromFile("resources/steel.png")) {
+            std::cerr << "Get texture failed\n";
+        }
+        initialized = true;
+    }
+    return texture;
+}
+
 paddle::paddle(float x, float y) : moving_entity()
 {
-    texture.loadFromFile("resources/steel.png");
-    sprite.setTexture(texture);
+    sprite.setTexture(getTexture());
     sprite.setOrigin(get_centre());
     sprite.setScale(constants::paddlle_width / get_bounding_box().width,
                     constants::paddlle_height / get_bounding_box().height);
@@ -34,21 +46,21 @@ void paddle::draw(sf::RenderWindow &window)
     window.draw(sprite);
 }
 
-void paddle::move_up() noexcept
+void paddle::move_up(const float ratio) noexcept
 {
 }
 
-void paddle::move_left() noexcept
+void paddle::move_left(const float ratio) noexcept
 {
-    velocity.x = -constants::paddle_speed;
+    velocity.x = -constants::paddle_speed * ratio;
 }
 
-void paddle::move_right() noexcept
+void paddle::move_right(const float ratio) noexcept
 {
-    velocity.x = constants::paddle_speed;
+    velocity.x = constants::paddle_speed * ratio;
 }
 
-void paddle::move_down() noexcept
+void paddle::move_down(const float ratio) noexcept
 {
 }
 
