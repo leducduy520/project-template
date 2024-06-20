@@ -46,10 +46,7 @@ public:
 
 private:
     std::unordered_map<std::string, std::string> modulePaths;
-    std::unordered_map<std::string, HMODULE> loadedModules;
-
-    // Helper function to get the actual path of a loaded module (DLL)
-    std::string getModulePath(HMODULE hModule);
+    std::unordered_map<std::string, LibraryHandle> loadedModules;
 };
 
 #endif // __MODULE_MANAGER_H__

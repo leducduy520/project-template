@@ -14,7 +14,7 @@ struct constants
     static constexpr float ball_speed{6.0f};
     static constexpr int paddlle_width{120};
     static constexpr int paddlle_height{40};
-    static constexpr float paddle_speed{4.0f};
+    static constexpr float paddle_speed{6.0f};
     static constexpr int brick_width{32};
     static constexpr int brick_height{20};
     static constexpr int brick_verical_lanes{13};

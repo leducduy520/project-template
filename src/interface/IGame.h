@@ -10,9 +10,15 @@ class IGame{
     ~IGame() = default;
 };
 
+#if defined _WIN32
+    #define EXPORT_API __declspec(dllexport)
+#else
+    #define EXPORT_API
+#endif
+
 extern "C" {
-    __declspec(dllexport) IGame* createPingPongGame();
-    __declspec(dllexport) void destroyGame(IGame* game);
+    EXPORT_API IGame* createPingPongGame();
+    EXPORT_API void destroyGame(IGame* game);
 }
 
 #endif // __IGAME__
