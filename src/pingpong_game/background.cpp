@@ -5,7 +5,7 @@ sf::Texture &background::getTexture()
     static sf::Texture texture;
     static bool initialized = false;
     if (!initialized) {
-        if (!texture.loadFromFile("resources/background.jpg")) {
+        if (!texture.loadFromFile(constants::resoucesPath + "background.jpg")) {
             std::cerr << "Get texture failed\n";
         }
         initialized = true;
@@ -15,11 +15,12 @@ sf::Texture &background::getTexture()
 
 background::background(float x, float y) : entity()
 {
-    // Load the texture
-    sprite.setTexture(getTexture());
+  init(x, y);
+}
 
-    // Set the initial position and velocity of the background
-    // Use (x, y) for the initial position of the background
+void background::init(float x, float y)
+{
+    sprite.setTexture(getTexture());
     sprite.setPosition(x, y);
 }
 

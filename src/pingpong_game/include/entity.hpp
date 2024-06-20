@@ -19,6 +19,8 @@ public:
     virtual void update() = 0;
     virtual void draw(sf::RenderWindow &window) = 0;
 
+    virtual void init(float x, float y) = 0;
+
     // Helper function to get the bounding box of a sprite
     sf::FloatRect get_bounding_box() const noexcept;
 

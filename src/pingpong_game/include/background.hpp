@@ -10,6 +10,9 @@ class background : public entity {
  public:
   
   background(float x, float y);
+  background() = default;
+
+  void init(float x, float y) override;
 
   // Implement the pure virtual functions
   void update() override;

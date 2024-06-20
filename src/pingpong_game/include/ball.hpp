@@ -13,6 +13,9 @@ class ball : public moving_entity
 
 public:
     ball(float x, float y);
+    ball() = default;
+
+    void init(float x, float y) override;
 
     void update() override;
     void draw(sf::RenderWindow &window) override;

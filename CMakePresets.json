@@ -243,7 +243,7 @@
             ]
         },
         {
-            "name": "msvc",
+            "name": "msvc-debug",
             "configurePreset": "msvc",
             "inherits": "base",
             "condition": {
@@ -251,7 +251,14 @@
                 "lhs": "${hostSystemName}",
                 "rhs": "Windows"
             },
-            "targets": "ALL_BUILD"
+            "targets": "ALL_BUILD",
+            "configuration": "Debug"
+        },
+        {
+            "name": "msvc-release",
+            "configurePreset": "msvc",
+            "inherits": "msvc-debug",
+            "configuration": "Release"
         }
     ],
     "testPresets": [

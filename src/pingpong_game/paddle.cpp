@@ -5,7 +5,7 @@ sf::Texture &paddle::getTexture()
     static sf::Texture texture;
     static bool initialized = false;
     if (!initialized) {
-        if (!texture.loadFromFile("resources/steel.png")) {
+        if (!texture.loadFromFile(constants::resoucesPath + "steel.png")) {
             std::cerr << "Get texture failed\n";
         }
         initialized = true;
@@ -14,6 +14,11 @@ sf::Texture &paddle::getTexture()
 }
 
 paddle::paddle(float x, float y) : moving_entity()
+{
+    init(x, y);
+}
+
+void paddle::init(float x, float y)
 {
     sprite.setTexture(getTexture());
     sprite.setOrigin(get_centre());

@@ -11,6 +11,9 @@ class brick : public entity
     static void releaseTexture();
 public:
     brick(float x, float y);
+    brick() = default;
+
+    void init(float x, float y) override;
 
     // Implement the pure virtual functions
     void update() override;

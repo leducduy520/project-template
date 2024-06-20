@@ -8,7 +8,7 @@ sf::Texture &brick::getTexture()
     static sf::Texture texture;
     static bool initialized = false;
     if (!initialized) {
-        if (!texture.loadFromFile("resources/brick.png")) {
+        if (!texture.loadFromFile(constants::resoucesPath + "brick.png")) {
             std::cerr << "Get texture failed\n";
         }
         initialized = true;
@@ -23,6 +23,11 @@ void brick::releaseTexture()
 }
 
 brick::brick(float x, float y) : entity()
+{
+    init(x, y);
+}
+
+void brick::init(float x, float y)
 {
     sprite.setTexture(getTexture());
     sprite.setScale(constants::brick_width / get_bounding_box().width,

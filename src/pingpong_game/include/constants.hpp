@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-
+#include <string>
 
 // Code for a "breakout" game
 // Based on a talk by Vittorio Romeo and code by "FamTrimli"
@@ -20,6 +20,7 @@ struct constants
     static constexpr int brick_verical_lanes{13};
     static constexpr int brick_horizontal_lanes{6};
     static constexpr int brick_padding{(window_width - brick_verical_lanes * brick_width) / 2};
+    static std::string resoucesPath;
 };
 
 #endif // CONSTANTS_H

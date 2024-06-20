@@ -10,6 +10,8 @@ class paddle : public moving_entity
 
 public:
     paddle(float x, float y);
+    paddle() = default;
+    void init(float x, float y) override;
     void update() override;
     void draw(sf::RenderWindow &window) override;
     void move_up(const float ratio = 1.0f) noexcept override;

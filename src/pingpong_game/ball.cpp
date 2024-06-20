@@ -6,7 +6,7 @@ sf::Texture &ball::getTexture()
     static sf::Texture texture;
     static bool initialized = false;
     if (!initialized) {
-        if (!texture.loadFromFile("resources/ball.png")) {
+        if (!texture.loadFromFile(constants::resoucesPath + "ball.png")) {
             std::cerr << "Get texture failed\n";
         }
         initialized = true;
@@ -15,6 +15,11 @@ sf::Texture &ball::getTexture()
 }
 
 ball::ball(float x, float y) : moving_entity()
+{
+    init(x, y);
+}
+
+void ball::init(float x, float y)
 {
     // Load the texture
     sprite.setTexture(getTexture());

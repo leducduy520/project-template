@@ -1,7 +1,9 @@
-#include "GameManager.hpp"
+#include "PingPongGame.hpp"
 #include "interactions.hpp"
 
-void game::eventHandler()
+std::string constants::resoucesPath;
+
+void PingPongGame::eventHandler()
 {
 	static bool pause_key_active = false;
 	sf::Event event;
@@ -27,12 +29,12 @@ void game::eventHandler()
 	else
 		pause_key_active = false;
 
-	// If the user presses "R", we reset the game
+	// If the user presses "R", we reset the PingPongGame
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
 		reset();
 }
 
-void game::update()
+void PingPongGame::update()
 {
 	if (state != game_state::paused) 
 	{
@@ -50,7 +52,7 @@ void game::update()
 	}
 }
 
-void game::render()
+void PingPongGame::render()
 {
 	game_window.clear(sf::Color::Black);
 	the_background.draw(game_window);
@@ -65,14 +67,20 @@ void game::render()
 	game_window.display();   
 }
 
-game::game()
+PingPongGame::PingPongGame(std::string resourcePath) 
+	: m_resourcesPath{resourcePath}
 {
-    game_window.setFramerateLimit(60);      // Max rate is 60 frames per second
+    constants::resoucesPath = m_resourcesPath;
+	std::cout << "m_resourcesPath: " << m_resourcesPath << std::endl;
+	game_window.setFramerateLimit(60);
+	the_background.init(0.0f, 0.0f); 
+	the_ball.init(constants::window_width/2.0f, constants::window_height/2.0f);
+	the_paddle.init(constants::window_width/2.0f, constants::window_height);
 	reset();
 }
 
-// Reinitialize the game
-void game::reset() {
+// Reinitialize the PingPongGame
+void PingPongGame::reset() {
 	game_window.clear(sf::Color::Black);
 	bricks.clear();
     for (int i = 0; i < constants::brick_verical_lanes; ++i) {
@@ -90,7 +98,7 @@ void game::reset() {
 }
 
 // Game loop
-void game::run() {
+void PingPongGame::run() {
 	// Was the pause key pressed in the last frame?
 	
 	while (game_window.isOpen()) {

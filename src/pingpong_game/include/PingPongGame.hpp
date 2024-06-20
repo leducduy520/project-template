@@ -7,7 +7,7 @@
 #include "constants.hpp"
 #include "paddle.hpp"
 
-class game {
+class PingPongGame {
 	// Create the game's window using an object of class RenderWindow
 	// The constructor takes an SFML 2D vector with the window dimensions
 	// and an std::string with the window title
@@ -16,17 +16,19 @@ class game {
 		"Simple Breakout Game Version 9"};
 
 	// Create the background object
-	background the_background{0.0f, 0.0f};
+	background the_background;
 
 	// Create a ball object in the middle of the screen
-	ball the_ball{constants::window_width/2.0f, constants::window_height/2.0f};
+	ball the_ball;
 
 	// Create a paddle object at the bottom of the screen in the middle
-	paddle the_paddle{constants::window_width/2.0f, constants::window_height};
+	paddle the_paddle;
 
 	// Create the grid of bricks
 	// We will use an std::vector to store them
 	wall bricks;
+
+	std::string m_resourcesPath;
 
 	// Enum with allowed values for the game's state
 	enum class game_state { paused, running };
@@ -39,7 +41,7 @@ class game {
 	void render();
 
 public:
-	game();
+	PingPongGame(std::string resourcePath);
 	
 	// Reinitialize the game
 	void reset();
