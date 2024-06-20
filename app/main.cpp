@@ -6,7 +6,8 @@
     #include <linux/limits.h>
 #endif
 
-#include "PingPongGame.hpp"
+#include "ModuleManager.h"
+#include "IGame.h"
 
 std::filesystem::path getExecutablePath() {
 #ifdef _WIN32
@@ -21,11 +22,40 @@ std::filesystem::path getExecutablePath() {
 }
 
 #define EXECUTABLE_PATH (getExecutablePath())
+#if defined(_WIN32)
+            #define dirSep "\\"
+#else
+            #define dirSep "/"    
+#endif
 
 int main() {
-
+    ModuleManager moduleManager;
+     moduleManager.registerModule("PingPongGame", "pingpong_game.dll");
     auto execPath = EXECUTABLE_PATH;
-    PingPongGame gameManager((execPath / "resources/").string());
-    gameManager.run();
+        if (moduleManager.loadModule("PingPongGame")) {
+        // Retrieve function pointers for creating and destroying the Game object
+        using CreateGameFunc = IGame* (*)();
+        using DestroyGameFunc = void (*)(IGame*);
+
+        CreateGameFunc createGame = reinterpret_cast<CreateGameFunc>(
+            moduleManager.getFunction("PingPongGame", "createPingPongGame"));
+        DestroyGameFunc destroyGame = reinterpret_cast<DestroyGameFunc>(
+            moduleManager.getFunction("PingPongGame", "destroyGame"));
+
+        if (createGame && destroyGame) {
+            // Create the Game object
+            IGame* game = createGame();
+            if (game) {
+                std::string path = getExecutablePath().string() + dirSep + "resources" + dirSep;
+                game->init(path);
+                game->run();
+                // Destroy the Game object
+                destroyGame(game);
+            }
+        }
+
+        // Release module
+        moduleManager.releaseModule("PingPongGame");
+    }
     return 0;
 }

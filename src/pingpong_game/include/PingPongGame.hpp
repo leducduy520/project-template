@@ -6,8 +6,9 @@
 #include "brick.hpp"
 #include "constants.hpp"
 #include "paddle.hpp"
+#include "../../interface/IGame.h"
 
-class PingPongGame {
+class PingPongGame : public IGame {
 	// Create the game's window using an object of class RenderWindow
 	// The constructor takes an SFML 2D vector with the window dimensions
 	// and an std::string with the window title
@@ -42,12 +43,13 @@ class PingPongGame {
 
 public:
 	PingPongGame(std::string resourcePath);
-	
+	PingPongGame();
+	void init(std::string resourcePath) override;
 	// Reinitialize the game
 	void reset();
 
 	// Game loop
-	void run();
+	void run() override;
 };
 
 #endif // GAME_H

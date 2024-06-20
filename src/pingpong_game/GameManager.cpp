@@ -70,8 +70,16 @@ void PingPongGame::render()
 PingPongGame::PingPongGame(std::string resourcePath) 
 	: m_resourcesPath{resourcePath}
 {
-    constants::resoucesPath = m_resourcesPath;
-	std::cout << "m_resourcesPath: " << m_resourcesPath << std::endl;
+    init(m_resourcesPath);
+}
+
+PingPongGame::PingPongGame()
+{
+}
+
+void PingPongGame::init(std::string resourcePath)
+{
+	constants::resoucesPath = resourcePath;
 	game_window.setFramerateLimit(60);
 	the_background.init(0.0f, 0.0f); 
 	the_ball.init(constants::window_width/2.0f, constants::window_height/2.0f);
@@ -112,4 +120,14 @@ void PingPongGame::run() {
 		// Display the updated graphics
 		render();
 	}
+}
+
+extern "C" IGame* createPingPongGame()
+{
+	return new PingPongGame();
+}
+extern "C" void destroyGame(IGame* game)
+{
+	delete game;
+    game = nullptr;
 }
