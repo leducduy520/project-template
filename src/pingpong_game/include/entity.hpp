@@ -67,6 +67,8 @@ public:
     virtual void move_left(const float ratio = 1.0f) noexcept = 0;
     virtual void move_right(const float ratio = 1.0f) noexcept = 0;
     virtual void print_info() const noexcept = 0;
+    void set_velocity(const sf::Vector2f& vel) noexcept;
+    sf::Vector2f get_velocity() const noexcept;
 
     // Pure virtual functions inherited from parent class
     // virtual void update() = 0;

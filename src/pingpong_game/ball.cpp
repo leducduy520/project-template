@@ -52,22 +52,22 @@ void ball::draw(sf::RenderWindow &window)
 
 void ball::move_up(const float ratio) noexcept
 {
-    velocity.y = -constants::ball_speed * ratio;
+    velocity.y = -abs(ratio);
 }
 
 void ball::move_left(const float ratio) noexcept
 {
-    velocity.x = -constants::ball_speed * ratio;
+    velocity.x = -abs(ratio);
 }
 
 void ball::move_right(const float ratio) noexcept
 {
-    velocity.x = constants::ball_speed * ratio;
+    velocity.x = abs(ratio);
 }
 
 void ball::move_down(const float ratio) noexcept
 {
-    velocity.y = constants::ball_speed * ratio;
+    velocity.y = abs(ratio);
 }
 
 void ball::print_info() const noexcept

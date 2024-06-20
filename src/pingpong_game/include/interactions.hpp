@@ -16,14 +16,15 @@ bool  is_interacting(const entity *e1, const entity *e2)
     return box1.intersects(box2);
 }
 
-const std::pair<float, float> get_raito(const ball &b, const paddle &p)
+const std::pair<float, float> get_raito(const ball &b, const entity &p)
 {
-    const float length{sqrt(powf(constants::ball_speed, 2.0f) * 2 )}; //8,48528137423857
-    const double angle{abs(b.x() - p.x()) / p.get_bounding_box().width * 75};
-    const double c = cos(angle * 3.14 / 180);
-    const double s = sqrt(1 - powf(c , 2.0f));
-    const float x_ratio = s * length / constants::ball_speed;
-    const float y_ratio = c * length / constants::ball_speed;
+    const float length{static_cast<float>(sqrt(2)*constants::ball_speed)}; //8,48528137423857
+    const double angle{abs((b.left() + b.width() / 2) - (p.left() + p.width() / 2)) / (p.width() / 2.0f) * 50};
+    std::cout << "angle: " << angle << std::endl;
+    const double c = cos(angle * 3.14 / 180.0f);
+    const double s = sqrt(1.0f - pow(c , 2));
+    const float x_ratio = s * length;
+    const float y_ratio = c * length;
     return std::make_pair(x_ratio, y_ratio);
 }
 
@@ -58,29 +59,22 @@ void  handle_interaction(ball &b, brick &br)
         bool from_left = std::abs(left_overlap) < std::abs(right_overlap);
         bool from_top = std::abs(top_overlap) < std::abs(bottom_overlap);
 
-        float min_x_overlap = from_left ? left_overlap : right_overlap;
-        float min_y_overlap = from_top ? top_overlap : bottom_overlap;
-        if (min_x_overlap < min_y_overlap)
+        const auto [x_ratio, y_ratio] = get_raito(b, br);
+        if (from_left)
         {
-            if (from_left)
-            {
-                b.move_left();
-            }
-            else
-            {
-                b.move_right();
-            }
+            b.move_left(x_ratio);
         }
         else
         {
-            if (from_top)
-            {
-                b.move_up();
-            }
-            else
-            {
-                b.move_down();
-            }
+            b.move_right(x_ratio);
+        }
+        if (from_top)
+        {
+            b.move_up(y_ratio);
+        }
+        else
+        {
+            b.move_down(y_ratio);
         }
     }
 }

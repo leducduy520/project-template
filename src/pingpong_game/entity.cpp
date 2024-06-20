@@ -67,3 +67,13 @@ void entity::set_position(const sf::Vector2f &pos) noexcept
 {
     sprite.setPosition(pos);
 }
+
+void moving_entity::set_velocity(const sf::Vector2f &vel) noexcept
+{
+    velocity = vel;
+}
+
+sf::Vector2f moving_entity::get_velocity() const noexcept
+{
+    return velocity;
+}
