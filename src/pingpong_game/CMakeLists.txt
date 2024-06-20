@@ -30,15 +30,15 @@ if(WIN32)
         TARGET ${PROJECT_NAME}
         COMMENT "Copy OpenAL DLL"
         PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        VERBATIM)
+        VERBATIM
+        )
+    add_custom_command(
+            TARGET ${PROJECT_NAME} POST_BUILD
+            COMMENT "Copy resources"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
+            VERBATIM
+        )
 endif()
-
-add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
-    COMMENT "Copy resources"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
-    VERBATIM
-)
 
 install(
     TARGETS ${PROJECT_NAME}
@@ -56,3 +56,5 @@ install(
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/game2
         COMPONENT PublicHeader
 )
+
+install(DIRECTORY resources DESTINATION ${CMAKE_INSTALL_BINDIR})
