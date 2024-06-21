@@ -16,10 +16,12 @@ struct constants
     static constexpr int paddlle_height{40};
     static constexpr float paddle_speed{6.0f};
     static constexpr int brick_width{32};
-    static constexpr int brick_height{20};
+    static constexpr int brick_height{32};
     static constexpr int brick_verical_lanes{13};
     static constexpr int brick_horizontal_lanes{6};
-    static constexpr int brick_padding{(window_width - brick_verical_lanes * brick_width) / 2};
+    static constexpr int cap_brick_hit{5};
+    static constexpr int cap_diamond_hit{1};
+    static constexpr int cap_bomb_hit{1};
     static std::string resoucesPath;
 };
 

@@ -7,13 +7,21 @@
 
 namespace wall_utils{
     void createWall(wall& w, const char* path);
+    void destroyAround(wall& w, brick& br, sf::Vector2i range);
     template <typename T>
     void interactionwith(wall& w, entity& entity)
     {
         auto elm = dynamic_cast<T*>(&entity);
         if(elm)
         {
-            w.erase(std::remove_if(w.begin(), w.end(), [&](brick& br){ interactions::handle_interaction(*elm, br); return br.is_destroyed();}), w.end());
+            for (auto it = w.rbegin(); it != w.rend();) {
+                interactions::handle_interaction(*elm, *(it->second));
+                if (it->second->is_destroyed()) {
+                    w.erase(it->first);
+                } else {
+                    ++it;
+                }
+            }
         }
         else{
             std::cerr << "The type of input entity must be derieved from entity\n";

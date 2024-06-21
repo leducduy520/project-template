@@ -41,32 +41,46 @@ namespace interactions
     {
         if (is_interacting(&b, &br))
         {
-            br.destroy();
+            br.hit();
+            switch (br.getProperty())
+            {
+            case brick::BRICK:
+            {
+                float left_overlap = b.right() - br.left();
+                float right_overlap = br.right() - b.left();
+                float top_overlap = b.bottom() - br.top();
+                float bottom_overlap = br.bottom() - b.top();
 
-            float left_overlap = b.right() - br.left();
-            float right_overlap = br.right() - b.left();
-            float top_overlap = b.bottom() - br.top();
-            float bottom_overlap = br.bottom() - b.top();
+                bool from_left = std::abs(left_overlap) < std::abs(right_overlap);
+                bool from_top = std::abs(top_overlap) < std::abs(bottom_overlap);
 
-            bool from_left = std::abs(left_overlap) < std::abs(right_overlap);
-            bool from_top = std::abs(top_overlap) < std::abs(bottom_overlap);
-
-            const auto [x_ratio, y_ratio] = get_raito(b, br);
-            if (from_left)
-            {
-                b.move_left(x_ratio);
+                const auto [x_ratio, y_ratio] = get_raito(b, br);
+                if (from_left)
+                {
+                    b.move_left(x_ratio);
+                }
+                else
+                {
+                    b.move_right(x_ratio);
+                }
+                if (from_top)
+                {
+                    b.move_up(y_ratio);
+                }
+                else
+                {
+                    b.move_down(y_ratio);
+                }
             }
-            else
-            {
-                b.move_right(x_ratio);
-            }
-            if (from_top)
-            {
-                b.move_up(y_ratio);
-            }
-            else
-            {
-                b.move_down(y_ratio);
+                break;
+            case brick::DIAMOND:
+                break;
+            case brick::BOMB:
+                
+                break;
+            default:
+                
+                break;
             }
         }
     }
