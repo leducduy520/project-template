@@ -1,6 +1,6 @@
 #include "PingPongGame.hpp"
 #include "interactions.hpp"
-#include <algorithm>
+#include "wallHelper.hpp"
 
 std::string constants::resoucesPath;
 
@@ -56,13 +56,13 @@ void PingPongGame::update()
 
 		m_entity_manager.apply_all<ball>([this](ball& b){
 			m_entity_manager.apply_all<paddle>([&b](const paddle& p){
-				handle_interaction(b, p);
+				interactions::handle_interaction(b, p);
 			});
 		});
 
 		m_entity_manager.apply_all<ball>([this](ball& b){
 			m_entity_manager.apply_all<wall>([&b](wall& w){
-				w.refresh(b);
+				wall_utils::interactionwith<ball>(w, b);
 			});
 		});
 
@@ -95,43 +95,20 @@ void PingPongGame::init(std::string resourcePath)
 
 	m_entity_manager.create<background>(0.0f, 0.0f);
 	m_entity_manager.create<ball>(constants::window_width/2.0f, constants::window_height/2.0f);
-	m_entity_manager.create<paddle>(constants::window_width/2.0f, constants::window_height);
+	m_entity_manager.create<paddle>(constants::window_width/2.0f, constants::window_height - constants::paddlle_height / 2.0f);
 
 
-	std::deque<brick> brick_deque;
-	for (int i = 0; i < constants::brick_verical_lanes; ++i) {
-		for (int j = 0; j < constants:: brick_horizontal_lanes; ++j) {
-
-			float x = constants::brick_padding + i * constants::brick_width;
-			float y = j * constants::brick_height;
-			brick_deque.emplace_back(x, y);
-		}
-	}
-	m_entity_manager.create<wall>(brick_deque);
+	wall w;
+	wall_utils::createWall(w, (constants::resoucesPath + "wall.csv").c_str());
+	m_entity_manager.create<wall>(std::move(w));
 }
 
 // Reinitialize the PingPongGame
 void PingPongGame::reset() {
 	game_window.clear(sf::Color::Black);
-	auto balls = m_entity_manager.get_all<ball>();
-	for(auto ball : balls) { ball->init(constants::window_width/2.0f, constants::window_height/2.0f);}
-	auto paddles = m_entity_manager.get_all<paddle>();
-	for (auto padd : paddles) { padd->set_position({constants::window_width/2.0f, constants::window_height});}
-	auto walls = m_entity_manager.get_all<wall>();
-	for (auto entity : walls) {
-		auto w = dynamic_cast<wall*>(entity);
-		w->clear();
-		std::deque<brick> brick_deque;
-		for (int i = 0; i < constants::brick_verical_lanes; ++i) {
-			for (int j = 0; j < constants:: brick_horizontal_lanes; ++j) {
-
-				float x = constants::brick_padding + i * constants::brick_width;
-				float y = j * constants::brick_height;
-				brick_deque.emplace_back(x, y);
-			}
-		}
-		swap(*w, brick_deque);
-	}
+	m_entity_manager.apply_all<ball>([](ball& b){b.init(constants::window_width/2.0f, constants::window_height/2.0f);});
+	m_entity_manager.apply_all<paddle>([](paddle& b){b.init(constants::window_width/2.0f, constants::window_height - constants::paddlle_height / 2.0f);});
+	m_entity_manager.apply_all<wall>([](wall& b){b.init(0.0f, 0.0f);});
 }
 
 void PingPongGame::clear()
@@ -142,17 +119,9 @@ void PingPongGame::clear()
 
 // Game loop
 void PingPongGame::run() {
-	// Was the pause key pressed in the last frame?
-
 	while (game_window.isOpen()) {
-
-
 		eventHandler();
-
-		// In the paused state, the entities are not updated, only redrawn
 		update();
-
-		// Display the updated graphics
 		render();
 	}
 }

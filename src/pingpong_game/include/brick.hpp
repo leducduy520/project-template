@@ -35,9 +35,6 @@ public:
     void draw(sf::RenderWindow &window) override;
 
     void init(float x, float y) override;
-    void refresh(entity& e);
-    void release();
-    ~wall();
 };
 
 #endif // _BRICK_H

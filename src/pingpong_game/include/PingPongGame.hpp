@@ -6,7 +6,7 @@
 #include "brick.hpp"
 #include "constants.hpp"
 #include "paddle.hpp"
-#include "../../interface/IGame.h"
+#include "IGame.h"
 #include "entityManager.hpp"
 
 class PingPongGame : public IGame {

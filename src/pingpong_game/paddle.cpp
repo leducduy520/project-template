@@ -15,16 +15,16 @@ sf::Texture &paddle::getTexture()
 
 paddle::paddle(float x, float y) : moving_entity()
 {
+    sprite.setTexture(getTexture());
+    sprite.setOrigin(get_centre());
     init(x, y);
 }
 
 void paddle::init(float x, float y)
 {
-    sprite.setTexture(getTexture());
-    sprite.setOrigin(get_centre());
-    sprite.setScale(constants::paddlle_width / get_bounding_box().width,
-                    constants::paddlle_height / get_bounding_box().height);
-    sprite.setPosition(x, y - get_bounding_box().height / 2.0f);
+    sprite.setScale(constants::paddlle_width / sprite.getLocalBounds().width,
+                    constants::paddlle_height / sprite.getLocalBounds().height);
+    sprite.setPosition(x, y);
     velocity = {0, 0};
 }
 

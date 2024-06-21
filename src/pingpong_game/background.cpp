@@ -15,12 +15,12 @@ sf::Texture &background::getTexture()
 
 background::background(float x, float y) : entity()
 {
-  init(x, y);
+    sprite.setTexture(getTexture());
+    init(x, y);
 }
 
 void background::init(float x, float y)
 {
-    sprite.setTexture(getTexture());
     sprite.setPosition(x, y);
 }
 

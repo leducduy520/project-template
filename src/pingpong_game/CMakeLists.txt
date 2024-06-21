@@ -10,7 +10,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${RESOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>)
 
 target_sources(${PROJECT_NAME} PRIVATE
@@ -26,7 +26,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 source_group("Resource Files" FILES ${RESOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-system)
+target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-system rapidcsv)
 
 if(WIN32)
     add_custom_command(

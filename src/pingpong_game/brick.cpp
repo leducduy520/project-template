@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "ball.hpp"
 #include "interactions.hpp"
+#include "wallHelper.hpp"
 
 // Define the static texture
 
@@ -33,8 +34,8 @@ brick::brick(float x, float y) : entity()
 void brick::init(float x, float y)
 {
     sprite.setTexture(getTexture());
-    sprite.setScale(constants::brick_width / get_bounding_box().width,
-                    constants::brick_height / get_bounding_box().height);
+    sprite.setScale(constants::brick_width / sprite.getLocalBounds().width,
+                    constants::brick_height / sprite.getLocalBounds().height);
     sprite.setPosition(x, y);
 }
 
@@ -67,35 +68,5 @@ void wall::draw(sf::RenderWindow &window)
 
 void wall::init(float x, float y)
 {
-
-}
-
-void wall::refresh(entity& e)
-{
-    auto b = dynamic_cast<ball*>(&e);
-    if(b)
-    {
-        erase(std::remove_if(begin(), end(), [this, &b](brick& br){ handle_interaction(*b, br); return br.is_destroyed();}), end());
-    }
-    else{
-        std::cerr << "The type of input entity must be ball\n";
-    }
-}
-
-void wall::release()
-{
-    while (size())
-    {
-        pop_front();
-        if(size() == 1)
-        {
-            front().releaseTexture();
-        }
-    }
-    clear();
-}
-
-wall::~wall()
-{
-    release();
+    wall_utils::createWall(*this, (constants::resoucesPath + "wall.csv").c_str());
 }

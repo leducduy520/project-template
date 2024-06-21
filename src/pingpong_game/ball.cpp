@@ -16,15 +16,13 @@ sf::Texture &ball::getTexture()
 
 ball::ball(float x, float y) : moving_entity()
 {
+    sprite.setTexture(getTexture());
+    sprite.setOrigin(get_centre());
     init(x, y);
 }
 
 void ball::init(float x, float y)
 {
-    // Load the texture
-    sprite.setTexture(getTexture());
-    sprite.setOrigin(get_centre());
-
     sprite.setPosition(x, y);
     velocity = {0, constants::ball_speed};
 }
