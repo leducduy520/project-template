@@ -32,17 +32,18 @@ void ball::init(float x, float y)
 // Compute the ball's new position
 void ball::update()
 {
+
+    if (x() - get_bounding_box().width / 2  <= 0 && velocity.x < 0)
+        velocity.x = -velocity.x;
+    if (x() + get_bounding_box().width / 2 >= constants::window_width && velocity.x > 0)
+        velocity.x = -velocity.x;
+
+    if (y() - get_bounding_box().height <= 0 && velocity.y < 0)
+        velocity.y = -velocity.y;
+    if (y() + get_bounding_box().height >= constants::window_height && velocity.y > 0)
+        velocity.y = -velocity.y;
+
     sprite.move(velocity);
-
-    if (x() - get_bounding_box().width / 2  < 0)
-        velocity.x = -velocity.x;
-    if (x() + get_bounding_box().width / 2 > constants::window_width)
-        velocity.x = -velocity.x;
-
-    if (y() - get_bounding_box().height < 0)
-        velocity.y = -velocity.y;
-    if (y() + get_bounding_box().height > constants::window_height)
-        velocity.y = -velocity.y;
 }
 
 void ball::draw(sf::RenderWindow &window)

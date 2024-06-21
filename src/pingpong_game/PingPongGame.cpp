@@ -1,0 +1,168 @@
+#include "PingPongGame.hpp"
+#include "interactions.hpp"
+#include <algorithm>
+
+std::string constants::resoucesPath;
+
+void PingPongGame::eventHandler()
+{
+	static bool pause_key_active = false;
+	static bool reset_key_active = false;
+	sf::Event event;
+
+	while (game_window.pollEvent(event)) {
+		if (event.type == sf::Event::Closed)
+			game_window.close();
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+		game_window.close();
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P)) {
+		// If it was not pressed on the last iteration, toggle the status
+		if (!pause_key_active) {
+			if (state == game_state::paused)
+				state = game_state::running;
+			else
+				state = game_state::paused;
+		}
+		pause_key_active = true;
+	}
+	else
+		pause_key_active = false;
+
+	// If the user presses "R", we reset the PingPongGame
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
+	{
+		if(!reset_key_active)
+		{
+			reset();
+		}
+		reset_key_active = true;
+	}
+	else
+	{
+		reset_key_active = false;
+	}
+
+}
+
+void PingPongGame::update()
+{
+	if (state != game_state::paused)
+	{
+		// Calculate the updated graphics
+		m_entity_manager.update();
+
+		m_entity_manager.apply_all<ball>([this](ball& b){
+			m_entity_manager.apply_all<paddle>([&b](const paddle& p){
+				handle_interaction(b, p);
+			});
+		});
+
+		m_entity_manager.apply_all<ball>([this](ball& b){
+			m_entity_manager.apply_all<wall>([&b](wall& w){
+				w.refresh(b);
+			});
+		});
+
+		// m_entity_manager.refresh();
+	}
+}
+
+void PingPongGame::render()
+{
+	game_window.clear(sf::Color::Black);
+
+	m_entity_manager.draw(game_window);
+
+	game_window.display();
+}
+
+PingPongGame::PingPongGame(std::string resourcePath)
+{
+    init(resourcePath);
+}
+
+PingPongGame::PingPongGame()
+{
+}
+
+void PingPongGame::init(std::string resourcePath)
+{
+	constants::resoucesPath = resourcePath;
+	game_window.setFramerateLimit(60);
+
+	m_entity_manager.create<background>(0.0f, 0.0f);
+	m_entity_manager.create<ball>(constants::window_width/2.0f, constants::window_height/2.0f);
+	m_entity_manager.create<paddle>(constants::window_width/2.0f, constants::window_height);
+
+
+	std::deque<brick> brick_deque;
+	for (int i = 0; i < constants::brick_verical_lanes; ++i) {
+		for (int j = 0; j < constants:: brick_horizontal_lanes; ++j) {
+
+			float x = constants::brick_padding + i * constants::brick_width;
+			float y = j * constants::brick_height;
+			brick_deque.emplace_back(x, y);
+		}
+	}
+	m_entity_manager.create<wall>(brick_deque);
+}
+
+// Reinitialize the PingPongGame
+void PingPongGame::reset() {
+	game_window.clear(sf::Color::Black);
+	auto balls = m_entity_manager.get_all<ball>();
+	for(auto ball : balls) { ball->init(constants::window_width/2.0f, constants::window_height/2.0f);}
+	auto paddles = m_entity_manager.get_all<paddle>();
+	for (auto padd : paddles) { padd->set_position({constants::window_width/2.0f, constants::window_height});}
+	auto walls = m_entity_manager.get_all<wall>();
+	for (auto entity : walls) {
+		auto w = dynamic_cast<wall*>(entity);
+		w->clear();
+		std::deque<brick> brick_deque;
+		for (int i = 0; i < constants::brick_verical_lanes; ++i) {
+			for (int j = 0; j < constants:: brick_horizontal_lanes; ++j) {
+
+				float x = constants::brick_padding + i * constants::brick_width;
+				float y = j * constants::brick_height;
+				brick_deque.emplace_back(x, y);
+			}
+		}
+		swap(*w, brick_deque);
+	}
+}
+
+void PingPongGame::clear()
+{
+	game_window.clear(sf::Color::Black);
+	m_entity_manager.clear();
+}
+
+// Game loop
+void PingPongGame::run() {
+	// Was the pause key pressed in the last frame?
+
+	while (game_window.isOpen()) {
+
+
+		eventHandler();
+
+		// In the paused state, the entities are not updated, only redrawn
+		update();
+
+		// Display the updated graphics
+		render();
+	}
+}
+
+extern "C" IGame* createPingPongGame()
+{
+	return new PingPongGame();
+}
+extern "C" void destroyGame(IGame* game)
+{
+	delete game;
+    game = nullptr;
+}

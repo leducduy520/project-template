@@ -4,6 +4,7 @@
 #include "constants.hpp"
 #include "entity.hpp"
 #include <deque>
+#include <utility>
 
 class brick : public entity
 {
@@ -21,9 +22,20 @@ public:
     friend class wall;
 };
 
-class wall : public std::deque<brick>
+class wall : public std::deque<brick>, public entity
 {
 public:
+    wall() = default;
+    template <class T = brick>
+    wall(T&& brick_deque) noexcept
+    {
+        swap(std::forward<T>(brick_deque));
+    }
+    void update() override;
+    void draw(sf::RenderWindow &window) override;
+
+    void init(float x, float y) override;
+    void refresh(entity& e);
     void release();
     ~wall();
 };
