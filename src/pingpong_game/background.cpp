@@ -15,13 +15,13 @@ sf::Texture &background::getTexture()
 
 background::background(float x, float y) : entity()
 {
-    sprite.setTexture(getTexture());
+    m_sprite.setTexture(getTexture());
     init(x, y);
 }
 
 void background::init(float x, float y)
 {
-    sprite.setPosition(x, y);
+    m_sprite.setPosition(x, y);
 }
 
 // Compute the background's new position
@@ -31,5 +31,5 @@ void background::update() {
 
 void background::draw(sf::RenderWindow& window) {
   // Ask the window to draw the sprite for us
-  window.draw(sprite);
+  window.draw(m_sprite);
 }

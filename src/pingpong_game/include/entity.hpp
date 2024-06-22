@@ -8,8 +8,8 @@
 class entity
 {
 protected:
-    sf::Sprite sprite;
-    bool destroyed{false};
+    sf::Sprite m_sprite;
+    bool m_destroyed{false};
 
 public:
     // Pure virtual functions
@@ -55,7 +55,7 @@ class moving_entity : public entity
 protected:
     // SFML vector to store the object's velocity
     // This is the distance the ball moves between screen updates
-    sf::Vector2f velocity;
+    sf::Vector2f m_velocity;
 
 public:
     // Helper functions inherited from parent class

@@ -9,31 +9,38 @@ namespace interactions
         return box1.intersects(box2);
     }
 
-    const std::pair<float, float> get_raito(const ball &b, const entity &p)
+    std::tuple<bool, bool, bool> getDirection(ball& b, entity& e)
     {
-        const float length{static_cast<float>(sqrt(2)*constants::ball_speed)}; //8,48528137423857
-        const double angle{abs((b.left() + b.width() / 2) - (p.left() + p.width() / 2)) / (p.width() / 2.0f) * 60};
-        const double c = cos(angle * 3.14 / 180.0f);
-        const double s = sqrt(1.0f - pow(c , 2));
-        const float x_ratio = s * length;
-        const float y_ratio = c * length;
-        return std::make_pair(x_ratio, y_ratio);
+        const float left_overlap = b.right() - e.left();
+        const float right_overlap = e.right() - b.left();
+        const float top_overlap = b.bottom() - e.top();
+        const float bottom_overlap = e.bottom() - b.top();
+
+        const bool from_left = std::abs(left_overlap) < std::abs(right_overlap);
+        const bool from_top = std::abs(top_overlap) < std::abs(bottom_overlap);
+
+        const float min_left = from_left ? std::abs(left_overlap) : std::abs(right_overlap);
+        const float min_top = from_top ? std::abs(top_overlap) : std::abs(bottom_overlap);
+
+        return std::make_tuple(min_left < min_top, from_left, from_top);
     }
 
     void  handle_interaction(ball &b, const paddle &p)
     {
         if (is_interacting(&b, &p))
         {
-            const auto [x_ratio, y_ratio] = get_raito(b, p);
-            b.move_up(y_ratio);
-            if (b.x() < p.x())
-            {
-                b.move_left(x_ratio);
-            }
-            else
-            {
-                b.move_right(x_ratio);
-            }
+
+
+            sf::Vector2f new_vel{b.get_velocity()};
+            const bool x_signed = _fdsign(new_vel.x);
+            const bool y_signed = _fdsign(new_vel.y);
+
+            new_vel.x += p.get_velocity().x * 0.5f;
+            const bool new_x_signed = _fdsign(new_vel.x);
+            if (abs(new_vel.x) > 0.9f * constants::ball_speed)
+                new_vel.x = 0.9f * constants::ball_speed * new_x_signed ? -1.0f : 1.0f;
+            new_vel.y = -sqrtf(powf(constants::ball_speed, 2.0f) - powf(new_vel.x, 2.0f));
+            b.set_velocity(std::move(new_vel));
         }
     }
 
@@ -46,30 +53,31 @@ namespace interactions
             {
             case brick::BRICK:
             {
-                float left_overlap = b.right() - br.left();
-                float right_overlap = br.right() - b.left();
-                float top_overlap = b.bottom() - br.top();
-                float bottom_overlap = br.bottom() - b.top();
+                auto [less, from_left, from_top] = getDirection(b, br);
 
-                bool from_left = std::abs(left_overlap) < std::abs(right_overlap);
-                bool from_top = std::abs(top_overlap) < std::abs(bottom_overlap);
-
-                const auto [x_ratio, y_ratio] = get_raito(b, br);
-                if (from_left)
+                if (less)
                 {
-                    b.move_left(x_ratio);
+                    if (from_left)
+                    {
+                        b.set_velocity({-abs(b.get_velocity().x), b.get_velocity().y});
+                    }
+                    else
+                    {
+                        b.set_velocity({abs(b.get_velocity().x), b.get_velocity().y});
+                    }
+                    
                 }
                 else
                 {
-                    b.move_right(x_ratio);
-                }
-                if (from_top)
-                {
-                    b.move_up(y_ratio);
-                }
-                else
-                {
-                    b.move_down(y_ratio);
+                    if (from_top)
+                    {
+                        b.set_velocity({b.get_velocity().x, -abs(b.get_velocity().y)});
+                    }
+                    else
+                    {
+                        b.set_velocity({b.get_velocity().x, abs(b.get_velocity().y)});
+                    }
+                    
                 }
             }
                 break;

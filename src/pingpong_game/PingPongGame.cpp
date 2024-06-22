@@ -21,10 +21,10 @@ void PingPongGame::eventHandler()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P)) {
 		// If it was not pressed on the last iteration, toggle the status
 		if (!pause_key_active) {
-			if (state == game_state::paused)
-				state = game_state::running;
+			if (m_state == game_state::paused)
+				m_state = game_state::running;
 			else
-				state = game_state::paused;
+				m_state = game_state::paused;
 		}
 		pause_key_active = true;
 	}
@@ -49,7 +49,7 @@ void PingPongGame::eventHandler()
 
 void PingPongGame::update()
 {
-	if (state != game_state::paused)
+	if (m_state != game_state::paused)
 	{
 		// Calculate the updated graphics
 		m_entity_manager.update();
@@ -95,7 +95,7 @@ void PingPongGame::init(std::string resourcePath)
 
 	m_entity_manager.create<background>(0.0f, 0.0f);
 	m_entity_manager.create<ball>(constants::window_width/2.0f, constants::window_height/2.0f);
-	m_entity_manager.create<paddle>(constants::window_width/2.0f, constants::window_height - constants::paddlle_height / 2.0f);
+	m_entity_manager.create<paddle>(constants::window_width/2.0f, constants::window_height);
 
 
 	wall w;
@@ -107,7 +107,7 @@ void PingPongGame::init(std::string resourcePath)
 void PingPongGame::reset() {
 	game_window.clear(sf::Color::Black);
 	m_entity_manager.apply_all<ball>([](ball& b){b.init(constants::window_width/2.0f, constants::window_height/2.0f);});
-	m_entity_manager.apply_all<paddle>([](paddle& b){b.init(constants::window_width/2.0f, constants::window_height - constants::paddlle_height / 2.0f);});
+	m_entity_manager.apply_all<paddle>([](paddle& b){b.init(constants::window_width/2.0f, constants::window_height);});
 	m_entity_manager.apply_all<wall>([](wall& b){b.init(0.0f, 0.0f);});
 }
 

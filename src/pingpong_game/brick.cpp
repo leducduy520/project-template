@@ -1,7 +1,4 @@
 #include "brick.hpp"
-#include <algorithm>
-#include "ball.hpp"
-#include "interactions.hpp"
 #include "wallHelper.hpp"
 
 // Define the static texture
@@ -50,17 +47,17 @@ void brick::releaseTexture()
 }
 
 brick::brick(float x, float y, BrickProperty property)
-    : m_property(property), hitCount(0)
+    : m_property(property), m_hitCount(0)
 {
-    sprite.setTexture(getTexture(property));
+    m_sprite.setTexture(getTexture(property));
     init(x, y);
 }
 
 void brick::init(float x, float y)
 {
-    sprite.setScale(constants::brick_width / sprite.getLocalBounds().width,
-                    constants::brick_height / sprite.getLocalBounds().height);
-    sprite.setPosition(x, y);
+    m_sprite.setScale(constants::brick_width / m_sprite.getLocalBounds().width,
+                    constants::brick_height / m_sprite.getLocalBounds().height);
+    m_sprite.setPosition(x, y);
 }
 
 // Compute the brick's new position
@@ -71,7 +68,7 @@ void brick::update()
 void brick::draw(sf::RenderWindow &window)
 {
     // Ask the window to draw the sprite for us
-    window.draw(sprite);
+    window.draw(m_sprite);
 }
 
 brick::BrickProperty brick::getProperty() const noexcept
@@ -81,26 +78,26 @@ brick::BrickProperty brick::getProperty() const noexcept
 
 void brick::hit() noexcept
 {
-    ++hitCount;
+    ++m_hitCount;
     bool destroyed = false;
     switch (m_property)
     {
     case BRICK:
-        if(hitCount >= constants::cap_brick_hit)
+        if(m_hitCount >= constants::cap_brick_hit)
             destroyed = true;
         break;
     case DIAMOND:
-        if(hitCount >= constants::cap_diamond_hit)
+        if(m_hitCount >= constants::cap_diamond_hit)
             destroyed = true;    
         break;
     case BOMB:
-        if(hitCount >= constants::cap_bomb_hit)
+        if(m_hitCount >= constants::cap_bomb_hit)
             destroyed = true;   
         break;
     default:
         break;
     }
-    if(destroyed)
+    if (destroyed)
         destroy();
 }
 

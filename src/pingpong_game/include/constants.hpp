@@ -11,10 +11,12 @@ struct constants
 {
     static constexpr int window_width{520};
     static constexpr int window_height{450};
-    static constexpr float ball_speed{6.0f};
+    static constexpr float ball_speed{8.0f};
     static constexpr int paddlle_width{120};
     static constexpr int paddlle_height{40};
-    static constexpr float paddle_speed{6.0f};
+    static constexpr float paddle_speed{8.0f};
+    static constexpr float paddle_accel{1.0f};
+    static constexpr float paddle_decel{1.0f};
     static constexpr int brick_width{32};
     static constexpr int brick_height{32};
     static constexpr int brick_verical_lanes{13};

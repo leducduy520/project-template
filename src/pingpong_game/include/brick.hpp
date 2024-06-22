@@ -33,7 +33,7 @@ public:
     friend class wall;
 private:
     BrickProperty m_property;
-    int hitCount;
+    int m_hitCount;
     static sf::Texture& getTexture(BrickProperty property = BRICK);
     static void releaseTexture();
 

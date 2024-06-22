@@ -15,7 +15,7 @@ class PingPongGame : public IGame {
 		"Simple Breakout Game Version 9"};
 	entity_manager m_entity_manager;
 	enum class game_state { paused, running };
-	game_state state{game_state::running};
+	game_state m_state{game_state::running};
 
 	void eventHandler();
 	void update();
