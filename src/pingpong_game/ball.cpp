@@ -49,24 +49,24 @@ void ball::draw(sf::RenderWindow &window)
     window.draw(m_sprite);
 }
 
-void ball::move_up(const float ratio) noexcept
+void ball::move_up() noexcept
 {
-    m_velocity.y = -abs(ratio);
+    m_velocity.y = -abs(m_velocity.y);
 }
 
-void ball::move_left(const float ratio) noexcept
+void ball::move_left() noexcept
 {
-    m_velocity.x = -abs(ratio);
+    m_velocity.x = -abs(m_velocity.x);
 }
 
-void ball::move_right(const float ratio) noexcept
+void ball::move_right() noexcept
 {
-    m_velocity.x = abs(ratio);
+    m_velocity.x = abs(m_velocity.x);
 }
 
-void ball::move_down(const float ratio) noexcept
+void ball::move_down() noexcept
 {
-    m_velocity.y = abs(ratio);
+    m_velocity.y = abs(m_velocity.y);
 }
 
 void ball::print_info() const noexcept

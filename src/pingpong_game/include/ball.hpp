@@ -20,10 +20,10 @@ public:
     void update() override;
     void draw(sf::RenderWindow &window) override;
 
-    void move_up(const float ratio = 1.0f) noexcept override;
-    void move_down(const float ratio = 1.0f) noexcept override;
-    void move_left(const float ratio = 1.0f) noexcept override;
-    void move_right(const float ratio = 1.0f) noexcept override;
+    void move_up() noexcept override;
+    void move_down() noexcept override;
+    void move_left() noexcept override;
+    void move_right() noexcept override;
     void print_info() const noexcept override;
 };
 

@@ -1,15 +1,16 @@
 #include "interactions.hpp"
+#include "wallHelper.hpp"
 
 namespace interactions
 {
-    bool  is_interacting(const entity *e1, const entity *e2)
+    bool is_interacting(const entity *e1, const entity *e2) noexcept
     {
         auto box1 = e1->get_bounding_box();
         auto box2 = e2->get_bounding_box();
         return box1.intersects(box2);
     }
 
-    std::tuple<bool, bool, bool> getDirection(ball& b, entity& e)
+    std::tuple<bool, bool, bool> getDirection(ball &b, entity &e) noexcept
     {
         const float left_overlap = b.right() - e.left();
         const float right_overlap = e.right() - b.left();
@@ -44,15 +45,17 @@ namespace interactions
         }
     }
 
-    void  handle_interaction(ball &b, brick &br)
+    void handle_interaction(wall &w, ball &b, brick &br)
     {
         if (is_interacting(&b, &br))
         {
-            br.hit();
+            
             switch (br.getProperty())
             {
             case brick::BRICK:
             {
+                br.hit();
+                
                 auto [less, from_left, from_top] = getDirection(b, br);
 
                 if (less)
@@ -82,9 +85,31 @@ namespace interactions
             }
                 break;
             case brick::DIAMOND:
+                br.hit();
                 break;
             case brick::BOMB:
-                
+            {
+                sf::Vector2f explode_point{br.x(), br.y()};
+
+                auto x = explode_point.x - (3 - 1) / 2 * br.width();
+                auto y = explode_point.y - (3 - 1) / 2 * br.height();
+
+                for (int i = 0; i < 3; ++i)
+                {
+                    for (int j = 0; j < 3; ++j)
+                    {
+                        sf::Vector2f hit_point{x + i * br.width(), y + j * br.height()};
+
+                        auto it = w.find(hit_point);
+                        if (it != w.end())
+                        {
+                            it->second->hit(constants::cap_brick_hit);
+                            w.insert_or_assign(hit_point, std::move(it->second));
+                        }
+                    }
+                }
+                b.set_velocity({-b.get_velocity().x, -b.get_velocity().y});
+            }
                 break;
             default:
                 

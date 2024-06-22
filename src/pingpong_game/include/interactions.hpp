@@ -10,13 +10,13 @@
 
 namespace interactions
 {
-    bool  is_interacting(const entity *e1, const entity *e2);
+    bool  is_interacting(const entity *e1, const entity *e2) noexcept;
 
-    const std::pair<float, float> get_raito(const ball &b, const entity &p);
+    std::tuple<bool, bool, bool> getDirection(ball &b, entity &e) noexcept;
 
     void  handle_interaction(ball &b, const paddle &p);
 
-    void handle_interaction(ball &b, brick &br);
+    void handle_interaction(wall& w, ball &b, brick &br);
 }
 
 

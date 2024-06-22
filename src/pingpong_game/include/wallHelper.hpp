@@ -14,11 +14,18 @@ namespace wall_utils{
         auto elm = dynamic_cast<T*>(&entity);
         if(elm)
         {
-            for (auto it = w.rbegin(); it != w.rend();) {
-                interactions::handle_interaction(*elm, *(it->second));
-                if (it->second->is_destroyed()) {
+            for (auto it = w.begin(); it != w.end(); ++it) {
+                interactions::handle_interaction(w, *elm, *(it->second.get()));
+            }
+            for (auto it = w.rbegin(); it != w.rend();)
+            {
+                if (it->second->is_destroyed())
+                {
+                    std::cout << "delete" << std::endl;
                     w.erase(it->first);
-                } else {
+                }
+                else
+                {
                     ++it;
                 }
             }

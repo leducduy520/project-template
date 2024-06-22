@@ -93,28 +93,57 @@ void PingPongGame::init(std::string resourcePath)
 	constants::resoucesPath = resourcePath;
 	game_window.setFramerateLimit(60);
 
+    
+
 	m_entity_manager.create<background>(0.0f, 0.0f);
 	m_entity_manager.create<ball>(constants::window_width/2.0f, constants::window_height/2.0f);
-	m_entity_manager.create<paddle>(constants::window_width/2.0f, constants::window_height);
+	m_entity_manager.create<paddle>(constants::window_width/2.0f, constants::window_height * 1.0f);
 
+	/*wall w;
+    wall_utils::createWall(w, (constants::resoucesPath + "wall.csv").c_str());
+	m_entity_manager.create<wall>(std::move(w));*/
 
-	wall w;
-	wall_utils::createWall(w, (constants::resoucesPath + "wall.csv").c_str());
-	m_entity_manager.create<wall>(std::move(w));
+	
+
+    try
+    {
+        wall w;
+		wall_utils::createWall(w, (constants::resoucesPath + "wall.csv").c_str());
+        m_entity_manager.create<wall>(std::move(w));
+    }
+    catch (const std::ios::failure &e)
+    {
+        std::cerr << "terminate by ios::failure\n";
+        clear();
+        return;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "terminate by exception\n";
+        clear();
+        return;
+    }
+    catch (...)
+    {
+        std::cerr << "terminate by an unknown error\n";
+        clear();
+        return;
+    }
 }
 
 // Reinitialize the PingPongGame
 void PingPongGame::reset() {
 	game_window.clear(sf::Color::Black);
 	m_entity_manager.apply_all<ball>([](ball& b){b.init(constants::window_width/2.0f, constants::window_height/2.0f);});
-	m_entity_manager.apply_all<paddle>([](paddle& b){b.init(constants::window_width/2.0f, constants::window_height);});
+	m_entity_manager.apply_all<paddle>([](paddle& b){b.init(constants::window_width/2.0f, constants::window_height * 1.0f);});
 	m_entity_manager.apply_all<wall>([](wall& b){b.init(0.0f, 0.0f);});
 }
 
 void PingPongGame::clear()
 {
-	game_window.clear(sf::Color::Black);
-	m_entity_manager.clear();
+    m_entity_manager.clear();
+    game_window.clear(sf::Color::Black);
+    game_window.close();
 }
 
 // Game loop

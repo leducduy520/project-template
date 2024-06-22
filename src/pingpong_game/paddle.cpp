@@ -32,25 +32,11 @@ void paddle::update()
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && x() >= get_bounding_box().width / 2.0f)
     {
-        if (m_velocity.x <= -constants::paddle_speed)
-        {
-            m_velocity = {-constants::paddle_speed, 0.0f};
-        }
-        else
-        {
-            m_velocity = {m_velocity.x - constants::paddle_accel / 2.0f, 0.0f};
-        }
+        move_left();
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && x() <= constants::window_width - get_bounding_box().width / 2.0f)
     {
-        if (m_velocity.x >= constants::paddle_speed)
-        {
-            m_velocity = {constants::paddle_speed, 0.0f};
-        }
-        else
-        {
-            m_velocity = {m_velocity.x + constants::paddle_accel / 2.0f, 0.0f};
-        }
+        move_right();
     }
     else
     {
@@ -71,21 +57,35 @@ void paddle::draw(sf::RenderWindow &window)
     window.draw(m_sprite);
 }
 
-void paddle::move_up(const float ratio) noexcept
+void paddle::move_up() noexcept
 {
 }
 
-void paddle::move_left(const float ratio) noexcept
+void paddle::move_left() noexcept
 {
-    m_velocity.x = -constants::paddle_speed * ratio;
+    if (m_velocity.x <= -constants::paddle_speed)
+    {
+        m_velocity = {-constants::paddle_speed, 0.0f};
+    }
+    else
+    {
+        m_velocity = {m_velocity.x - constants::paddle_accel / 2.0f, 0.0f};
+    }
 }
 
-void paddle::move_right(const float ratio) noexcept
+void paddle::move_right() noexcept
 {
-    m_velocity.x = constants::paddle_speed * ratio;
+    if (m_velocity.x >= constants::paddle_speed)
+    {
+        m_velocity = {constants::paddle_speed, 0.0f};
+    }
+    else
+    {
+        m_velocity = {m_velocity.x + constants::paddle_accel / 2.0f, 0.0f};
+    }
 }
 
-void paddle::move_down(const float ratio) noexcept
+void paddle::move_down() noexcept
 {
 }
 

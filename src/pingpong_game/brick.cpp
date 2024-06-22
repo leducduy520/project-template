@@ -76,9 +76,9 @@ brick::BrickProperty brick::getProperty() const noexcept
     return m_property;
 }
 
-void brick::hit() noexcept
+void brick::hit(const int damage) noexcept
 {
-    ++m_hitCount;
+    m_hitCount += damage;
     bool destroyed = false;
     switch (m_property)
     {
