@@ -92,18 +92,11 @@ void PingPongGame::init(std::string resourcePath)
 {
 	constants::resoucesPath = resourcePath;
 	game_window.setFramerateLimit(60);
-
+	game_window.setVerticalSyncEnabled(true);
     
-
 	m_entity_manager.create<background>(0.0f, 0.0f);
 	m_entity_manager.create<ball>(constants::window_width/2.0f, constants::window_height/2.0f);
 	m_entity_manager.create<paddle>(constants::window_width/2.0f, constants::window_height * 1.0f);
-
-	/*wall w;
-    wall_utils::createWall(w, (constants::resoucesPath + "wall.csv").c_str());
-	m_entity_manager.create<wall>(std::move(w));*/
-
-	
 
     try
     {

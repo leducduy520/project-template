@@ -30,11 +30,11 @@ void paddle::init(float x, float y)
 
 void paddle::update()
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && x() >= get_bounding_box().width / 2.0f)
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && x() >= getGlobalbound().width / 2.0f)
     {
         move_left();
     }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && x() <= constants::window_width - get_bounding_box().width / 2.0f)
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && x() <= constants::window_width - getGlobalbound().width / 2.0f)
     {
         move_right();
     }
@@ -93,6 +93,6 @@ void paddle::print_info() const noexcept
 {
     std::cout << "paddle centre: " << get_centre().x << " " << get_centre().y << '\n';
     std::cout << "paddle position: " << x() << " " << y() << '\n';
-    std::cout << "paddle bounding box: " << get_bounding_box().width << " " << get_bounding_box().height << '\n';
+    std::cout << "paddle bounding box: " << getGlobalbound().width << " " << getGlobalbound().height << '\n';
     std::cout << '\n';
 }

@@ -1,7 +1,7 @@
 #include "entity.hpp"
 
 // Helper function to get the bounding box of a sprite
-sf::FloatRect entity::get_bounding_box() const noexcept
+sf::FloatRect entity::getGlobalbound() const noexcept
 {
     return m_sprite.getGlobalBounds();
 }
@@ -9,7 +9,7 @@ sf::FloatRect entity::get_bounding_box() const noexcept
 // Helper function to get the centre of a sprite
 sf::Vector2f entity::get_centre() const noexcept
 {
-    auto box = get_bounding_box();
+    auto box = getGlobalbound();
     return {box.width / 2.0f, box.height / 2.0f};
 }
 
@@ -25,12 +25,12 @@ float entity::y() const noexcept
 
 float entity::width() const noexcept
 {
-    return m_sprite.getGlobalBounds().width;
+    return m_sprite.getLocalBounds().width;
 }
 
 float entity::height() const noexcept
 {
-    return m_sprite.getGlobalBounds().height;
+    return m_sprite.getLocalBounds().height;
 }
 
 void entity::destroy() noexcept

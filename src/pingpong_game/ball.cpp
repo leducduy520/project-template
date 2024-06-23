@@ -31,14 +31,14 @@ void ball::init(float x, float y)
 void ball::update()
 {
 
-    if (x() - get_bounding_box().width / 2  <= 0 && m_velocity.x < 0)
+    if (x() - getGlobalbound().width / 2  <= 0 && m_velocity.x < 0)
         m_velocity.x = -m_velocity.x;
-    if (x() + get_bounding_box().width / 2 >= constants::window_width && m_velocity.x > 0)
+    if (x() + getGlobalbound().width / 2 >= constants::window_width && m_velocity.x > 0)
         m_velocity.x = -m_velocity.x;
 
-    if (y() - get_bounding_box().height <= 0 && m_velocity.y < 0)
+    if (y() - getGlobalbound().height <= 0 && m_velocity.y < 0)
         m_velocity.y = -m_velocity.y;
-    if (y() + get_bounding_box().height >= constants::window_height && m_velocity.y > 0)
+    if (y() + getGlobalbound().height >= constants::window_height && m_velocity.y > 0)
         m_velocity.y = -m_velocity.y;
 
     m_sprite.move(m_velocity);

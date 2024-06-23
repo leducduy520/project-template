@@ -35,7 +35,6 @@ private:
     BrickProperty m_property;
     int m_hitCount;
     static sf::Texture& getTexture(BrickProperty property = BRICK);
-    static void releaseTexture();
 
 };
 
@@ -64,21 +63,22 @@ namespace std {
 //    }
 //};
 
-typedef std::map<e_location, std::unique_ptr<brick>> wall_mapp;
+typedef std::map<e_location, std::unique_ptr<brick>> wall_map;
 
-class wall : public wall_mapp, public entity
+class wall : public wall_map, public entity
 {
 public:
     wall() = default;
-    template <class T = brick>
+    template <class T>
     wall(T&& bricks) noexcept
     {
         swap(std::forward<T>(bricks));
     }
     void update() override;
     void draw(sf::RenderWindow &window) override;
-
     void init(float x, float y) override;
+
+private:
 };
 
 #endif // _BRICK_H

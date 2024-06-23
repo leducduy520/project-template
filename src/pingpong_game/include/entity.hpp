@@ -4,25 +4,25 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-// Abstract base class to represent any graphical entity on the screen
-class entity
+class Ientity
 {
 protected:
     sf::Sprite m_sprite;
     bool m_destroyed{false};
+    virtual ~Ientity() = default;
 
 public:
-    // Pure virtual functions
-    // Concrete graphical entities must implement these functions
-    // The update member function will compute the new position, appearance, etc of the object
-    // The draw member function will cause the updated object to be displayed in the game window
     virtual void update() = 0;
     virtual void draw(sf::RenderWindow &window) = 0;
-
     virtual void init(float x, float y) = 0;
+};
 
-    // Helper function to get the bounding box of a sprite
-    sf::FloatRect get_bounding_box() const noexcept;
+// Abstract base class to represent any graphical entity on the screen
+class entity : public Ientity
+{
+public:
+    
+    sf::FloatRect getGlobalbound() const noexcept;
 
     // Helper function to get the centre of a sprite
     sf::Vector2f get_centre() const noexcept;
@@ -33,13 +33,14 @@ public:
     float width() const noexcept;
     float height() const noexcept;
 
-    virtual void destroy() noexcept;
-    virtual bool is_destroyed() const noexcept;
-
     virtual float left() const noexcept;
     virtual float right() const noexcept;
     virtual float top() const noexcept;
     virtual float bottom() const noexcept;
+
+    virtual void destroy() noexcept;
+    virtual bool is_destroyed() const noexcept;
+
 
     void set_position(const sf::Vector2f& pos) noexcept;
 

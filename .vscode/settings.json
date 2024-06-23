@@ -73,6 +73,5 @@
         "forward_list": "cpp",
         "ratio": "cpp"
     },
-    "cmake.configureOnEdit": false,
-    "C_Cpp.errorSquiggles": "disabled"
+    "cmake.configureOnEdit": false
 }

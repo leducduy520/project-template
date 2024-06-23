@@ -5,8 +5,8 @@ namespace interactions
 {
     bool is_interacting(const entity *e1, const entity *e2) noexcept
     {
-        auto box1 = e1->get_bounding_box();
-        auto box2 = e2->get_bounding_box();
+        auto box1 = e1->getGlobalbound();
+        auto box2 = e2->getGlobalbound();
         return box1.intersects(box2);
     }
 
@@ -36,7 +36,7 @@ namespace interactions
             const bool x_signed = _fdsign(new_vel.x);
             const bool y_signed = _fdsign(new_vel.y);
 
-            new_vel.x += p.get_velocity().x * 0.5f;
+            new_vel.x += p.get_velocity().x * constants::paddle_damping;
             const bool new_x_signed = _fdsign(new_vel.x);
             if (abs(new_vel.x) > 0.9f * constants::ball_speed)
                 new_vel.x = 0.9f * constants::ball_speed * new_x_signed ? -1.0f : 1.0f;

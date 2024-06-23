@@ -21,7 +21,6 @@ namespace wall_utils{
             {
                 if (it->second->is_destroyed())
                 {
-                    std::cout << "delete" << std::endl;
                     w.erase(it->first);
                 }
                 else

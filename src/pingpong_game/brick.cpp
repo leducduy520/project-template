@@ -3,6 +3,53 @@
 
 // Define the static texture
 
+sf::Image& getImage(brick::BrickProperty property)
+{
+    static bool initialized = false;
+    static std::vector<sf::Image> list;
+    if (!initialized)
+    {
+        sf::Image source;
+        if (!source.loadFromFile(constants::resoucesPath + "brick.png"))
+        {
+            throw std::exception("Cannot open source image");
+        }
+        
+        const auto width = source.getSize().x;
+        const auto height = source.getSize().y;
+        const auto pixels = source.getPixelsPtr();
+        std::vector<std::vector<sf::Uint8>> matrix(width / constants::brick_width);
+        
+        for (unsigned int y = 0; y < height; ++y)
+        {
+            for (unsigned int x = 0; x < width; ++x)
+            {
+                unsigned int index = (x + y * width) * 4; // 4 bytes per pixel (RGBA)
+                for (int k = 0; k < matrix.size(); k++)
+                {
+                    if (k == (x / constants::brick_width))
+                    {
+                        matrix.at(k).push_back(pixels[index]);
+                        matrix.at(k).push_back(pixels[index + 1]);
+                        matrix.at(k).push_back(pixels[index + 2]);
+                        matrix.at(k).push_back(pixels[index + 3]);
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < matrix.size(); i++)
+        {
+            sf::Image des;
+            des.create(constants::brick_width, constants::brick_height, &matrix[i][0]);
+            list.push_back(std::move(des));
+        }
+
+        initialized = true;
+    }
+    
+    return list.at(static_cast<int>(property) - 1);
+}
 
 sf::Texture &brick::getTexture(BrickProperty property)
 {
@@ -12,13 +59,17 @@ sf::Texture &brick::getTexture(BrickProperty property)
     static sf::Texture bomb;
     static bool initialized = false;
     if (!initialized) {
-        if (!brick.loadFromFile(constants::resoucesPath + "brick.png")) {
+        getImage(BRICK);
+        if (!brick.loadFromImage(getImage(BRICK)))
+        {
             std::cerr << "Get texture brick failed\n";
         }
-        if (!diamond.loadFromFile(constants::resoucesPath + "diamond.png")) {
+        if (!diamond.loadFromImage(getImage(DIAMOND)))
+        {
             std::cerr << "Get texture diamond failed\n";
         }
-        if (!bomb.loadFromFile(constants::resoucesPath + "bomb.png")) {
+        if (!bomb.loadFromImage(getImage(BOMB)))
+        {
             std::cerr << "Get texture bomb failed\n";
         }
         initialized = true;
@@ -40,12 +91,6 @@ sf::Texture &brick::getTexture(BrickProperty property)
     }
 }
 
-void brick::releaseTexture()
-{
-    // sf::Texture empty;
-    // std::swap(getTexture(), empty);
-}
-
 brick::brick(float x, float y, BrickProperty property)
     : m_property(property), m_hitCount(0)
 {
@@ -55,8 +100,6 @@ brick::brick(float x, float y, BrickProperty property)
 
 void brick::init(float x, float y)
 {
-    m_sprite.setScale(constants::brick_width / m_sprite.getLocalBounds().width,
-                    constants::brick_height / m_sprite.getLocalBounds().height);
     m_sprite.setPosition(x, y);
 }
 

@@ -4,18 +4,18 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "D:/ProgramFiles/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.40.33807/include"
+                "D:\\ProgramFiles\\msys64\\ucrt64\\include\\c++\\14.1.0\\**",
+                "D:\\ProgramFiles\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.40.33807\\include"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "d:/programfiles/microsoft visual studio/2022/community/vc/tools/msvc/14.40.33807/bin/hostx64/x64/cl.exe",
+            "compilerPath": "D:\\ProgramFiles\\msys64\\ucrt64\\bin\\g++.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "msvc-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4
