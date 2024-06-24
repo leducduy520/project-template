@@ -1,5 +1,7 @@
 #include "brick.hpp"
 #include "wallHelper.hpp"
+#include <exception>
+#include "stdlib.h"
 
 // Define the static texture
 
@@ -15,7 +17,7 @@ sf::Image& getImage(brick::BrickProperty property)
         if (!source.loadFromFile(constants::resoucesPath + "brick.png"))
         {
             std::string message = "Cannot open source image "s + constants::resoucesPath + "brick.png";
-            throw std::exception(message.c_str());
+            throw std::logic_error(message.c_str());
         }
         
         const auto width = source.getSize().x;
@@ -63,15 +65,15 @@ sf::Texture &brick::getTexture(BrickProperty property)
         {
             if (!brick.loadFromImage(getImage(BRICK)))
             {
-                throw std::exception("Get texture brick from image data has failed\n");
+                throw std::logic_error("Get texture brick from image data has failed\n");
             }
             if (!diamond.loadFromImage(getImage(DIAMOND)))
             {
-                throw std::exception("Get texture diamond from image data has failed\n");
+                throw std::logic_error("Get texture diamond from image data has failed\n");
             }
             if (!bomb.loadFromImage(getImage(BOMB)))
             {
-                throw std::exception("Get texture bomb from image data has failed\n");
+                throw std::logic_error("Get texture bomb from image data has failed\n");
             }
         }
         catch (const std::exception& e)
@@ -81,7 +83,7 @@ sf::Texture &brick::getTexture(BrickProperty property)
             {
                 std::cout << "Retrying after 5 seconds...\n";
                 retryCount++;
-                _sleep(5000);
+                sf::sleep(sf::seconds(5.0f));
                 goto retry;
             }
             throw e;

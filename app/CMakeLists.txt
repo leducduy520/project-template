@@ -11,9 +11,13 @@ target_include_directories(MySFMLApp PRIVATE
 # Link the GameManager library and SFML libraries
 target_link_libraries(MySFMLApp PRIVATE sfml-graphics sfml-window sfml-system)
 
+set_target_properties(
+    MySFMLApp PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>"
+)
+
 install(TARGETS MySFMLApp
     RUNTIME
-        DESTINATION  ${CMAKE_INSTALL_BINDIR}
+        DESTINATION  "."
         COMPONENT Runtime
     ARCHIVE
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
