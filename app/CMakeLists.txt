@@ -11,18 +11,20 @@ target_include_directories(MySFMLApp PRIVATE
 # Link the GameManager library and SFML libraries
 target_link_libraries(MySFMLApp PRIVATE sfml-graphics sfml-window sfml-system)
 
-foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
-    string(TOUPPER ${build_type} build_type_upper)
-    set_target_properties(MySFMLApp PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}
-        LIBRARY_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/lib
-        ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/lib
+add_custom_command(
+    TARGET MySFMLApp POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/create_shortcuts.ps1 ${CMAKE_BINARY_DIR}/create_shortcuts.ps1
+)
+
+install(CODE "
+    execute_process(
+        COMMAND powershell.exe -File \${CMAKE_SOURCE_DIR}/create_shortcuts.ps1 -InstallDir \${CMAKE_INSTALL_PREFIX} -AppName MyApp -ExePath \${CMAKE_INSTALL_PREFIX}/bin/MySFMLApp.exe
     )
-endforeach()
+")
 
 install(TARGETS MySFMLApp
     RUNTIME
-        DESTINATION  "."
+        DESTINATION  ${CMAKE_INSTALL_BINDIR}
         COMPONENT Runtime
     ARCHIVE
         DESTINATION ${CMAKE_INSTALL_LIBDIR}

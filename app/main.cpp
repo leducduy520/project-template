@@ -51,7 +51,7 @@ int main() {
             // Create the Game object
             IGame* game = createGame();
             if (game) {
-                std::string path = (getExecutablePath() / "resources/").string();
+                std::string path = (getExecutablePath() / "../resources/").string();
                 game->init(path);
                 game->run();
                 // Destroy the Game object

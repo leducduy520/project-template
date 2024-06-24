@@ -100,3 +100,6 @@ set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
 
 # Set the package description summary
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "MyProject is an example project to demonstrate CPack usage.")
+
+
+
