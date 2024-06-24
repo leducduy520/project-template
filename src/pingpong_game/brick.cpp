@@ -3,6 +3,8 @@
 
 // Define the static texture
 
+using namespace std::literals;
+
 sf::Image& getImage(brick::BrickProperty property)
 {
     static bool initialized = false;
@@ -12,7 +14,8 @@ sf::Image& getImage(brick::BrickProperty property)
         sf::Image source;
         if (!source.loadFromFile(constants::resoucesPath + "brick.png"))
         {
-            throw std::exception("Cannot open source image");
+            std::string message = "Cannot open source image "s + constants::resoucesPath + "brick.png";
+            throw std::exception(message.c_str());
         }
         
         const auto width = source.getSize().x;
@@ -20,21 +23,16 @@ sf::Image& getImage(brick::BrickProperty property)
         const auto pixels = source.getPixelsPtr();
         std::vector<std::vector<sf::Uint8>> matrix(width / constants::brick_width);
         
-        for (unsigned int y = 0; y < height; ++y)
+        for (auto y = 0; y < height; ++y)
         {
-            for (unsigned int x = 0; x < width; ++x)
+            for (auto x = 0; x < width; ++x)
             {
-                unsigned int index = (x + y * width) * 4; // 4 bytes per pixel (RGBA)
-                for (int k = 0; k < matrix.size(); k++)
-                {
-                    if (k == (x / constants::brick_width))
-                    {
-                        matrix.at(k).push_back(pixels[index]);
-                        matrix.at(k).push_back(pixels[index + 1]);
-                        matrix.at(k).push_back(pixels[index + 2]);
-                        matrix.at(k).push_back(pixels[index + 3]);
-                    }
-                }
+                auto index = (x + y * width) * 4; // 4 bytes per pixel (RGBA)
+                auto index_matrix = x / constants::brick_width;
+                matrix.at(index_matrix).push_back(pixels[index]);
+                matrix.at(index_matrix).push_back(pixels[index + 1]);
+                matrix.at(index_matrix).push_back(pixels[index + 2]);
+                matrix.at(index_matrix).push_back(pixels[index + 3]);
             }
         }
 
@@ -53,25 +51,42 @@ sf::Image& getImage(brick::BrickProperty property)
 
 sf::Texture &brick::getTexture(BrickProperty property)
 {
+    retry:
     static sf::Texture empty;
     static sf::Texture brick;
     static sf::Texture diamond;
     static sf::Texture bomb;
     static bool initialized = false;
+    static int retryCount = 0;
     if (!initialized) {
-        getImage(BRICK);
-        if (!brick.loadFromImage(getImage(BRICK)))
+        try
         {
-            std::cerr << "Get texture brick failed\n";
+            if (!brick.loadFromImage(getImage(BRICK)))
+            {
+                throw std::exception("Get texture brick from image data has failed\n");
+            }
+            if (!diamond.loadFromImage(getImage(DIAMOND)))
+            {
+                throw std::exception("Get texture diamond from image data has failed\n");
+            }
+            if (!bomb.loadFromImage(getImage(BOMB)))
+            {
+                throw std::exception("Get texture bomb from image data has failed\n");
+            }
         }
-        if (!diamond.loadFromImage(getImage(DIAMOND)))
+        catch (const std::exception& e)
         {
-            std::cerr << "Get texture diamond failed\n";
+            std::cerr << "Get texture failed: \n" << e.what() << "\n";
+            if (retryCount < 5)
+            {
+                std::cout << "Retrying after 5 seconds...\n";
+                retryCount++;
+                _sleep(5000);
+                goto retry;
+            }
+            throw e;
         }
-        if (!bomb.loadFromImage(getImage(BOMB)))
-        {
-            std::cerr << "Get texture bomb failed\n";
-        }
+        
         initialized = true;
     }
     switch (property)
