@@ -11,9 +11,14 @@ target_include_directories(MySFMLApp PRIVATE
 # Link the GameManager library and SFML libraries
 target_link_libraries(MySFMLApp PRIVATE sfml-graphics sfml-window sfml-system)
 
-set_target_properties(
-    MySFMLApp PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>"
-)
+foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
+    string(TOUPPER ${build_type} build_type_upper)
+    set_target_properties(MySFMLApp PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}
+        LIBRARY_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/lib
+        ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/lib
+    )
+endforeach()
 
 install(TARGETS MySFMLApp
     RUNTIME

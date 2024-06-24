@@ -71,7 +71,8 @@
         "chrono": "cpp",
         "codecvt": "cpp",
         "forward_list": "cpp",
-        "ratio": "cpp"
+        "ratio": "cpp",
+        "filesystem": "cpp"
     },
     "cmake.configureOnEdit": false,
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
