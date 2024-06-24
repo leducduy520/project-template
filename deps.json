@@ -1,9 +1,0 @@
-[
-    {
-        "label": "pprint",
-        "repo": "https://github.com/p-ranav/pprint.git",
-        "tag": "master",
-        "shallow": true,
-        "find_pkg_args": ""
-    }
-]

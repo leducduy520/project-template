@@ -1,39 +1,33 @@
-project(app)
+# Add source files for the executable
+add_executable(MySFMLApp main.cpp ModuleManager.cpp)
 
-add_library(base SHARED base.cpp)
-target_include_directories(
-    base PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+# Include directories
+target_include_directories(MySFMLApp PRIVATE 
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/game2>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>)
+
+# Link the GameManager library and SFML libraries
+target_link_libraries(MySFMLApp PRIVATE sfml-graphics sfml-window sfml-system)
+
+foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
+    string(TOUPPER ${build_type} build_type_upper)
+    set_target_properties(MySFMLApp PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}
+        LIBRARY_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/lib
+        ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/lib
     )
+endforeach()
 
-build_external_project(
-    LABEL
-    "yaml"
-    "wise_enum"
-    REPO
-    "https://github.com/jbeder/yaml-cpp.git"
-    "https://github.com/quicknir/wise_enum.git"
-    TAG
-    "0.8.0"
-    "3.1.0"
-    SHALLOW
-    "ON"
-    "ON"
-    CMAKE_ARGS_MORE
-    "\"-DYAML_BUILD_SHARED_LIBS=ON\""
-    "OFF"
-    )
-
-find_package(yaml-cpp REQUIRED)
-target_link_libraries(base PUBLIC yaml-cpp::yaml-cpp)
-
-find_package(WiseEnum REQUIRED)
-target_link_libraries(base PUBLIC WiseEnum::wise_enum)
-
-target_link_libraries(base PRIVATE pprint)
-
-add_executable(app main.cpp)
-target_link_libraries(app PRIVATE base)
-
-install(TARGETS app base)
-
-install(IMPORTED_RUNTIME_ARTIFACTS yaml-cpp::yaml-cpp)
+install(TARGETS MySFMLApp
+    RUNTIME
+        DESTINATION  "."
+        COMPONENT Runtime
+    ARCHIVE
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT Development
+    LIBRARY
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT Development
+)
