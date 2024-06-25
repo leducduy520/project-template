@@ -1,4 +1,5 @@
 #include "paddle.hpp"
+#include <cmath>
 
 sf::Texture &paddle::getTexture()
 {
@@ -46,7 +47,7 @@ void paddle::update()
         }
         else
         {
-            m_velocity.x += constants::paddle_decel / 2.0f * _fdsign(m_velocity.x) ? 1 : -1;
+            m_velocity.x += constants::paddle_decel / 2.0f * std::signbit(m_velocity.x) ? 1 : -1;
         }
     }
     m_sprite.move(m_velocity);

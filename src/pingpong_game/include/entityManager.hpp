@@ -4,6 +4,7 @@
 #include <map>
 #include <SFML/Graphics.hpp>
 #include "entity.hpp"
+#include <memory>
 
 using entity_vector = std::vector<std::unique_ptr<entity>>;
 using entity_alias_vector = std::vector<entity *>;

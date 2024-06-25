@@ -1,5 +1,6 @@
 #include "brick.hpp"
 #include "wallHelper.hpp"
+#include <exception>
 
 // Define the static texture
 
@@ -12,7 +13,7 @@ sf::Image& getImage(brick::BrickProperty property)
         sf::Image source;
         if (!source.loadFromFile(constants::resoucesPath + "brick.png"))
         {
-            throw std::exception("Cannot open source image");
+            throw std::logic_error("Cannot open source image");
         }
         
         const auto width = source.getSize().x;
