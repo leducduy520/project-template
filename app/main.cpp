@@ -31,12 +31,13 @@ std::filesystem::path getExecutablePath() {
 int main() {
     ModuleManager moduleManager;
 #if defined(_WIN32)
+    SetDllDirectoryA((getExecutablePath() / "bin").string().c_str());
     moduleManager.registerModule("PingPongGame", "pingpong_game.dll");
 #else
-    moduleManager.registerModule("PingPongGame", "../lib/libpingpong_game.so");
+    moduleManager.registerModule("PingPongGame", "libpingpong_game.so");
 #endif
     auto execPath = EXECUTABLE_PATH;
-        if (moduleManager.loadModule("PingPongGame")) {
+    if (moduleManager.loadModule("PingPongGame")) {
         // Retrieve function pointers for creating and destroying the Game object
         using CreateGameFunc = IGame* (*)();
         using DestroyGameFunc = void (*)(IGame*);
@@ -50,7 +51,7 @@ int main() {
             // Create the Game object
             IGame* game = createGame();
             if (game) {
-                std::string path = getExecutablePath().string() + dirSep + "resources" + dirSep;
+                std::string path = (getExecutablePath() / "../resources/").string();
                 game->init(path);
                 game->run();
                 // Destroy the Game object

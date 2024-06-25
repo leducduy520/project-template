@@ -11,6 +11,17 @@ target_include_directories(MySFMLApp PRIVATE
 # Link the GameManager library and SFML libraries
 target_link_libraries(MySFMLApp PRIVATE sfml-graphics sfml-window sfml-system)
 
+add_custom_command(
+    TARGET MySFMLApp POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/create_shortcuts.ps1 ${CMAKE_BINARY_DIR}/create_shortcuts.ps1
+)
+
+install(CODE "
+    execute_process(
+        COMMAND powershell.exe -File \${CMAKE_SOURCE_DIR}/create_shortcuts.ps1 -InstallDir \${CMAKE_INSTALL_PREFIX} -AppName MyApp -ExePath \${CMAKE_INSTALL_PREFIX}/bin/MySFMLApp.exe
+    )
+")
+
 install(TARGETS MySFMLApp
     RUNTIME
         DESTINATION  ${CMAKE_INSTALL_BINDIR}

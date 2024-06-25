@@ -38,7 +38,7 @@ if(WIN32)
     add_custom_command(
             TARGET ${PROJECT_NAME} POST_BUILD
             COMMENT "Copy resources"
-            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
+            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>/../resources
             VERBATIM
         )
 endif()
@@ -60,4 +60,4 @@ install(
         COMPONENT PublicHeader
 )
 
-install(DIRECTORY resources DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY resources/ DESTINATION "resources")
