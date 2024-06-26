@@ -27,7 +27,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 source_group("Resource Files" FILES ${RESOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} sfml-graphics rapidcsv)
+target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio rapidcsv)
 
 if(WIN32)
     add_custom_command(

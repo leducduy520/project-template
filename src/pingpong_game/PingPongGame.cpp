@@ -216,7 +216,7 @@ void PingPongGame::reset() {
     m_live = 3;
 	m_entity_manager.apply_all<ball>([](ball& b){b.init(constants::window_width/2.0f, constants::window_height/2.0f);});
 	m_entity_manager.apply_all<paddle>([](paddle& b){b.init(constants::window_width/2.0f, constants::window_height * 1.0f);});
-	m_entity_manager.apply_all<wall>([](wall& b){b.init(0.0f, 0.0f);});
+    try_createwall();
 }
 
 void PingPongGame::clear()
@@ -235,6 +235,7 @@ void PingPongGame::run() {
 		update();
 		render();
 	}
+    m_entity_manager.clear();
 }
 
 extern "C" IGame* createPingPongGame()
