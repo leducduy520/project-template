@@ -19,12 +19,17 @@ class PingPongGame : public IGame {
 	
 	sf::Font m_font;
 	sf::Text m_textState;
+	sf::Text m_textLive;
+
+	int m_live;
 
 	void eventHandler();
-	void handleGameState();
+	void stateHandler();
 	void update();
 	void render();
     void try_createwall();
+
+	void centeredText(sf::Text& text);
 
 public:
 	PingPongGame(std::string resourcePath);
