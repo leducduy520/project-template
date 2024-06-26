@@ -30,8 +30,8 @@ std::filesystem::path getExecutablePath() {
 
 int main() {
     ModuleManager moduleManager;
+    std::cout << EXECUTABLE_PATH << std::endl;
 #if defined(_WIN32)
-    SetDllDirectoryA((getExecutablePath() / "bin").string().c_str());
     moduleManager.registerModule("PingPongGame", "pingpong_game.dll");
 #else
     moduleManager.registerModule("PingPongGame", "libpingpong_game.so");

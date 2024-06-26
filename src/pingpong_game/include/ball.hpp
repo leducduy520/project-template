@@ -13,7 +13,7 @@ class ball : public moving_entity
 
 public:
     ball(float x, float y);
-    ball() = default;
+    ball();
 
     void init(float x, float y) override;
 

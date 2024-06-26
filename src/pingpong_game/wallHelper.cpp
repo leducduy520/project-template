@@ -40,15 +40,42 @@ namespace wall_utils{
             {
                 sf::Vector2f hit_point{x + i * br.width(), y + j * br.height()};
 
-                std::cout << "hit_point.x " << hit_point.x << ", hit_point.y " << hit_point.y << std::endl;
-                w[hit_point];
-                //if (w[hit_point].get())
-                //{
-                //    std::cout << "existing" << std::endl;
-                //    //w[hit_point]->hit(constants::cap_brick_hit);
-                //}
+                auto it = w.find(hit_point);
+                if (it != w.end() && !it->second.get()->is_destroyed())
+                {
+                    auto alias = it->second.get();
+                    alias->hit(constants::cap_brick_hit);
+                    if(alias->getProperty() == brick::BOMB)
+                    {
+                        destroyAround(w, *alias, range);
+                    }
+                }
             }
         }
-        std::cout << std::endl;
     }
-} // namespace wall_utils
+    void checkAlive(wall &w)
+    {
+        bool is_destroyed = true;
+        for (auto it = w.rbegin(); it != w.rend();)
+        {
+            if (it->second->is_destroyed())
+            {
+                w.erase(it->first);
+            }
+            else
+            {
+                if (is_destroyed)
+                {
+                    if (it->second.get()->getProperty() == brick::DIAMOND)
+                        is_destroyed = false;
+                }
+                ++it;
+            }
+        }
+
+        if (is_destroyed)
+        {
+            w.destroy();
+        }
+    }
+    } // namespace wall_utils

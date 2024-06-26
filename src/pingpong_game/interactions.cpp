@@ -89,25 +89,7 @@ namespace interactions
                 break;
             case brick::BOMB:
             {
-                sf::Vector2f explode_point{br.x(), br.y()};
-
-                auto x = explode_point.x - (3 - 1) / 2 * br.width();
-                auto y = explode_point.y - (3 - 1) / 2 * br.height();
-
-                for (int i = 0; i < 3; ++i)
-                {
-                    for (int j = 0; j < 3; ++j)
-                    {
-                        sf::Vector2f hit_point{x + i * br.width(), y + j * br.height()};
-
-                        auto it = w.find(hit_point);
-                        if (it != w.end())
-                        {
-                            it->second->hit(constants::cap_brick_hit);
-                            w.insert_or_assign(hit_point, std::move(it->second));
-                        }
-                    }
-                }
+                wall_utils::destroyAround(w, br, {3, 3});
                 b.set_velocity({-b.get_velocity().x, -b.get_velocity().y});
             }
                 break;

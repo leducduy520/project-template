@@ -10,8 +10,9 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${RESOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../interface>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>)
 
 target_sources(${PROJECT_NAME} PRIVATE
     FILE_SET ${PROJECT_NAME}_headers
@@ -60,4 +61,4 @@ install(
         COMPONENT PublicHeader
 )
 
-install(DIRECTORY resources/ DESTINATION "resources")
+install(DIRECTORY resources/ DESTINATION "resources" COMPONENT Resources)

@@ -21,6 +21,12 @@ ball::ball(float x, float y) : moving_entity()
     init(x, y);
 }
 
+ball::ball()
+{
+    m_sprite.setTexture(getTexture());
+    m_sprite.setOrigin(get_centre());
+}
+
 void ball::init(float x, float y)
 {
     m_sprite.setPosition(x, y);
@@ -36,10 +42,10 @@ void ball::update()
     if (x() + getGlobalbound().width / 2 >= constants::window_width && m_velocity.x > 0)
         m_velocity.x = -m_velocity.x;
 
-    if (y() - getGlobalbound().height <= 0 && m_velocity.y < 0)
+    if (y() - getGlobalbound().height / 2 <= 0 && m_velocity.y < 0)
         m_velocity.y = -m_velocity.y;
-    if (y() + getGlobalbound().height >= constants::window_height && m_velocity.y > 0)
-        m_velocity.y = -m_velocity.y;
+    if (y() + getGlobalbound().height / 2 >= constants::window_height)
+        destroy();
 
     m_sprite.move(m_velocity);
 }
