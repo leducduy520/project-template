@@ -57,6 +57,11 @@ FetchContent_Declare(rapidcsv
     GIT_TAG v8.82 )
 FetchContent_MakeAvailable(rapidcsv)
 
+FetchContent_Declare(SQLiteCpp
+    GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
+    GIT_TAG 3.3.1 )
+FetchContent_MakeAvailable(SQLiteCpp)
+
 add_subdirectory(src)
 add_subdirectory(app)
 
