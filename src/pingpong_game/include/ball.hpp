@@ -5,15 +5,19 @@
 
 #include "constants.hpp"
 #include "entity.hpp"
+#include "SFML/Audio.hpp"
 
 class ball : public moving_entity
 {
     // Private data members
     static sf::Texture& getTexture();
+    sf::Sound sound;
+    sf::SoundBuffer buffer;
 
 public:
     ball(float x, float y);
-    ball() = default;
+    ball();
+    ~ball();
 
     void init(float x, float y) override;
 
@@ -25,6 +29,14 @@ public:
     void move_left() noexcept override;
     void move_right() noexcept override;
     void print_info() const noexcept override;
+
+    enum SoundType
+    {
+        Edge,
+        Brick
+    };
+
+    void playSound(SoundType type);
 };
 
 #endif // BALL_H

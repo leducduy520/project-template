@@ -8,6 +8,7 @@
 namespace wall_utils{
     void createWall(wall& w, const char* path);
     void destroyAround(wall& w, brick& br, sf::Vector2i range);
+    void checkAlive(wall &w);
     template <typename T>
     void interactionwith(wall& w, entity& entity)
     {
@@ -16,17 +17,6 @@ namespace wall_utils{
         {
             for (auto it = w.begin(); it != w.end(); ++it) {
                 interactions::handle_interaction(w, *elm, *(it->second.get()));
-            }
-            for (auto it = w.rbegin(); it != w.rend();)
-            {
-                if (it->second->is_destroyed())
-                {
-                    w.erase(it->first);
-                }
-                else
-                {
-                    ++it;
-                }
             }
         }
         else{

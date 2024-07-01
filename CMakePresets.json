@@ -296,6 +296,12 @@
             }
         }
     ],
+    "packagePresets": [
+        {
+            "name": "msvc",
+            "configurePreset": "msvc"
+        }
+    ],
     "workflowPresets": [
         {
             "name": "windows",

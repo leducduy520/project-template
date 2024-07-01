@@ -57,6 +57,11 @@ FetchContent_Declare(rapidcsv
     GIT_TAG v8.82 )
 FetchContent_MakeAvailable(rapidcsv)
 
+FetchContent_Declare(SQLiteCpp
+    GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
+    GIT_TAG 3.3.1 )
+FetchContent_MakeAvailable(SQLiteCpp)
+
 add_subdirectory(src)
 add_subdirectory(app)
 
@@ -81,25 +86,3 @@ endif(ENABLE_TEST_EXEC)
 #         DESTINATION ${INSTALL_CONFIG_DIR}
 #         )
 # endif(NOT SUBPROJECT)
-
-set(MY_PROJECT_VERSION_MAJOR 1)
-set(MY_PROJECT_VERSION_MINOR 0)
-set(MY_PROJECT_VERSION_PATCH 0)
-set(MY_PROJECT_VERSION ${MY_PROJECT_VERSION_MAJOR}.${MY_PROJECT_VERSION_MINOR}.${MY_PROJECT_VERSION_PATCH})
-
-# CPack configuration
-include(CPack)
-
-# Set the name and version of the package
-set(CPACK_PACKAGE_NAME "DuyLDGame")
-set(CPACK_PACKAGE_VERSION ${MY_PROJECT_VERSION})
-set(CPACK_PACKAGE_CONTACT "duyleduc123@gmail.com")
-
-# Set the package file name without a specific generator suffix
-set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
-
-# Set the package description summary
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "MyProject is an example project to demonstrate CPack usage.")
-
-
-

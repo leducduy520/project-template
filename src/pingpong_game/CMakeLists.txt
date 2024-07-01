@@ -6,17 +6,22 @@ list(APPEND HEADER_FILES "${PUBLIC_HEADER_FILE}")
 list(FILTER PUBLIC_HEADER_FILE INCLUDE REGEX "Game")
 file(GLOB RESOURCE_FILES LIST_DIRECTORIES false "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.*")
 
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${RESOURCE_FILES})
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../interface>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>)
 
 target_sources(${PROJECT_NAME} PRIVATE
     FILE_SET ${PROJECT_NAME}_headers
     TYPE HEADERS
     FILES "${HEADER_FILES}"
+)
+
+target_sources(${PROJECT_NAME} PRIVATE
+    ${RESOURCE_FILES}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES 
@@ -26,7 +31,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 source_group("Resource Files" FILES ${RESOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} sfml-graphics rapidcsv)
+target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio rapidcsv SQLiteCpp)
 
 if(WIN32)
     add_custom_command(
@@ -60,4 +65,4 @@ install(
         COMPONENT PublicHeader
 )
 
-install(DIRECTORY resources/ DESTINATION "resources")
+install(DIRECTORY resources/ DESTINATION "resources" COMPONENT Resources)

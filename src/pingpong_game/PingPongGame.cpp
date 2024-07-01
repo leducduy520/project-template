@@ -3,6 +3,7 @@
 #include "wallHelper.hpp"
 
 std::string constants::resoucesPath;
+using namespace std;
 
 void PingPongGame::eventHandler()
 {
@@ -36,7 +37,12 @@ void PingPongGame::eventHandler()
 	{
 		if(!reset_key_active)
 		{
+			if (m_state == game_state::game_over)
+			{
+                m_entity_manager.create<ball>();
+			}
 			reset();
+			m_state = game_state::running;
 		}
 		reset_key_active = true;
 	}
@@ -45,11 +51,41 @@ void PingPongGame::eventHandler()
 		reset_key_active = false;
 	}
 
+	
+}
+
+void PingPongGame::stateHandler()
+{
+	switch (m_state)
+    {
+    case game_state::paused:
+    {
+        m_textState.setString("Paused");
+		m_textLive.setString("Lives: " + std::to_string(m_live));
+
+		centeredText(m_textState);
+    }
+    break;
+    case game_state::game_over:
+    {
+        m_textState.setString("Game Over");
+        centeredText(m_textState);
+    }
+    break;
+	case game_state::player_wins:
+    {
+        m_textState.setString("Win");
+        centeredText(m_textState);
+    }
+    break;
+	default:
+        break;
+    }
 }
 
 void PingPongGame::update()
 {
-	if (m_state != game_state::paused)
+	if (m_state == game_state::running)
 	{
 		// Calculate the updated graphics
 		m_entity_manager.update();
@@ -63,45 +99,50 @@ void PingPongGame::update()
 		m_entity_manager.apply_all<ball>([this](ball& b){
 			m_entity_manager.apply_all<wall>([&b](wall& w){
 				wall_utils::interactionwith<ball>(w, b);
+                wall_utils::checkAlive(w);
 			});
 		});
 
-		// m_entity_manager.refresh();
+		m_entity_manager.refresh();
+
+		if(m_entity_manager.get_all<ball>().empty())
+		{
+			--m_live;
+            m_entity_manager.create<ball>(constants::window_width / 2.0f, constants::window_height / 2.0f);
+            m_entity_manager.apply_all<paddle>(
+                [](paddle &b) { b.init(constants::window_width / 2.0f, constants::window_height * 1.0f); });
+            m_state = game_state::paused;
+		}
+
+		if(m_entity_manager.get_all<wall>().empty())
+		{
+			m_state = game_state::player_wins;
+            
+		}
+
+		if (!m_live)
+		{
+            m_state = game_state::game_over;
+		}
 	}
 }
 
 void PingPongGame::render()
 {
-	game_window.clear(sf::Color::Black);
-
 	m_entity_manager.draw(game_window);
-
+    if (m_state != game_state::running)
+		game_window.draw(m_textState);
+    if (m_state == game_state::paused)
+		game_window.draw(m_textLive);
 	game_window.display();
 }
 
-PingPongGame::PingPongGame(std::string resourcePath)
+void PingPongGame::try_createwall()
 {
-    init(resourcePath);
-}
-
-PingPongGame::PingPongGame()
-{
-}
-
-void PingPongGame::init(std::string resourcePath)
-{
-	constants::resoucesPath = resourcePath;
-	game_window.setFramerateLimit(60);
-	game_window.setVerticalSyncEnabled(true);
-    
-	m_entity_manager.create<background>(0.0f, 0.0f);
-	m_entity_manager.create<ball>(constants::window_width/2.0f, constants::window_height/2.0f);
-	m_entity_manager.create<paddle>(constants::window_width/2.0f, constants::window_height * 1.0f);
-
     try
     {
         wall w;
-		wall_utils::createWall(w, (constants::resoucesPath + "wall.csv").c_str());
+        wall_utils::createWall(w, (constants::resoucesPath + "wall.csv").c_str());
         m_entity_manager.create<wall>(std::move(w));
     }
     catch (const std::ios::failure &e)
@@ -124,12 +165,58 @@ void PingPongGame::init(std::string resourcePath)
     }
 }
 
+void PingPongGame::centeredText(sf::Text &text)
+{
+    auto textRect = text.getLocalBounds();
+    text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+    text.setPosition(constants::window_width / 2.0f, constants::window_height / 2.0f);
+}
+
+PingPongGame::PingPongGame(std::string resourcePath) : m_live(3)
+{
+    init(resourcePath);
+}
+
+PingPongGame::PingPongGame() : m_live(3)
+{
+}
+
+void PingPongGame::init(std::string resourcePath)
+{
+	constants::resoucesPath = resourcePath;
+	game_window.setFramerateLimit(60);
+	game_window.setVerticalSyncEnabled(true);
+    
+	m_entity_manager.create<background>(0.0f, 0.0f);
+	m_entity_manager.create<ball>(constants::window_width/2.0f, constants::window_height/2.0f);
+	m_entity_manager.create<paddle>(constants::window_width/2.0f, constants::window_height * 1.0f);
+
+    try_createwall();
+
+	m_font.loadFromFile(constants::resoucesPath + "Cross Boxed.ttf");
+    
+	sf::Text textState("Paused", m_font, 32);
+    textState.setFillColor(sf::Color(255, 26, 26));
+    auto bound = textState.getLocalBounds();
+    textState.setOrigin(bound.width / 2.0f, bound.height / 2.0f);
+    textState.setPosition(constants::window_width / 2, constants::window_height / 2);
+
+    sf::Text textLife("Lives: " + to_string(m_live), m_font, 26);
+    textLife.setFillColor(sf::Color(255, 26, 26));
+    bound = textLife.getLocalBounds();
+    textLife.setOrigin(bound.width / 2.0f, bound.height / 2.0f);
+    textLife.setPosition(constants::window_width / 2, constants::window_height / 2 - 50.f);
+
+    m_textState = std::move(textState);
+    m_textLive = std::move(textLife);
+}
+
 // Reinitialize the PingPongGame
 void PingPongGame::reset() {
-	game_window.clear(sf::Color::Black);
+    m_live = 3;
 	m_entity_manager.apply_all<ball>([](ball& b){b.init(constants::window_width/2.0f, constants::window_height/2.0f);});
 	m_entity_manager.apply_all<paddle>([](paddle& b){b.init(constants::window_width/2.0f, constants::window_height * 1.0f);});
-	m_entity_manager.apply_all<wall>([](wall& b){b.init(0.0f, 0.0f);});
+    try_createwall();
 }
 
 void PingPongGame::clear()
@@ -142,10 +229,13 @@ void PingPongGame::clear()
 // Game loop
 void PingPongGame::run() {
 	while (game_window.isOpen()) {
+        game_window.clear(sf::Color::Black);
 		eventHandler();
+		stateHandler();
 		update();
 		render();
 	}
+    m_entity_manager.clear();
 }
 
 extern "C" IGame* createPingPongGame()
