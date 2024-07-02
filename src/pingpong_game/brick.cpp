@@ -151,12 +151,18 @@ void brick::hit(const int damage) noexcept
     }
         break;
     case DIAMOND:
-        if(m_hitCount >= constants::cap_diamond_hit)
-            destroyed = true;    
+    {
+        if (m_hitCount >= constants::cap_diamond_hit)
+            destroyed = true;
+        SoundPlayer::getInstance()->playSound(SoundPlayer::DIAMOND_DESTROY);
+    }
         break;
     case BOMB:
-        if(m_hitCount >= constants::cap_bomb_hit)
-            destroyed = true;   
+    {
+        if (m_hitCount >= constants::cap_bomb_hit)
+            destroyed = true;
+        SoundPlayer::getInstance()->playSound(SoundPlayer::BOMB_EXPLOSION);
+    }
         break;
     default:
         break;

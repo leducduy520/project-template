@@ -13,16 +13,20 @@ public:
 
     enum SoundMode{
         WALL_BOUNCE,
-        BRICK_BOUNCE
+        BRICK_BOUNCE,
+        PADDLE_BOUNCE,
+        DIAMOND_DESTROY,
+        BOMB_EXPLOSION
     };
 
+    SoundPlayer();
     ~SoundPlayer();
 
     void playSound(const SoundMode& mode);
 
 private:
-    sf::SoundBuffer buffer;
-    sf::Sound sound;
+    sf::Sound m_player;
+    std::unordered_map<SoundMode, sf::SoundBuffer> m_soundDict;
 };
 
 #endif // __SOUNDPLAYER__

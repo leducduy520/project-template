@@ -1,5 +1,6 @@
 #include "interactions.hpp"
 #include "wallHelper.hpp"
+#include "soundplayer.hpp"
 
 namespace interactions
 {
@@ -30,7 +31,7 @@ namespace interactions
     {
         if (is_interacting(&b, &p))
         {
-
+            SoundPlayer::getInstance()->playSound(SoundPlayer::PADDLE_BOUNCE);
 
             sf::Vector2f new_vel{b.get_velocity()};
             const bool x_signed = std::signbit(new_vel.x);

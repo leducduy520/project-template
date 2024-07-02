@@ -31,7 +31,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 source_group("Resource Files" FILES ${RESOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio rapidcsv SQLiteCpp)
+target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio rapidcsv SQLiteCpp magic_enum)
 
 if(WIN32)
     add_custom_command(
