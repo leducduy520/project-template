@@ -10,15 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Configure Project
-        uses: threeal/cmake-action@main
-        with:
-          args: |
-            --graphviz=docs/graph/graph.dot
-            --no-warn-unused-cli
-            -DCMAKE_BUILD_TYPE=release
-          build-args: |
-            -j6
-            --config release
-            --target all
-
+        run: cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=ubuntu
+      - name: Build Project
+        run: cmake --build --preset=ubuntu
           
