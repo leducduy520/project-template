@@ -1,11 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
 
-# set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
-option(ENABLE_CMAKE_FORMAT "enable cmake format" ON)
-option( "enable document target" OFF)
-option(ENABLE_IENABLE_DOCUMENT_TARGETNSTALL_GRAPH_AND_DOC "enable moving files in docs directory to the install directory" OFF)
-option(ENABLE_TEST_EXEC "enable build test executable" OFF)
-
 if(PROJECT_NAME)
     set(SUBPROJECT ON)
 else(PROJECT_NAME)
@@ -18,6 +12,16 @@ include(GNUInstallDirs)
 include(FetchContent)
 include(TestCXXAcceptsFlag)
 include(CMakePackageConfigHelpers)
+include(CMakeDependentOption)
+
+# set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+option(BUILD_CMAKE_FORMAT "enable cmake format" ON)
+option(BUILD_GRAPH "build graph" ON)
+option(BUILD_DOCS "build documentation" ON)
+option(BUILD_TEST "enable build test executable" OFF)
+
+cmake_dependent_option(INSTALL_DOCS "install docs" OFF "NOT BUILD_DOCS" OFF)
+cmake_dependent_option(INSTALL_GRAPH "install graph" OFF "NOT BUILD_GRAPH" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -30,7 +34,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDOUT)
 
 set(INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
-set(GRAPH_OUTPUT_NAME graph)
 
 if(UNIX)
     set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
@@ -43,9 +46,8 @@ foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/bin)
 endforeach()
 
-# include(Tools)
-# include(GraphAndDoc)
-# include(External)
+include(Tools)
+include(GraphAndDoc)
 
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -70,11 +72,11 @@ FetchContent_MakeAvailable(magic_enum)
 add_subdirectory(src)
 add_subdirectory(app)
 
-if(ENABLE_TEST_EXEC)
+if(BUILD_TEST)
     include(CTest)
     enable_testing()
     add_subdirectory(test)
-endif(ENABLE_TEST_EXEC)
+endif(BUILD_TEST)
 
 # if(NOT SUBPROJECT)
 #     configure_package_config_file(

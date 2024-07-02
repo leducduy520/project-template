@@ -1,5 +1,5 @@
 #ifndef __SOUNDPLAYER_H__
-#define __SOUNDPLAYER__
+#define __SOUNDPLAYER_H__
 
 #include "SFML/Audio.hpp"
 #include <unordered_map>
@@ -30,4 +30,4 @@ private:
     std::unordered_map<SoundMode, sf::SoundBuffer> m_soundDict;
 };
 
-#endif // __SOUNDPLAYER__
+#endif // __SOUNDPLAYER_H__

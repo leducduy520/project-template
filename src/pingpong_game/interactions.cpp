@@ -34,13 +34,11 @@ namespace interactions
             SoundPlayer::getInstance()->playSound(SoundPlayer::PADDLE_BOUNCE);
 
             sf::Vector2f new_vel{b.get_velocity()};
-            const bool x_signed = std::signbit(new_vel.x);
-            const bool y_signed = std::signbit(new_vel.y);
 
             new_vel.x += p.get_velocity().x * constants::paddle_damping;
             const bool new_x_signed = std::signbit(new_vel.x);
             if (abs(new_vel.x) > 0.9f * constants::ball_speed)
-                new_vel.x = 0.9f * constants::ball_speed * new_x_signed ? -1.0f : 1.0f;
+                new_vel.x = 0.9f * constants::ball_speed * (new_x_signed ? -1.0f : 1.0f);
             new_vel.y = -sqrtf(powf(constants::ball_speed, 2.0f) - powf(new_vel.x, 2.0f));
             b.set_velocity(std::move(new_vel));
         }

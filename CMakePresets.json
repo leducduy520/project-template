@@ -6,12 +6,10 @@
             "hidden": true,
             "environment": {
                 "BUILD_TYPE": "Debug",
-                "EXTERNAL_NAME": "external",
                 "OUR_DIR_NAME": "out",
                 "INSTALL_DIR_NAME": "install",
                 "BUILD_DIR_NAME": "build",
-                "DOC_DIR_NAME": "docs",
-                "TOOL_DIR_NAME": "tools"
+                "DOC_DIR_NAME": "docs"
             }
         },
         {
@@ -25,29 +23,9 @@
                     "type": "STRING",
                     "value": "$env{BUILD_TYPE}"
                 },
-                "PRESET": {
-                    "type": "STRING",
-                    "value": "${presetName}"
-                },
-                "EXTERNAL_DIR": {
-                    "type": "PATH",
-                    "value": "${sourceDir}/$env{EXTERNAL_NAME}"
-                },
-                "EXTERNAL_BINARY_DIR": {
-                    "type": "PATH",
-                    "value": "${sourceDir}/$env{EXTERNAL_NAME}/$env{BUILD_DIR_NAME}/${presetName}"
-                },
-                "EXTERNAL_INSTALL_PREFIX": {
-                    "type": "PATH",
-                    "value": "${sourceDir}/$env{EXTERNAL_NAME}/$env{INSTALL_DIR_NAME}/${presetName}"
-                },
                 "DOCS_DIR": {
                     "type": "PATH",
                     "value": "${sourceDir}/$env{DOC_DIR_NAME}"
-                },
-                "TOOLS_DIR": {
-                    "type": "PATH",
-                    "value": "${sourceDir}/$env{TOOL_DIR_NAME}"
                 }
             }
         },
@@ -88,7 +66,15 @@
         {
             "name": "msvc",
             "inherits": "windows",
-            "generator": "Visual Studio 17 2022"
+            "generator": "Visual Studio 17 2022",
+            "architecture":{
+                "strategy": "set",
+                "value": "x64"
+            },
+            "toolset":{
+                "strategy": "set",
+                "value": "ClangCl"
+            }
         }
     ],
     "buildPresets": [

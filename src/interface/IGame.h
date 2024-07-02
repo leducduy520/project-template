@@ -7,7 +7,7 @@ class IGame{
     public:
 	virtual void run() = 0;
     virtual void init(std::string) = 0;
-    ~IGame() = default;
+    ~IGame(){};
 };
 
 #if defined _WIN32
