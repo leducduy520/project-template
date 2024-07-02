@@ -26,6 +26,7 @@ public:
 
 private:
     sf::Sound m_player;
+    sf::Music m_music;
     std::unordered_map<SoundMode, sf::SoundBuffer> m_soundDict;
 };
 

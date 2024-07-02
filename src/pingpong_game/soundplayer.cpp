@@ -5,6 +5,10 @@
 
 SoundPlayer::SoundPlayer()
 {
+    m_music.openFromFile(constants::resoucesPath + "game_background.wav");
+    m_music.setLoop(true);
+    m_music.play();
+    
     magic_enum::enum_for_each<SoundMode>([this] (auto val) {
         constexpr SoundMode mode = val;
         sf::SoundBuffer buffer;
@@ -67,6 +71,7 @@ SoundPlayer::~SoundPlayer()
 {
     m_player.resetBuffer();
     m_soundDict.clear();
+    m_music.stop();
 }
 
 void SoundPlayer::playSound(const SoundMode &mode)

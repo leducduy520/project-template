@@ -44,10 +44,14 @@ namespace wall_utils{
                 if (it != w.end() && !it->second.get()->is_destroyed())
                 {
                     auto alias = it->second.get();
-                    alias->hit(constants::cap_brick_hit);
                     if(alias->getProperty() == brick::BOMB)
                     {
+                        alias->hit(constants::cap_brick_hit);
                         destroyAround(w, *alias, range);
+                    }
+                    else
+                    {
+                        alias->hit(constants::cap_brick_hit, true);
                     }
                 }
             }

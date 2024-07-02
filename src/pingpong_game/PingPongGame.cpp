@@ -1,6 +1,7 @@
 #include "PingPongGame.hpp"
 #include "interactions.hpp"
 #include "wallHelper.hpp"
+#include "soundplayer.hpp"
 
 std::string constants::resoucesPath;
 using namespace std;
@@ -228,6 +229,7 @@ void PingPongGame::clear()
 
 // Game loop
 void PingPongGame::run() {
+	SoundPlayer::getInstance();
 	while (game_window.isOpen()) {
         game_window.clear(sf::Color::Black);
 		eventHandler();

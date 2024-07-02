@@ -137,7 +137,7 @@ brick::BrickProperty brick::getProperty() const noexcept
     return m_property;
 }
 
-void brick::hit(const int damage) noexcept
+void brick::hit(const int damage, const bool relate) noexcept
 {
     m_hitCount += damage;
     bool destroyed = false;
@@ -147,21 +147,24 @@ void brick::hit(const int damage) noexcept
     {
         if (m_hitCount >= constants::cap_brick_hit)
             destroyed = true;
-        SoundPlayer::getInstance()->playSound(SoundPlayer::BRICK_BOUNCE);
+        if(!relate)
+            SoundPlayer::getInstance()->playSound(SoundPlayer::BRICK_BOUNCE);
     }
         break;
     case DIAMOND:
     {
         if (m_hitCount >= constants::cap_diamond_hit)
             destroyed = true;
-        SoundPlayer::getInstance()->playSound(SoundPlayer::DIAMOND_DESTROY);
+        if(!relate)
+            SoundPlayer::getInstance()->playSound(SoundPlayer::DIAMOND_DESTROY);
     }
         break;
     case BOMB:
     {
         if (m_hitCount >= constants::cap_bomb_hit)
             destroyed = true;
-        SoundPlayer::getInstance()->playSound(SoundPlayer::BOMB_EXPLOSION);
+        if(!relate)
+            SoundPlayer::getInstance()->playSound(SoundPlayer::BOMB_EXPLOSION);
     }
         break;
     default:

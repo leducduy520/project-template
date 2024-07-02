@@ -29,7 +29,7 @@ public:
 
     BrickProperty getProperty() const noexcept;
 
-    void hit(const int damage = 1) noexcept;
+    void hit(const int damage = 1, const bool relate = false) noexcept;
 
     friend class wall;
 private:
