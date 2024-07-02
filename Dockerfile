@@ -19,4 +19,5 @@ libvorbis-dev \
 libgl1-mesa-dev \
 libegl1-mesa-dev \
 libdrm-dev \
-libgbm-dev
+libgbm-dev \
+libfreetype6-dev
