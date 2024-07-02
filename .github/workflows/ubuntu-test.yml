@@ -9,12 +9,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Configure and Build Project
+      - name: Configure Project
         uses: threeal/cmake-action@main
         with:
+          run-build: false
           args: |
             --graphviz=docs/graph/graph.dot
             --no-warn-unused-cli
             --preset=ubuntu
-          build-args: |
-            --preset=ubuntu
+      - name: Build Project
+        run: cmake --build --preset=ubuntu
