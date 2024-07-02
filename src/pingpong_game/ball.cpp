@@ -1,5 +1,6 @@
 #include "ball.hpp"
 #include <filesystem>
+#include "soundplayer.hpp"
 
 
 sf::Texture &ball::getTexture()
@@ -48,18 +49,18 @@ void ball::update()
     if (x() - getGlobalbound().width / 2 <= 0 && m_velocity.x < 0)
     {
         m_velocity.x = -m_velocity.x;
-        playSound(ball::Edge);
+        SoundPlayer::getInstance()->playSound(SoundPlayer::WALL_BOUNCE);
     }
     if (x() + getGlobalbound().width / 2 >= constants::window_width && m_velocity.x > 0)
     {
         m_velocity.x = -m_velocity.x;
-        playSound(ball::Edge);
+        SoundPlayer::getInstance()->playSound(SoundPlayer::WALL_BOUNCE);
     }
 
     if (y() - getGlobalbound().height / 2 <= 0 && m_velocity.y < 0)
     {
         m_velocity.y = -m_velocity.y;
-        playSound(ball::Edge);
+        SoundPlayer::getInstance()->playSound(SoundPlayer::WALL_BOUNCE);
     }
     if (y() + getGlobalbound().height / 2 >= constants::window_height)
         destroy();
@@ -98,24 +99,3 @@ void ball::print_info() const noexcept
     // std::cout << "ball position: " << x() << " " << y() << '\n';
 }
 
-void ball::playSound(SoundType type)
-{
-    std::string path;
-    switch (type)
-    {
-    case ball::Edge:
-        path = std::move(constants::resoucesPath + "bouncing.wav");
-        break;
-    case ball::Brick:
-        path = std::move(constants::resoucesPath + "brick.wav");
-        break;
-    default:
-        break;
-    }
-
-    if (buffer.loadFromFile(path))
-    {
-        sound.setBuffer(buffer);
-        sound.play();
-    }
-}

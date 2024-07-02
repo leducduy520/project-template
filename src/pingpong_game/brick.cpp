@@ -2,6 +2,7 @@
 #include "wallHelper.hpp"
 #include <exception>
 #include "stdlib.h"
+#include "soundplayer.hpp"
 
 // Define the static texture
 
@@ -143,8 +144,11 @@ void brick::hit(const int damage) noexcept
     switch (m_property)
     {
     case BRICK:
-        if(m_hitCount >= constants::cap_brick_hit)
+    {
+        if (m_hitCount >= constants::cap_brick_hit)
             destroyed = true;
+        SoundPlayer::getInstance()->playSound(SoundPlayer::BRICK_BOUNCE);
+    }
         break;
     case DIAMOND:
         if(m_hitCount >= constants::cap_diamond_hit)

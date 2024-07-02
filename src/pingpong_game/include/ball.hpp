@@ -29,14 +29,6 @@ public:
     void move_left() noexcept override;
     void move_right() noexcept override;
     void print_info() const noexcept override;
-
-    enum SoundType
-    {
-        Edge,
-        Brick
-    };
-
-    void playSound(SoundType type);
 };
 
 #endif // BALL_H

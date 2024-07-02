@@ -55,7 +55,6 @@ namespace interactions
             case brick::BRICK:
             {
                 br.hit();
-                b.playSound(ball::Brick);
                 auto [less, from_left, from_top] = getDirection(b, br);
 
                 if (less)
