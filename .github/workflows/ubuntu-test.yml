@@ -12,10 +12,13 @@ jobs:
       - name: Configure Project
         uses: threeal/cmake-action@main
         with:
-          run-build: false
           args: |
             --graphviz=docs/graph/graph.dot
             --no-warn-unused-cli
-            --preset=ubuntu
-      - name: Build Project
-        run: cmake --build --preset=ubuntu
+            -DCMAKE_BUILD_TYPE=release
+          build-args: |
+            -j6
+            --config release
+            --target all
+
+          
