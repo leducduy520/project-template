@@ -1,10 +1,10 @@
 #ifndef __ENTITY_MANAGER_H__
 #define __ENTITY_MANAGER_H__
 
-#include <map>
-#include <SFML/Graphics.hpp>
 #include "entity.hpp"
+#include <map>
 #include <memory>
+#include <SFML/Graphics.hpp>
 
 using entity_vector = std::vector<std::unique_ptr<entity>>;
 using entity_alias_vector = std::vector<entity *>;

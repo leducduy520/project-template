@@ -1,7 +1,7 @@
-#include "soundplayer.hpp"
 #include "constants.hpp"
 #include "magic_enum.hpp"
 #include "magic_enum_all.hpp"
+#include "soundplayer.hpp"
 
 SoundPlayer::SoundPlayer()
 {

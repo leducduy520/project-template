@@ -93,6 +93,10 @@ namespace interactions
                 a_ball.set_velocity({-a_ball.get_velocity().x, -a_ball.get_velocity().y});
             }
                 break;
+            case brick::NONE:
+            {
+                [[fallthrough]];
+            }
             default:
                 
                 break;

@@ -26,11 +26,17 @@ target_sources(
 target_sources(${PROJECT_NAME} PRIVATE ${RESOURCE_FILES})
 
 set_target_properties(
-    ${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON
-                               PUBLIC_HEADER "${PUBLIC_HEADER_FILE}"
+    ${PROJECT_NAME}
+    PROPERTIES
+        WINDOWS_EXPORT_ALL_SYMBOLS ON
+        PUBLIC_HEADER "${PUBLIC_HEADER_FILE}"
+        CXX_CLANG_TIDY
+        "clang-tidy;-checks=clang-analyzer-*,cppcoreguidelines-*,modernize-*,bugprone-*,performance-*,readability-*,readability-non-const-parameter,misc-const-correctness,misc-use-anonymous-namespace,google-explicit-constructor,-modernize-use-trailing-return-type,-bugprone-exception-escape,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-avoid-magic-numbers,-bugprone-easily-swappable-parameters,-cppcoreguidelines-non-private-member-variables-in-classes,-readability-magic-numbers,-readability-uppercase-literal-suffix,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-readability-inconsistent-declaration-parameter-name,-clang-diagnostic-c++98-compat"
     )
 
 source_group("Resource Files" FILES ${RESOURCE_FILES})
+
+target_set_warnings(TARGET ${PROJECT_NAME} ENABLE ON AS_ERRORS OFF)
 
 target_link_libraries(
     ${PROJECT_NAME} sfml-graphics sfml-audio rapidcsv SQLiteCpp magic_enum

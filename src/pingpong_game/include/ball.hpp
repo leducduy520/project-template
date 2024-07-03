@@ -11,15 +11,12 @@ class ball : public moving_entity
 {
     // Private data members
     static sf::Texture& getTexture();
-    sf::Sound sound;
-    sf::SoundBuffer buffer;
 
 public:
-    ball(float x, float y);
+    ball(float px_x, float px_y);
     ball();
-    ~ball();
 
-    void init(float x, float y) override;
+    void init(float px_x, float px_y) override;
 
     void update() override;
     void draw(sf::RenderWindow &window) override;

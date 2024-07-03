@@ -26,9 +26,9 @@ sf::Image& getImage(brick::BrickProperty property)
         const auto *const pixels = source.getPixelsPtr();
         std::vector<std::vector<sf::Uint8>> matrix(width / constants::brick_width);
         
-        for (auto px_y = 0; px_y < height; ++px_y)
+        for (unsigned int px_y = 0; px_y < height; ++px_y)
         {
-            for (auto px_x = 0; px_x < width; ++px_x)
+            for (unsigned int px_x = 0; px_x < width; ++px_x)
             {
                 auto index = (px_x + px_y * width) * 4; // 4 bytes per pixel (RGBA)
                 auto index_matrix = px_x / constants::brick_width;
@@ -95,16 +95,16 @@ sf::Texture &brick::getTexture(BrickProperty property)
     {
     case BRICK:
         return brick;
-        break;
     case DIAMOND:
         return diamond;
-        break;
     case BOMB:
         return bomb;
-        break;
+    case NONE:
+    {
+        [[fallthrough]];
+    }
     default:
         return empty;
-        break;
     }
 }
 
@@ -178,6 +178,10 @@ void brick::hit(const int damage, const bool relate) noexcept
         }
     }
         break;
+    case NONE:
+    {
+        [[fallthrough]];
+    }
     default:
         break;
     }
@@ -203,7 +207,7 @@ void wall::draw(sf::RenderWindow &window)
     }
 }
 
-void wall::init(float px_x, float px_y)
+void wall::init([[maybe_unused]] float px_x, [[maybe_unused]] float px_y)
 {
     wall_utils::createWall(*this, (constants::resoucesPath + "wall.csv").c_str());
 }

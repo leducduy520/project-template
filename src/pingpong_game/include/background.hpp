@@ -9,10 +9,10 @@ class background : public entity {
   static sf::Texture& getTexture();
  public:
   
-  background(float x, float y);
+  background(float px_x, float px_y);
   background() = default;
 
-  void init(float x, float y) override;
+  void init(float px_x, float px_y) override;
 
   // Implement the pure virtual functions
   void update() override;

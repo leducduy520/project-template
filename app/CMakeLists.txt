@@ -14,6 +14,8 @@ target_include_directories(
 # Link the GameManager library and SFML libraries
 # target_link_libraries(MySFMLApp PRIVATE sfml-graphics sfml-window sfml-system)
 
+target_set_warnings(TARGET MySFMLApp ENABLE ON AS_ERRORS OFF)
+
 if(WIN32)
     install(
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/mysfmlapp.ico

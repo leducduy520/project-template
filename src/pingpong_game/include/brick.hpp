@@ -3,9 +3,9 @@
 
 #include "constants.hpp"
 #include "entity.hpp"
+#include <memory>
 #include <unordered_map>
 #include <utility>
-#include <memory>
 
 class brick : public entity
 {

@@ -1,6 +1,6 @@
 #include "ball.hpp"
-#include <filesystem>
 #include "soundplayer.hpp"
+#include <filesystem>
 
 
 sf::Texture &ball::getTexture()
@@ -18,11 +18,11 @@ sf::Texture &ball::getTexture()
     return texture;
 }
 
-ball::ball(float x, float y) : moving_entity()
+ball::ball(float px_x, float px_y) : moving_entity()
 {
     m_sprite.setTexture(getTexture());
     m_sprite.setOrigin(get_centre());
-    init(x, y);
+    ball::init(px_x, px_y);
 }
 
 ball::ball()
@@ -31,15 +31,10 @@ ball::ball()
     m_sprite.setOrigin(get_centre());
 }
 
-ball::~ball()
+void ball::init(float px_x, float px_y)
 {
-    sound.resetBuffer();
-}
-
-void ball::init(float x, float y)
-{
-    m_sprite.setPosition(x, y);
-    m_velocity = {0, constants::ball_speed};
+    m_sprite.setPosition(px_x, px_y);
+    m_velocity = {0.0F, constants::ball_speed};
 }
 
 // Compute the ball's new position
@@ -51,7 +46,7 @@ void ball::update()
         m_velocity.x = -m_velocity.x;
         SoundPlayer::getInstance()->playSound(SoundPlayer::WALL_BOUNCE);
     }
-    if (x() + getGlobalbound().width / 2 >= constants::window_width && m_velocity.x > 0)
+    else if (x() + getGlobalbound().width / 2 >= constants::window_width && m_velocity.x > 0)
     {
         m_velocity.x = -m_velocity.x;
         SoundPlayer::getInstance()->playSound(SoundPlayer::WALL_BOUNCE);
@@ -62,8 +57,10 @@ void ball::update()
         m_velocity.y = -m_velocity.y;
         SoundPlayer::getInstance()->playSound(SoundPlayer::WALL_BOUNCE);
     }
-    if (y() + getGlobalbound().height / 2 >= constants::window_height)
+    else if (y() + getGlobalbound().height / 2 >= constants::window_height)
+    {
         destroy();
+    }
 
     m_sprite.move(m_velocity);
 }

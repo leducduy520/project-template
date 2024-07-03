@@ -1,5 +1,10 @@
 #include "entity.hpp"
 
+entity::entity() : Ientity()
+{
+
+}
+
 // Helper function to get the bounding box of a sprite
 sf::FloatRect entity::getGlobalbound() const noexcept
 {

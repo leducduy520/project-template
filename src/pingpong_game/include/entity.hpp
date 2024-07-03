@@ -1,5 +1,5 @@
-#ifndef ENTITY_H
-#define ENTITY_H
+#ifndef __ENTITY_H__
+#define __ENTITY_H__
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -9,18 +9,24 @@ class Ientity
 protected:
     sf::Sprite m_sprite;
     bool m_destroyed{false};
-    virtual ~Ientity() = default;
 
 public:
+    virtual ~Ientity() = default;
     virtual void update() = 0;
     virtual void draw(sf::RenderWindow &window) = 0;
-    virtual void init(float x, float y) = 0;
+    virtual void init(float px_x, float px_y) = 0;
+
+    Ientity() = default;
+    Ientity(const Ientity &other) noexcept = default;
+    Ientity &operator=(const Ientity &other) noexcept = default;
+    Ientity(Ientity &&other) noexcept = default;
+    Ientity &operator=(Ientity &&other) noexcept = default;
 };
 
 class entity : public Ientity
 {
 public:
-    
+    entity();
     sf::FloatRect getGlobalbound() const noexcept;
 
     sf::Vector2f get_centre() const noexcept;
@@ -39,10 +45,6 @@ public:
     virtual bool is_destroyed() const noexcept;
 
     void set_position(const sf::Vector2f& pos) noexcept;
-
-    virtual ~entity()
-    {
-    }
 };
 
 
@@ -62,4 +64,4 @@ public:
     sf::Vector2f get_velocity() const noexcept;
 };
 
-#endif // ENTITY_H
+#endif // __ENTITY_H__

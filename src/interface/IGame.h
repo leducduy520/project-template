@@ -4,10 +4,10 @@
 #include <string>
 
 class IGame{
-    public:
+public:
 	virtual void run() = 0;
     virtual void init(std::string&) = 0;
-    ~IGame(){};
+    virtual ~IGame() = default;
 };
 
 #if defined _WIN32

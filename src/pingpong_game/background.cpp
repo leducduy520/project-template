@@ -13,15 +13,15 @@ sf::Texture &background::getTexture()
     return texture;
 }
 
-background::background(float x, float y) : entity()
+background::background(float px_x, float px_y)
 {
     m_sprite.setTexture(getTexture());
-    init(x, y);
+    background::init(px_x, px_y);
 }
 
-void background::init(float x, float y)
+void background::init(float px_x, float px_y)
 {
-    m_sprite.setPosition(x, y);
+    m_sprite.setPosition(px_x, px_y);
 }
 
 // Compute the background's new position

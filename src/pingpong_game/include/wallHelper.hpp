@@ -6,17 +6,18 @@
 #include <algorithm>
 
 namespace wall_utils{
-    void createWall(wall& w, const char* path);
-    void destroyAround(wall& w, brick& br, sf::Vector2i range);
-    void checkAlive(wall &w);
+    void createWall(wall& a_wall, const char* path);
+void destroyAround(wall &a_wall, brick &a_brick, sf::Vector2i range);
+    void checkAlive(wall &a_wall);
     template <typename T>
-    void interactionwith(wall& w, entity& entity)
+    void interactionwith(wall &a_wall, entity &entity)
     {
         auto elm = dynamic_cast<T*>(&entity);
         if(elm)
         {
-            for (auto it = w.begin(); it != w.end(); ++it) {
-                interactions::handle_interaction(w, *elm, *(it->second.get()));
+            for (auto it = a_wall.begin(); it != a_wall.end(); ++it)
+            {
+                interactions::handle_interaction(a_wall, *elm, *(it->second.get()));
             }
         }
         else{

@@ -4,50 +4,50 @@
 #include <ios>
 
 namespace wall_utils{
-    void createWall(wall &w, const char *path)
+    void createWall(wall &a_wall, const char *path)
     {
-        if(w.size())
+        if(!a_wall.empty())
         {
-            w.clear();
+            a_wall.clear();
         }
 
-        rapidcsv::Document doc(path, rapidcsv::LabelParams(-1, -1));
+        const rapidcsv::Document doc(path, rapidcsv::LabelParams(-1, -1));
 
         const auto padding = (constants::window_width - constants::brick_width * doc.GetColumnCount()) / 2;
-        for (int i = 0; i < doc.GetRowCount(); i++)
+        for (decltype(doc.GetRowCount()) i = 0; i < doc.GetRowCount(); i++)
         {
             const auto rows = doc.GetRow<int>(i);
-            for (int j = 0; j < rows.size(); j++)
+            for (decltype(rows.size()) j = 0; j < rows.size(); j++)
             {
-                float x = padding + j * constants::brick_width;
-                float y = i * constants::brick_height;
-                brick::BrickProperty property = static_cast<brick::BrickProperty>(doc.GetCell<int>(j, i));
-                w[{x, y}] = std::make_unique<brick>(x, y, property);
+                const float px_x = padding + j * constants::brick_width;
+                const float px_y = i * constants::brick_height;
+                const auto property = static_cast<brick::BrickProperty>(doc.GetCell<int>(j, i));
+                a_wall[{px_x, px_y}] = std::make_unique<brick>(px_x, px_y, property);
             }
         }
     }
 
-    void destroyAround(wall& w, brick& br, sf::Vector2i range)
+    void destroyAround(wall& a_wall, brick& a_brick, sf::Vector2i range)
     {
-        sf::Vector2f explode_point{br.x(), br.y()};
+        const sf::Vector2f explode_point{a_brick.x(), a_brick.y()};
         
-        auto x = explode_point.x - (range.x - 1) / 2 * br.width();
-        auto y = explode_point.y - (range.y - 1) / 2 * br.height();
+        auto px_x = explode_point.x - (range.x - 1) / 2 * a_brick.width();
+        auto px_y = explode_point.y - (range.y - 1) / 2 * a_brick.height();
 
         for (int i = 0; i < range.y; ++i)
         {
             for (int j = 0; j < range.x; ++j)
             {
-                sf::Vector2f hit_point{x + i * br.width(), y + j * br.height()};
+                const sf::Vector2f hit_point{px_x + i * a_brick.width(), px_y + j * a_brick.height()};
 
-                auto it = w.find(hit_point);
-                if (it != w.end() && !it->second.get()->is_destroyed())
+                auto iter = a_wall.find(hit_point);
+                if (iter != a_wall.end() && !iter->second.get()->is_destroyed())
                 {
-                    auto alias = it->second.get();
+                    auto* alias = iter->second.get();
                     if(alias->getProperty() == brick::BOMB)
                     {
                         alias->hit(constants::cap_brick_hit);
-                        destroyAround(w, *alias, range);
+                        destroyAround(a_wall, *alias, range);
                     }
                     else
                     {

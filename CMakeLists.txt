@@ -39,6 +39,10 @@ if(UNIX)
     set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 endif(UNIX)
 
+if(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    set(CMAKE_COLOR_DIAGNOSTICS ON)
+endif(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+
 foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
     string(TOUPPER ${build_type} build_type_upper)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper}
@@ -53,7 +57,8 @@ foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
 endforeach()
 
 include(Tools)
-include(GraphAndDoc)
+include(Document)
+include(Warnings)
 
 FetchContent_Declare(
     SFML GIT_REPOSITORY https://github.com/SFML/SFML.git GIT_TAG 2.6.x

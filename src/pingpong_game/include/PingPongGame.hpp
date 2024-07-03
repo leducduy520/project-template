@@ -32,8 +32,9 @@ class PingPongGame : public IGame {
 	static void centeredText(sf::Text& text);
 
 public:
-	PingPongGame(std::string resourcePath);
+	explicit PingPongGame(std::string resourcePath);
 	PingPongGame();
+
 	void init(std::string& resourcePath) override;
 	// Reinitialize the game
 	void reset();

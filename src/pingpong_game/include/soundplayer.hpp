@@ -7,7 +7,7 @@
 class SoundPlayer {
 public:
     static SoundPlayer* getInstance(){
-        static SoundPlayer* instance = new SoundPlayer();
+        static auto* instance = new SoundPlayer();
         return instance;
     }
 
@@ -21,6 +21,11 @@ public:
 
     SoundPlayer();
     ~SoundPlayer();
+
+    SoundPlayer (const SoundPlayer &other) = delete;
+    SoundPlayer (SoundPlayer &&other) = delete;
+    SoundPlayer &operator=(const SoundPlayer &other) = delete;
+    SoundPlayer &operator=(SoundPlayer &&other) = delete;
 
     void playSound(const SoundMode& mode);
 
