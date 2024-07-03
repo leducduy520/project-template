@@ -76,10 +76,10 @@ SoundPlayer::~SoundPlayer()
 
 void SoundPlayer::playSound(const SoundMode &mode)
 {
-    auto it = m_soundDict.find(mode);
-    if(it != m_soundDict.end())
+    auto iter = m_soundDict.find(mode);
+    if(iter != m_soundDict.end())
     {
-        m_player.setBuffer(it->second);
+        m_player.setBuffer(iter->second);
         m_player.play();
     }
 }

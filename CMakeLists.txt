@@ -41,32 +41,41 @@ endif(UNIX)
 
 foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
     string(TOUPPER ${build_type} build_type_upper)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/lib)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/lib)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} ${CMAKE_BINARY_DIR}/${build_type}/bin)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper}
+        ${CMAKE_BINARY_DIR}/${build_type}/lib
+        )
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${build_type_upper}
+        ${CMAKE_BINARY_DIR}/${build_type}/lib
+        )
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper}
+        ${CMAKE_BINARY_DIR}/${build_type}/bin
+        )
 endforeach()
 
 include(Tools)
 include(GraphAndDoc)
 
-FetchContent_Declare(SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 2.6.x)
+FetchContent_Declare(
+    SFML GIT_REPOSITORY https://github.com/SFML/SFML.git GIT_TAG 2.6.x
+    )
 FetchContent_MakeAvailable(SFML)
 
-FetchContent_Declare(rapidcsv
-    GIT_REPOSITORY https://github.com/d99kris/rapidcsv.git
-    GIT_TAG v8.82 )
+FetchContent_Declare(
+    rapidcsv GIT_REPOSITORY https://github.com/d99kris/rapidcsv.git
+    GIT_TAG v8.82
+    )
 FetchContent_MakeAvailable(rapidcsv)
 
-FetchContent_Declare(SQLiteCpp
-    GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
-    GIT_TAG 3.3.1 )
+FetchContent_Declare(
+    SQLiteCpp GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
+    GIT_TAG 3.3.1
+    )
 FetchContent_MakeAvailable(SQLiteCpp)
 
-FetchContent_Declare(magic_enum
-    GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
-    GIT_TAG v0.9.6 )
+FetchContent_Declare(
+    magic_enum GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
+    GIT_TAG v0.9.6
+    )
 FetchContent_MakeAvailable(magic_enum)
 
 add_subdirectory(src)

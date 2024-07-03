@@ -94,6 +94,24 @@
         "--no-warn-unused-cli"
     ],
     "cmake.configureOnOpen": false,
+    "[cmake]": {
+        "editor.quickSuggestions": {
+            "strings": true
+        },
+        "editor.defaultFormatter": "cheshirekow.cmake-format",
+        "editor.formatOnSave": true
+    },
+    "[yaml]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "keep",
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": true
+        }
+    },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "C_Cpp.default.cppStandard": "c++17",
     "C_Cpp.default.cStandard": "c17"

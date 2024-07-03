@@ -6,7 +6,7 @@
 class IGame{
     public:
 	virtual void run() = 0;
-    virtual void init(std::string) = 0;
+    virtual void init(std::string&) = 0;
     ~IGame(){};
 };
 

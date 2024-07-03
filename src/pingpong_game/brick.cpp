@@ -1,7 +1,7 @@
 #include "brick.hpp"
 #include "wallHelper.hpp"
 #include <exception>
-#include "stdlib.h"
+#include <cstdlib>
 #include "soundplayer.hpp"
 
 // Define the static texture
@@ -17,21 +17,21 @@ sf::Image& getImage(brick::BrickProperty property)
         sf::Image source;
         if (!source.loadFromFile(constants::resoucesPath + "brick.png"))
         {
-            std::string message = "Cannot open source image "s + constants::resoucesPath + "brick.png";
+            const std::string message = "Cannot open source image "s + constants::resoucesPath + "brick.png";
             throw std::logic_error(message.c_str());
         }
         
         const auto width = source.getSize().x;
         const auto height = source.getSize().y;
-        const auto pixels = source.getPixelsPtr();
+        const auto *const pixels = source.getPixelsPtr();
         std::vector<std::vector<sf::Uint8>> matrix(width / constants::brick_width);
         
-        for (auto y = 0; y < height; ++y)
+        for (auto px_y = 0; px_y < height; ++px_y)
         {
-            for (auto x = 0; x < width; ++x)
+            for (auto px_x = 0; px_x < width; ++px_x)
             {
-                auto index = (x + y * width) * 4; // 4 bytes per pixel (RGBA)
-                auto index_matrix = x / constants::brick_width;
+                auto index = (px_x + px_y * width) * 4; // 4 bytes per pixel (RGBA)
+                auto index_matrix = px_x / constants::brick_width;
                 matrix.at(index_matrix).push_back(pixels[index]);
                 matrix.at(index_matrix).push_back(pixels[index + 1]);
                 matrix.at(index_matrix).push_back(pixels[index + 2]);
@@ -39,10 +39,10 @@ sf::Image& getImage(brick::BrickProperty property)
             }
         }
 
-        for (int i = 0; i < matrix.size(); i++)
+        for (const auto& elm: matrix)
         {
             sf::Image des;
-            des.create(constants::brick_width, constants::brick_height, &matrix[i][0]);
+            des.create(constants::brick_width, constants::brick_height, elm.data());
             list.push_back(std::move(des));
         }
 
@@ -54,14 +54,13 @@ sf::Image& getImage(brick::BrickProperty property)
 
 sf::Texture &brick::getTexture(BrickProperty property)
 {
-    retry:
     static sf::Texture empty;
     static sf::Texture brick;
     static sf::Texture diamond;
     static sf::Texture bomb;
     static bool initialized = false;
     static int retryCount = 0;
-    if (!initialized) {
+    while (!initialized) {
         try
         {
             if (!brick.loadFromImage(getImage(BRICK)))
@@ -85,7 +84,7 @@ sf::Texture &brick::getTexture(BrickProperty property)
                 std::cout << "Retrying after 5 seconds...\n";
                 retryCount++;
                 sf::sleep(sf::seconds(5.0f));
-                goto retry;
+                continue;
             }
             throw e;
         }
@@ -109,16 +108,16 @@ sf::Texture &brick::getTexture(BrickProperty property)
     }
 }
 
-brick::brick(float x, float y, BrickProperty property)
+brick::brick(float px_x, float px_y, BrickProperty property)
     : m_property(property), m_hitCount(0)
 {
     m_sprite.setTexture(getTexture(property));
-    init(x, y);
+    brick::init(px_x, px_y);
 }
 
-void brick::init(float x, float y)
+void brick::init(float px_x, float px_y)
 {
-    m_sprite.setPosition(x, y);
+    m_sprite.setPosition(px_x, px_y);
 }
 
 // Compute the brick's new position
@@ -146,32 +145,46 @@ void brick::hit(const int damage, const bool relate) noexcept
     case BRICK:
     {
         if (m_hitCount >= constants::cap_brick_hit)
+        {
             destroyed = true;
+        }
         if(!relate)
+        {
             SoundPlayer::getInstance()->playSound(SoundPlayer::BRICK_BOUNCE);
+        }
     }
         break;
     case DIAMOND:
     {
         if (m_hitCount >= constants::cap_diamond_hit)
+        {
             destroyed = true;
+        }
         if(!relate)
+        {
             SoundPlayer::getInstance()->playSound(SoundPlayer::DIAMOND_DESTROY);
+        }
     }
         break;
     case BOMB:
     {
         if (m_hitCount >= constants::cap_bomb_hit)
+        {
             destroyed = true;
+        }
         if(!relate)
+        {
             SoundPlayer::getInstance()->playSound(SoundPlayer::BOMB_EXPLOSION);
+        }
     }
         break;
     default:
         break;
     }
     if (destroyed)
+    {
         destroy();
+    }
 }
 
 void wall::update()
@@ -190,7 +203,7 @@ void wall::draw(sf::RenderWindow &window)
     }
 }
 
-void wall::init(float x, float y)
+void wall::init(float px_x, float px_y)
 {
     wall_utils::createWall(*this, (constants::resoucesPath + "wall.csv").c_str());
 }

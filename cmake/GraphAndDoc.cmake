@@ -6,14 +6,16 @@ if(Doxygen_FOUND)
     if(BUILD_GRAPH)
         add_custom_command(
             OUTPUT ${DOCS_GRAPH_DIR}/mysfmlapp-graph.png
-            COMMAND ${DOXYGEN_DOT_EXECUTABLE} -v -Tpng graph.dot -o mysfmlapp-graph.png
+            COMMAND ${DOXYGEN_DOT_EXECUTABLE} -v -Tpng graph.dot -o
+                    mysfmlapp-graph.png
             DEPENDS ${DOCS_GRAPH_DIR}/graph.dot
             WORKING_DIRECTORY ${DOCS_GRAPH_DIR}
             VERBATIM USES_TERMINAL
             )
 
         add_custom_target(
-            gen_graph ALL COMMENT "Generate project graph dependencies" DEPENDS ${DOCS_GRAPH_DIR}/mysfmlapp-graph.png
+            gen_graph ALL COMMENT "Generate project graph dependencies"
+            DEPENDS ${DOCS_GRAPH_DIR}/mysfmlapp-graph.png
             )
     endif(BUILD_GRAPH)
 
@@ -31,14 +33,20 @@ if(Doxygen_FOUND)
             COMMENT "Generate project document"
             DEPENDS ${DOCS_HTML_DIR}/index.html
             SOURCES ${DOCS_DIR}/docCfg
-            )    
+            )
     endif(BUILD_DOCS)
 
     if(INSTALL_GRAPH)
-        install(FILES ${DOCS_GRAPH_DIR}/mysfmlapp-graph.png DESTINATION ${CMAKE_INSTALL_DATADIR}/MySFMLApp)
+        install(
+            FILES ${DOCS_GRAPH_DIR}/mysfmlapp-graph.png
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/MySFMLApp
+            )
     endif(INSTALL_GRAPH)
 
     if(INSTALL_DOCS)
-        install(DIRECTORY ${DOCS_HTML_DIR} DESTINATION ${CMAKE_INSTALL_DATADIR}/MySFMLApp)
+        install(
+            DIRECTORY ${DOCS_HTML_DIR}
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/MySFMLApp
+            )
     endif(INSTALL_DOCS)
 endif(Doxygen_FOUND)

@@ -29,12 +29,12 @@ class PingPongGame : public IGame {
 	void render();
     void try_createwall();
 
-	void centeredText(sf::Text& text);
+	static void centeredText(sf::Text& text);
 
 public:
 	PingPongGame(std::string resourcePath);
 	PingPongGame();
-	void init(std::string resourcePath) override;
+	void init(std::string& resourcePath) override;
 	// Reinitialize the game
 	void reset();
 

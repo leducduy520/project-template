@@ -14,18 +14,18 @@ sf::Texture &paddle::getTexture()
     return texture;
 }
 
-paddle::paddle(float x, float y) : moving_entity()
+paddle::paddle(float px_x, float px_y) : moving_entity()
 {
     m_sprite.setTexture(getTexture());
     m_sprite.setOrigin(get_centre());
-    init(x, y);
+    paddle::init(px_x, px_y);
 }
 
-void paddle::init(float x, float y)
+void paddle::init(float px_x, float px_y)
 {
     m_sprite.setScale(constants::paddlle_width / m_sprite.getLocalBounds().width,
                     constants::paddlle_height / m_sprite.getLocalBounds().height);
-    m_sprite.setPosition(x, y);
+    m_sprite.setPosition(px_x, px_y);
     m_velocity = {0, 0};
 }
 
@@ -47,7 +47,7 @@ void paddle::update()
         }
         else
         {
-            m_velocity.x += constants::paddle_decel / 2.0f * std::signbit(m_velocity.x) ? 1 : -1;
+            m_velocity.x += constants::paddle_decel / 2.0f * (std::signbit(m_velocity.x) ? 1.0F : -1.0F);
         }
     }
     m_sprite.move(m_velocity);
