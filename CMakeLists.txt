@@ -19,6 +19,8 @@ option(BUILD_CMAKE_FORMAT "enable cmake format" ON)
 option(BUILD_GRAPH "build graph" ON)
 option(BUILD_DOCS "build documentation" ON)
 option(BUILD_TEST "enable build test executable" OFF)
+option(ENABLE_WARNINGS "enable warnings" ON)
+option(ENABLE_WARNINGS_AS_ERRORS "enable warnings as errors" OFF)
 
 cmake_dependent_option(INSTALL_DOCS "install docs" OFF "NOT BUILD_DOCS" OFF)
 cmake_dependent_option(INSTALL_GRAPH "install graph" OFF "NOT BUILD_GRAPH" OFF)

@@ -36,7 +36,10 @@ set_target_properties(
 
 source_group("Resource Files" FILES ${RESOURCE_FILES})
 
-target_set_warnings(TARGET ${PROJECT_NAME} ENABLE ON AS_ERRORS OFF)
+target_set_warnings(
+    TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS
+    ${ENABLE_WARNINGS_AS_ERRORS}
+    )
 
 target_link_libraries(
     ${PROJECT_NAME} sfml-graphics sfml-audio rapidcsv SQLiteCpp magic_enum

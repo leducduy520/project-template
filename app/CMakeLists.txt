@@ -14,7 +14,10 @@ target_include_directories(
 # Link the GameManager library and SFML libraries
 # target_link_libraries(MySFMLApp PRIVATE sfml-graphics sfml-window sfml-system)
 
-target_set_warnings(TARGET MySFMLApp ENABLE ON AS_ERRORS OFF)
+target_set_warnings(
+    TARGET MySFMLApp ENABLE ${ENABLE_WARNINGS} AS_ERRORS
+    ${ENABLE_WARNINGS_AS_ERRORS}
+    )
 
 if(WIN32)
     install(
