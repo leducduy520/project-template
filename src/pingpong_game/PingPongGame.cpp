@@ -73,9 +73,9 @@ void PingPongGame::stateHandler()
     case game_state::paused:
     {
         m_textState.setString("Paused");
-		m_textLive.setString("Lives: " + std::to_string(m_live));
+        m_textLive.setString("Lives: " + std::to_string(m_live));
 
-		centeredText(m_textState);
+        centeredText(m_textState);
     }
     break;
     case game_state::game_over:
@@ -84,13 +84,15 @@ void PingPongGame::stateHandler()
         centeredText(m_textState);
     }
     break;
-	case game_state::player_wins:
+    case game_state::player_wins:
     {
         m_textState.setString("Win");
         centeredText(m_textState);
     }
     break;
-	default:
+    case game_state::running:
+        [[fallthrough]];
+    default:
         break;
     }
 }

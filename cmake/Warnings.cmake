@@ -57,6 +57,18 @@ function(target_set_warnings)
         # Disable warnings
         -Wno-c++98-compat
         -Wno-c++98-compat-pedantic
+        -Wno-suggest-override
+        -Wno-zero-as-null-pointer-constant
+        -Wno-suggest-destructor-override
+        -Wno-reserved-macro-identifier
+        -Wno-language-extension-token
+        -Wno-documentation-deprecated-sync
+        -Wno-reserved-identifier
+        -Wno-documentation
+        -Wno-newline-eof
+        -Wno-exit-time-destructors
+        -Wno-missing-prototypes
+        -Wno-covered-switch-default
         )
 
     set(GCC_WARNINGS

@@ -49,7 +49,7 @@ sf::Image& getImage(brick::BrickProperty property)
         initialized = true;
     }
     
-    return list.at(static_cast<int>(property) - 1);
+    return list.at(static_cast<size_t>(property) - size_t(1));
 }
 
 sf::Texture &brick::getTexture(BrickProperty property)
@@ -100,9 +100,7 @@ sf::Texture &brick::getTexture(BrickProperty property)
     case BOMB:
         return bomb;
     case NONE:
-    {
         [[fallthrough]];
-    }
     default:
         return empty;
     }
@@ -142,48 +140,46 @@ void brick::hit(const int damage, const bool relate) noexcept
     bool destroyed = false;
     switch (m_property)
     {
-    case BRICK:
-    {
-        if (m_hitCount >= constants::cap_brick_hit)
+        case BRICK:
         {
-            destroyed = true;
+            if (m_hitCount >= constants::cap_brick_hit)
+            {
+                destroyed = true;
+            }
+            if(!relate)
+            {
+                SoundPlayer::getInstance()->playSound(SoundPlayer::BRICK_BOUNCE);
+            }
         }
-        if(!relate)
+            break;
+        case DIAMOND:
         {
-            SoundPlayer::getInstance()->playSound(SoundPlayer::BRICK_BOUNCE);
+            if (m_hitCount >= constants::cap_diamond_hit)
+            {
+                destroyed = true;
+            }
+            if(!relate)
+            {
+                SoundPlayer::getInstance()->playSound(SoundPlayer::DIAMOND_DESTROY);
+            }
         }
-    }
-        break;
-    case DIAMOND:
-    {
-        if (m_hitCount >= constants::cap_diamond_hit)
+            break;
+        case BOMB:
         {
-            destroyed = true;
+            if (m_hitCount >= constants::cap_bomb_hit)
+            {
+                destroyed = true;
+            }
+            if(!relate)
+            {
+                SoundPlayer::getInstance()->playSound(SoundPlayer::BOMB_EXPLOSION);
+            }
         }
-        if(!relate)
-        {
-            SoundPlayer::getInstance()->playSound(SoundPlayer::DIAMOND_DESTROY);
-        }
-    }
-        break;
-    case BOMB:
-    {
-        if (m_hitCount >= constants::cap_bomb_hit)
-        {
-            destroyed = true;
-        }
-        if(!relate)
-        {
-            SoundPlayer::getInstance()->playSound(SoundPlayer::BOMB_EXPLOSION);
-        }
-    }
-        break;
-    case NONE:
-    {
-        [[fallthrough]];
-    }
-    default:
-        break;
+            break;
+        case NONE:
+            [[fallthrough]];
+        default:
+            break;
     }
     if (destroyed)
     {
