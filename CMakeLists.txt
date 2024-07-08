@@ -21,9 +21,14 @@ option(BUILD_DOCS "build documentation" ON)
 option(BUILD_TEST "enable build test executable" OFF)
 option(ENABLE_WARNINGS "enable warnings" ON)
 option(ENABLE_WARNINGS_AS_ERRORS "enable warnings as errors" OFF)
+option(ENABLE_CLANG_TIDY "enable clang tidy" OFF)
 
 cmake_dependent_option(INSTALL_DOCS "install docs" OFF "NOT BUILD_DOCS" OFF)
 cmake_dependent_option(INSTALL_GRAPH "install graph" OFF "NOT BUILD_GRAPH" OFF)
+cmake_dependent_option(
+    CLANG_TIDY_CHECK "clang_tidy_check" ON
+    "ENABLE_CLANG_TIDY AND NOT ENABLE_WARNINGS" OFF
+    )
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

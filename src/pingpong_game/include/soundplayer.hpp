@@ -3,6 +3,7 @@
 
 #include "SFML/Audio.hpp"
 #include <unordered_map>
+#include <mutex>
 
 class SoundPlayer {
 public:

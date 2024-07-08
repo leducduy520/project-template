@@ -8,7 +8,6 @@ if(Doxygen_FOUND)
             OUTPUT ${DOCS_GRAPH_DIR}/mysfmlapp-graph.png
             COMMAND ${DOXYGEN_DOT_EXECUTABLE} -v -Tpng graph.dot -o
                     mysfmlapp-graph.png
-            DEPENDS ${DOCS_GRAPH_DIR}/graph.dot
             WORKING_DIRECTORY ${DOCS_GRAPH_DIR}
             VERBATIM USES_TERMINAL
             )
@@ -23,7 +22,7 @@ if(Doxygen_FOUND)
         add_custom_command(
             OUTPUT ${DOCS_HTML_DIR}/index.html
             COMMAND ${DOXYGEN_EXECUTABLE} ./docCfg
-            DEPENDS ${DOCS_DIR}/docCfg
+            DEPENDS "${DOCS_DIR}/docCfg"
             WORKING_DIRECTORY ${DOCS_DIR}
             VERBATIM USES_TERMINAL
             )
@@ -32,7 +31,7 @@ if(Doxygen_FOUND)
             gen_doc ALL
             COMMENT "Generate project document"
             DEPENDS ${DOCS_HTML_DIR}/index.html
-            SOURCES ${DOCS_DIR}/docCfg
+            SOURCES "${DOCS_DIR}/docCfg"
             )
     endif(BUILD_DOCS)
 

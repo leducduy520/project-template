@@ -26,13 +26,17 @@ target_sources(
 target_sources(${PROJECT_NAME} PRIVATE ${RESOURCE_FILES})
 
 set_target_properties(
-    ${PROJECT_NAME}
-    PROPERTIES
-        WINDOWS_EXPORT_ALL_SYMBOLS ON
-        PUBLIC_HEADER "${PUBLIC_HEADER_FILE}"
-        CXX_CLANG_TIDY
-        "clang-tidy;-checks=clang-analyzer-*,cppcoreguidelines-*,modernize-*,bugprone-*,performance-*,readability-*,readability-non-const-parameter,misc-const-correctness,misc-use-anonymous-namespace,google-explicit-constructor,-modernize-use-trailing-return-type,-bugprone-exception-escape,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-avoid-magic-numbers,-bugprone-easily-swappable-parameters,-cppcoreguidelines-non-private-member-variables-in-classes,-readability-magic-numbers,-readability-uppercase-literal-suffix,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-readability-inconsistent-declaration-parameter-name,-clang-diagnostic-c++98-compat"
+    ${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON
+                               PUBLIC_HEADER "${PUBLIC_HEADER_FILE}"
     )
+
+if(CLANG_TIDY_CHECK)
+    set_target_properties(
+        ${PROJECT_NAME}
+        PROPERTIES CXX_CLANG_TIDY
+                   "clang-tidy;--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy"
+        )
+endif(CLANG_TIDY_CHECK)
 
 source_group("Resource Files" FILES ${RESOURCE_FILES})
 
