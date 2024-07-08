@@ -21,12 +21,7 @@ std::filesystem::path getExecutablePath() {
 #endif
 }
 
-#define EXECUTABLE_PATH (getExecutablePath())
-#if defined(_WIN32)
-            #define dirSep "\\"
-#else
-            #define dirSep "/"    
-#endif
+#define EXECUTABLE_PATH getExecutablePath()
 
 int main() {
     ModuleManager moduleManager;

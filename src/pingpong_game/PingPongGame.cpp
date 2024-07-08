@@ -252,6 +252,7 @@ void PingPongGame::run() {
 		update();
 		render();
 	}
+    SoundPlayer::destroyInstance();
     m_entity_manager.clear();
 }
 

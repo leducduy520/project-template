@@ -7,8 +7,15 @@
 class SoundPlayer {
 public:
     static SoundPlayer* getInstance(){
-        static auto* instance = new SoundPlayer();
-        return instance;
+        std::call_once(m_callflag, []() mutable {
+            m_instance = new SoundPlayer();
+        });
+        return m_instance;
+    }
+
+    static void destroyInstance(){
+        delete m_instance;
+        m_instance = nullptr;
     }
 
     enum SoundMode{
@@ -19,8 +26,6 @@ public:
         BOMB_EXPLOSION
     };
 
-    SoundPlayer();
-    ~SoundPlayer();
 
     SoundPlayer (const SoundPlayer &other) = delete;
     SoundPlayer (SoundPlayer &&other) = delete;
@@ -29,10 +34,16 @@ public:
 
     void playSound(const SoundMode& mode);
 
+protected:
+    ~SoundPlayer();
+
 private:
+    SoundPlayer();
     sf::Sound m_player;
     sf::Music m_music;
     std::unordered_map<SoundMode, sf::SoundBuffer> m_soundDict;
+    static std::once_flag m_callflag;
+    static SoundPlayer *m_instance;
 };
 
 #endif // __SOUNDPLAYER_H__

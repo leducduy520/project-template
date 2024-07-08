@@ -32,7 +32,7 @@
         {
             "name": "windows",
             "inherits": "base",
-            "generator": "Ninja",
+            "generator": "MinGW Makefiles",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": {
                     "type": "FILEPATH",

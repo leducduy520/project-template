@@ -3,6 +3,9 @@
 #include "magic_enum_all.hpp"
 #include "soundplayer.hpp"
 
+SoundPlayer *SoundPlayer::m_instance = nullptr;
+std::once_flag SoundPlayer::m_callflag;
+
 SoundPlayer::SoundPlayer()
 {
     m_music.openFromFile(constants::resoucesPath + "game_background.wav");
