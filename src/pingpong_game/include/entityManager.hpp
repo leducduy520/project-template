@@ -79,3 +79,4 @@ public:
 };
 
 #endif // __ENTITY_MANAGER_H__
+

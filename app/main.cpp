@@ -9,7 +9,7 @@
 #include "ModuleManager.h"
 #include "IGame.h"
 
-std::filesystem::path getExecutablePath() {
+static std::filesystem::path getExecutablePath() {
 #ifdef _WIN32
     char path[MAX_PATH];
     GetModuleFileNameA(nullptr, path, MAX_PATH);
