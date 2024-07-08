@@ -37,7 +37,7 @@ namespace interactions
 
             new_vel.x += a_paddle.get_velocity().x * constants::paddle_damping;
             const bool new_x_signed = std::signbit(new_vel.x);
-            if (abs(new_vel.x) > 0.9f * constants::ball_speed)
+            if (std::abs(new_vel.x) > 0.9F * constants::ball_speed)
             {
                 new_vel.x = 0.9f * constants::ball_speed * (new_x_signed ? -1.0f : 1.0f);
             }
@@ -62,11 +62,11 @@ namespace interactions
                 {
                     if (from_left)
                     {
-                        a_ball.set_velocity({-abs(a_ball.get_velocity().x), a_ball.get_velocity().y});
+                        a_ball.set_velocity({-std::abs(a_ball.get_velocity().x), a_ball.get_velocity().y});
                     }
                     else
                     {
-                        a_ball.set_velocity({abs(a_ball.get_velocity().x), a_ball.get_velocity().y});
+                        a_ball.set_velocity({std::abs(a_ball.get_velocity().x), a_ball.get_velocity().y});
                     }
                     
                 }
@@ -74,11 +74,11 @@ namespace interactions
                 {
                     if (from_top)
                     {
-                        a_ball.set_velocity({a_ball.get_velocity().x, -abs(a_ball.get_velocity().y)});
+                        a_ball.set_velocity({a_ball.get_velocity().x, -std::abs(a_ball.get_velocity().y)});
                     }
                     else
                     {
-                        a_ball.set_velocity({a_ball.get_velocity().x, abs(a_ball.get_velocity().y)});
+                        a_ball.set_velocity({a_ball.get_velocity().x, std::abs(a_ball.get_velocity().y)});
                     }
                     
                 }
