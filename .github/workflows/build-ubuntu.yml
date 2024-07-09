@@ -21,12 +21,15 @@ jobs:
       - name: Configure and Build Project
         uses: threeal/cmake-action@main
         with:
+          build-dir: out/build/ubuntu
           args: |
             --graphviz=./docs/graph/graph.dot
             --no-warn-unused-cli
-            -DCMAKE_BUILD_TYPE=${{inputs.build_type}}
             --preset=ubuntu
+          options: |
+            -DCMAKE_BUILD_TYPE=${{inputs.build_type}}
           build-args: |
+            -j8
             --target=${{inputs.target}}
             --config=${{inputs.build_type}}
     
