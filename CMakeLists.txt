@@ -79,11 +79,11 @@ FetchContent_Declare(
     )
 FetchContent_MakeAvailable(rapidcsv)
 
-FetchContent_Declare(
-    SQLiteCpp GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
-    GIT_TAG 3.3.1
-    )
-FetchContent_MakeAvailable(SQLiteCpp)
+# FetchContent_Declare(
+#     SQLiteCpp GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
+#     GIT_TAG 3.3.1
+#     )
+# FetchContent_MakeAvailable(SQLiteCpp)
 
 FetchContent_Declare(
     magic_enum GIT_REPOSITORY https://github.com/Neargye/magic_enum.git

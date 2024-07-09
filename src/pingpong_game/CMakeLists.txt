@@ -46,7 +46,7 @@ target_set_warnings(
     )
 
 target_link_libraries(
-    ${PROJECT_NAME} sfml-graphics sfml-audio rapidcsv SQLiteCpp magic_enum
+    ${PROJECT_NAME} sfml-graphics sfml-audio rapidcsv magic_enum
     )
 
 if(WIN32)
