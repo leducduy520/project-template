@@ -1,5 +1,5 @@
 config-win:
-	cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=mingw
+	cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=windows
 .PHONY: config-win
 
 config-ubuntu:
@@ -7,7 +7,7 @@ config-ubuntu:
 .PHONY: config-ubuntu
 
 fresh-win:
-	cmake --fresh --no-warn-unused-cli --graphviz=docs/graph/graph.dot  --preset=mingw
+	cmake --fresh --no-warn-unused-cli --graphviz=docs/graph/graph.dot  --preset=windows
 .PHONY: fresh-win
 
 fresh-ubuntu:
