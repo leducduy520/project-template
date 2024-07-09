@@ -31,7 +31,7 @@ jobs:
     with:
       target: ${{inputs.target}}
       build_type: ${{matrix.build_type}}
-      os: ${{matrix.build_type}}
+      os: ${{matrix.os}}
     # runs-on: ubuntu-22.04
     # permissions:
     #   contents: write
