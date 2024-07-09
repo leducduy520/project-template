@@ -28,5 +28,5 @@ jobs:
             -DDOCS_DIR=docs
           build-args: |
             --target=ubuntu-${{inputs.target}}
-            --config=${{inputs.build_type}}
+            --config=${{inputs.build_type}}]
     
