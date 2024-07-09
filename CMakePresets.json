@@ -5,7 +5,6 @@
             "name": "environment",
             "hidden": true,
             "environment": {
-                "BUILD_TYPE": "Debug",
                 "OUR_DIR_NAME": "out",
                 "INSTALL_DIR_NAME": "install",
                 "BUILD_DIR_NAME": "build",
@@ -19,10 +18,6 @@
             "installDir": "${sourceDir}/$env{OUR_DIR_NAME}/$env{INSTALL_DIR_NAME}/${presetName}",
             "inherits": "environment",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": {
-                    "type": "STRING",
-                    "value": "$env{BUILD_TYPE}"
-                },
                 "DOCS_DIR": {
                     "type": "PATH",
                     "value": "${sourceDir}/$env{DOC_DIR_NAME}"

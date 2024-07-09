@@ -25,8 +25,7 @@ jobs:
             --graphviz=./docs/graph/graph.dot
             --no-warn-unused-cli
             -DCMAKE_BUILD_TYPE=${{inputs.build_type}}
-            -DDOCS_DIR=./docs
-            -DCMAKE_INSTALL_PREFIX=./install
+            --preset=ubuntu
           build-args: |
             --target=${{inputs.target}}
             --config=${{inputs.build_type}}
