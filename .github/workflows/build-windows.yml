@@ -37,11 +37,11 @@ jobs:
       - name: Configure and Build Project
         uses: threeal/cmake-action@main
         with:
-          build-dir: out/build/ubuntu
+          build-dir: out/build/msvc
           args: |
             --graphviz=./docs/graph/graph.dot
             --no-warn-unused-cli
-            --preset=ubuntu
+            --preset=msvc
           options: |
             CMAKE_BUILD_TYPE=${{inputs.build_type}}
           build-args: |
@@ -49,4 +49,4 @@ jobs:
             --target=${{inputs.target}}
             --config=${{inputs.build_type}}
       - name: Installation
-        run: cmake --build ./out/build/ubuntu -j${{steps.cpu.outputs.count}} --target=install --config=${{inputs.build_type}}
+        run: cmake --build ./out/build/msvc -j${{steps.cpu.outputs.count}} --target=install --config=${{inputs.build_type}}
