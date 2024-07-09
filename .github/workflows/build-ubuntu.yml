@@ -27,6 +27,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{inputs.build_type}}
             -DDOCS_DIR=docs
           build-args: |
-            --target=${{inputs.target}}
+            --target=ubuntu-${{inputs.target}}
             --config=${{inputs.build_type}}
     
