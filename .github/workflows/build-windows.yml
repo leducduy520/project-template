@@ -14,16 +14,8 @@ jobs:
   Configuration:
     runs-on: windows-latest
     steps:
-      - name: install graphviz
-        run: choco install graphviz
-      - name: install ninja
-        run: choco install ninja
-      - name: install make
-        run: choco install make
-      - name: install dos2unix
-        run: choco install dos2unix
-      - name: install doxygen
-        run: choco install doxygen.portable
+      - name: Install dependencies by choco
+        run: choco install graphviz ninja make dos2unix doxygen.portable
       - name: install cmake-format
         run: |
           pip install cmake-format
@@ -46,7 +38,7 @@ jobs:
             CMAKE_BUILD_TYPE=${{inputs.build_type}}
           build-args: |
             -j${{steps.cpu.outputs.count}}
-            --target=ALL_BUILD
+            --target=${{inputs.target}}
             --config=${{inputs.build_type}}
       - name: Installation
-        run: cmake --build ./out/build/msvc -j${{steps.cpu.outputs.count}} --target=INSTALL --config=${{inputs.build_type}}
+        run: cmake --build ./out/build/msvc -j${{steps.cpu.outputs.count}} --target=install --config=${{inputs.build_type}}

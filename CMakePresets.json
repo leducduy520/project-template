@@ -25,7 +25,7 @@
             }
         },
         {
-            "name": "windows",
+            "name": "mingw",
             "inherits": "base",
             "generator": "MinGW Makefiles",
             "cacheVariables": {
@@ -41,12 +41,12 @@
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
-                "rhs": "Windows"
+                "rhs": "mingw"
             }
         },
         {
             "name": "ubuntu",
-            "inherits": "windows",
+            "inherits": "mingw",
             "generator": "Unix Makefiles",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
@@ -60,8 +60,8 @@
         },
         {
             "name": "msvc",
-            "inherits": "windows",
-            "generator": "Visual Studio 17 2022",
+            "inherits": "mingw",
+            "generator": "Ninja",
             "architecture":{
                 "strategy": "set",
                 "value": "x64"
@@ -122,53 +122,53 @@
             ]
         },
         {
-            "name": "windows",
-            "configurePreset": "windows",
+            "name": "mingw",
+            "configurePreset": "mingw",
             "inherits": "base",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
-                "rhs": "Windows"
+                "rhs": "mingw"
             }
         },
         {
-            "name": "windows-graphviz",
-            "configurePreset": "windows",
+            "name": "mingw-graphviz",
+            "configurePreset": "mingw",
             "inherits": [
                 "base-graphviz",
-                "windows"
+                "mingw"
             ]
         },
         {
-            "name": "windows-document",
-            "configurePreset": "windows",
+            "name": "mingw-document",
+            "configurePreset": "mingw",
             "inherits": [
                 "base-document",
-                "windows"
+                "mingw"
             ]
         },
         {
-            "name": "windows-format",
-            "configurePreset": "windows",
+            "name": "mingw-format",
+            "configurePreset": "mingw",
             "inherits": [
                 "base-format",
-                "windows"
+                "mingw"
             ]
         },
         {
-            "name": "windows-install",
-            "configurePreset": "windows",
+            "name": "mingw-install",
+            "configurePreset": "mingw",
             "inherits": [
                 "base-install",
-                "windows"
+                "mingw"
             ]
         },
         {
-            "name": "windows-complete",
-            "configurePreset": "windows",
+            "name": "mingw-complete",
+            "configurePreset": "mingw",
             "inherits": [
                 "base-complete",
-                "windows"
+                "mingw"
             ]
         },
         {
@@ -228,7 +228,7 @@
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
-                "rhs": "Windows"
+                "rhs": "mingw"
             },
             "targets": "ALL_BUILD",
             "configuration": "Debug"
@@ -255,13 +255,13 @@
             }
         },
         {
-            "name": "windows",
-            "configurePreset": "windows",
+            "name": "mingw",
+            "configurePreset": "mingw",
             "inherits": "base",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
-                "rhs": "Windows"
+                "rhs": "mingw"
             }
         },
         {
@@ -283,19 +283,19 @@
     ],
     "workflowPresets": [
         {
-            "name": "windows",
+            "name": "mingw",
             "steps": [
                 {
                     "type": "configure",
-                    "name": "windows"
+                    "name": "mingw"
                 },
                 {
                     "type": "build",
-                    "name": "windows-complete"
+                    "name": "mingw-complete"
                 },
                 {
                     "type": "test",
-                    "name": "windows"
+                    "name": "mingw"
                 }
             ]
         },
