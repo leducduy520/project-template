@@ -29,9 +29,9 @@ jobs:
           options: |
             CMAKE_BUILD_TYPE=${{inputs.build_type}}
           build-args: |
-            -j"$(nproc)"
+            -j$(nproc)
             --target=${{inputs.target}}
             --config=${{inputs.build_type}}
       - name: Installation
-        run: cmake --build ./out/build/ubuntu -j"$(nproc)" --target=install --config=${{inputs.build_type}}
+        run: cmake --build ./out/build/ubuntu -j$(nproc) --target=install --config=${{inputs.build_type}}
     
