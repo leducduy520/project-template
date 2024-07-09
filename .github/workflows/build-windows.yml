@@ -46,7 +46,7 @@ jobs:
             CMAKE_BUILD_TYPE=${{inputs.build_type}}
           build-args: |
             -j${{steps.cpu.outputs.count}}
-            --target=${{inputs.target}}
+            --target=ALL_BUILD
             --config=${{inputs.build_type}}
       - name: Installation
-        run: cmake --build ./out/build/msvc -j${{steps.cpu.outputs.count}} --target=install --config=${{inputs.build_type}}
+        run: cmake --build ./out/build/msvc -j${{steps.cpu.outputs.count}} --target=INSTALL --config=${{inputs.build_type}}
