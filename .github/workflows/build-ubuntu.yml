@@ -6,7 +6,10 @@ on:
         description: "Target to be built"
         required: true
         type: "string"
-        default: "complete"
+      build_type:
+          description: "Build type"
+          type: "string"
+          default: "Release"
 jobs:
   Configuration:
     runs-on: ubuntu-latest
@@ -16,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Configure Project
-        run: cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=ubuntu
+        run: cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli -DCMAKE_BUILD_TYPE=${{inputs.build_type}} --preset=ubuntu
       - name: Build
         run: cmake --build --preset=ubuntu-${{inputs.target}}
     
