@@ -30,6 +30,6 @@ jobs:
             -S.
             -Bbuild
           build-args: |
-            --target=ubuntu-${{inputs.target}}
+            --target=${{inputs.target}}
             --config=${{inputs.build_type}}
     
