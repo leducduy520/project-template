@@ -10,22 +10,13 @@ on:
 jobs:
   Configuration:
     runs-on: ubuntu-latest
+    container:
+      image: duyleduc520/mysfmlapp:latest
     steps:
-      - name: update & install deps
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential
-          sudo apt-get install -y cmake
-          sudo apt-get install -y git doxygen
-          sudo apt-get install -y python3 python3-pip
-          sudo apt-get install -y ninja-build
-          sudo apt-get install -y graphviz pkg-config
-          sudo apt-get install -y dos2unix
-          sudo apt-get install -y cmake-format
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Configure
-        run: make config-ubuntu
+      - name: Configure Project
+        run: cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=ubuntu
       - name: Build
         run: cmake --build --preset=ubuntu-${{inputs.target}}
     

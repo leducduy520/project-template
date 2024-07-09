@@ -123,8 +123,6 @@
             "targets": [
                 "all",
                 "run_cmake_format",
-                "gen_graph",
-                "gen_doc",
                 "install"
             ]
         },
