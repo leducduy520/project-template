@@ -12,8 +12,6 @@ on:
           default: "Release"
 jobs:
   Configuration:
-    outputs:
-      cpu: ${{ steps.cpu.outputs.count }}
     runs-on: ubuntu-latest
     container:
       image: duyleduc520/mysfmlapp:latest

@@ -25,7 +25,7 @@ jobs:
   build-ubuntu:
     strategy:
       matrix:
-        os: [ubuntu]
+        os: [ubuntu, windows]
         build_type: [release, debug]
     uses: ./.github/workflows/build.yml
     with:

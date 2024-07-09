@@ -114,5 +114,15 @@
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "C_Cpp.default.cppStandard": "c++17",
-    "C_Cpp.default.cStandard": "c17"
+    "C_Cpp.default.cStandard": "c17",
+    "[github-actions-workflow]": {
+        "editor.indentSize": "tabSize",
+        "editor.tabSize": 2,
+        "editor.defaultFormatter": "github.vscode-github-actions",
+        "editor.quickSuggestions": {
+            "other": "on",
+            "comments": "off",
+            "strings": "off"
+        }
+    }
 }

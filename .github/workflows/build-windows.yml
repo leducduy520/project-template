@@ -6,7 +6,10 @@ on:
         description: "Target to be built"
         required: true
         type: "string"
-        default: "complete"
+      build_type:
+          description: "Build type"
+          type: "string"
+          default: "Release"
 jobs:
   Configuration:
     runs-on: windows-latest
@@ -27,7 +30,23 @@ jobs:
           pip install PyYAML
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Configure
-        run: make config-win
-      - name: Build
-        run: cmake --build --preset=windows-${{inputs.target}}
+      - name: Get cpu amount
+        id: cpu
+        run: |
+          echo "count=$(nproc)" >> $GITHUB_OUTPUT
+      - name: Configure and Build Project
+        uses: threeal/cmake-action@main
+        with:
+          build-dir: out/build/ubuntu
+          args: |
+            --graphviz=./docs/graph/graph.dot
+            --no-warn-unused-cli
+            --preset=ubuntu
+          options: |
+            CMAKE_BUILD_TYPE=${{inputs.build_type}}
+          build-args: |
+            -j${{steps.cpu.outputs.count}}
+            --target=${{inputs.target}}
+            --config=${{inputs.build_type}}
+      - name: Installation
+        run: cmake --build ./out/build/ubuntu -j${{steps.cpu.outputs.count}} --target=install --config=${{inputs.build_type}}
