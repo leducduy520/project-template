@@ -12,12 +12,18 @@ on:
           default: "Release"
 jobs:
   Configuration:
+    outputs:
+      cpu: ${{ steps.cpu.outputs.count }}
     runs-on: ubuntu-latest
     container:
       image: duyleduc520/mysfmlapp:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Get cpu amount
+        id: cpu
+        run: |
+          echo "count=$(nproc)" >> $GITHUB_OUTPUT
       - name: Configure and Build Project
         uses: threeal/cmake-action@main
         with:
@@ -29,9 +35,9 @@ jobs:
           options: |
             CMAKE_BUILD_TYPE=${{inputs.build_type}}
           build-args: |
-            -j$(nproc)
+            -j${{steps.cpu.outputs.count}}
             --target=${{inputs.target}}
             --config=${{inputs.build_type}}
       - name: Installation
-        run: cmake --build ./out/build/ubuntu -j$(nproc) --target=install --config=${{inputs.build_type}}
+        run: cmake --build ./out/build/ubuntu -j${{steps.cpu.outputs.count}} --target=install --config=${{inputs.build_type}}
     
