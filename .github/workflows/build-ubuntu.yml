@@ -27,9 +27,11 @@ jobs:
             --no-warn-unused-cli
             --preset=ubuntu
           options: |
-            -DCMAKE_BUILD_TYPE=${{inputs.build_type}}
+            CMAKE_BUILD_TYPE=${{inputs.build_type}}
           build-args: |
             -j8
             --target=${{inputs.target}}
             --config=${{inputs.build_type}}
+      - name: Installation
+        run: cmake --build ./out/build/ubuntu -j8 --target=install --config=${{inputs.build_type}}
     
