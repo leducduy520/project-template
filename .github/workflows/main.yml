@@ -6,7 +6,7 @@ on:
         description: "Target to be built"
         required: false
         type: "string"
-        default: "complete"
+        default: "all"
   push:
     branches:
       - main
