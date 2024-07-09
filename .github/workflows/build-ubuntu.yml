@@ -22,13 +22,11 @@ jobs:
         uses: threeal/cmake-action@main
         with:
           args: |
-            --graphviz=docs/graph/graph.dot
+            --graphviz=$PWD/docs/graph/graph.dot
             --no-warn-unused-cli
             -DCMAKE_BUILD_TYPE=${{inputs.build_type}}
-            -DDOCS_DIR=docs
-            -DCMAKE_INSTALL_PREFIX=install
-            -S.
-            -Bbuild
+            -DDOCS_DIR=$PWD/docs
+            -DCMAKE_INSTALL_PREFIX=$PWD/install
           build-args: |
             --target=${{inputs.target}}
             --config=${{inputs.build_type}}
