@@ -26,7 +26,10 @@ jobs:
             --no-warn-unused-cli
             -DCMAKE_BUILD_TYPE=${{inputs.build_type}}
             -DDOCS_DIR=docs
+            -DCMAKE_INSTALL_PREFIX=install
+            -S.
+            -Bbuild
           build-args: |
             --target=ubuntu-${{inputs.target}}
-            --config=${{inputs.build_type}}]
+            --config=${{inputs.build_type}}
     
