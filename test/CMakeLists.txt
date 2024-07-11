@@ -1,8 +1,13 @@
 project(Catch-test)
 
+FetchContent_Declare(
+    Catch2 GIT_REPOSITORY https://github.com/catchorg/Catch2.git GIT_TAG v3.6.0
+    )
+FetchContent_MakeAvailable(Catch2)
+
 add_executable(${PROJECT_NAME} test.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE base)
+target_link_libraries(${PROJECT_NAME} PRIVATE pingpong_game_util)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Catch2::Catch2WithMain)
 

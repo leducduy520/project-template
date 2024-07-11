@@ -79,11 +79,11 @@ sf::Texture &brick::getTexture(BrickProperty property)
         catch (const std::exception& e)
         {
             std::cerr << "Get texture failed: \n" << e.what() << "\n";
-            if (retryCount < 5)
+            if (retryCount < 2)
             {
-                std::cout << "Retrying after 5 seconds...\n";
+                std::cout << "Retrying after 1 seconds...\n";
                 retryCount++;
-                sf::sleep(sf::seconds(5.0f));
+                sf::sleep(sf::seconds(1.0f));
                 continue;
             }
             throw e;

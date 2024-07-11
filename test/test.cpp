@@ -14,24 +14,63 @@
 
 // main() provided by linkage to Catch2WithMain
 
-#include <base.hpp>
+#include <ball.hpp>
+#include <paddle.hpp>
+#include <background.hpp>
+#include <brick.hpp>
+#include <wallHelper.hpp>
+#include <constants.hpp>
+#include <PingPongGame.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
+#include <memory>
+#include <filesystem>
+#ifdef _WIN32
+    #include <Windows.h>
+#else
+    #include <unistd.h>
+    #include <linux/limits.h>
+#endif
 
-static int Factorial(int number)
-{
-    return number <= 1 ? number : Factorial(number - 1) * number; // fail
-    // return number <= 1 ? 1      : Factorial( number - 1 ) * number;  // pass
+static std::filesystem::path getExecutablePath() {
+#ifdef _WIN32
+    char path[MAX_PATH];
+    GetModuleFileNameA(nullptr, path, MAX_PATH);
+    return std::filesystem::path(path).parent_path();
+#else
+    char path[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
+    return std::filesystem::path(std::string(path, (count > 0) ? count : 0)).parent_path();
+#endif
 }
 
-// TEST_CASE( "Factorial of 0 is 1 (fail)", "[single-file]" ) {
-//     REQUIRE( Factorial(0) == 1 );
-// }
+#define EXECUTABLE_PATH getExecutablePath()
 
-TEST_CASE("Factorials of 1 and higher are computed (pass)", "[single-file]")
+std::string constants::resoucesPath;
+
+TEST_CASE("Initializing entities", "[single-file]")
 {
-    REQUIRE(Factorial(1) == 1);
-    REQUIRE(Factorial(2) == 2);
-    REQUIRE(Factorial(3) == 6);
-    REQUIRE(Factorial(10) == 3628800);
+    constants::resoucesPath = (EXECUTABLE_PATH / ".." / "resources" / "").string();
+    UNSCOPED_INFO("LOG" << constants::resoucesPath + "wall.csv");
+
+    CHECK_NOTHROW([&](){
+        auto entity = std::make_unique<ball>();
+    }());
+
+    CHECK_NOTHROW([&](){
+        auto entity = std::make_unique<paddle>();
+    }());
+
+    CHECK_NOTHROW([&](){
+        auto entity = std::make_unique<background>();
+    }());
+
+    CHECK_NOTHROW([&](){
+        auto entity = std::make_unique<brick>();
+    }());
+
+    CHECK_NOTHROW([&](){
+        wall a_wall;
+        wall_utils::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+    }());
 }

@@ -105,6 +105,7 @@
         "editor.insertSpaces": true,
         "editor.tabSize": 2,
         "editor.autoIndent": "keep",
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "diffEditor.ignoreTrimWhitespace": false,
         "editor.quickSuggestions": {
             "other": true,
@@ -124,5 +125,6 @@
             "comments": "off",
             "strings": "off"
         }
-    }
+    },
+    "cmake.parallelJobs": 8
 }

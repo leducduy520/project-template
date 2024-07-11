@@ -69,6 +69,7 @@ function(target_set_warnings)
         -Wno-exit-time-destructors
         -Wno-missing-prototypes
         -Wno-covered-switch-default
+        -Wno-unsafe-buffer-usage
         )
 
     set(GCC_WARNINGS
