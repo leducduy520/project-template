@@ -39,6 +39,8 @@ private:
 
 };
 
+extern sf::Image& getImage(brick::BrickProperty property);
+
 typedef sf::Vector2f e_location;
 
 namespace std {

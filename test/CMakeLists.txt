@@ -20,6 +20,25 @@ list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
 include(Catch)
 catch_discover_tests(${PROJECT_NAME})
 
+file(GLOB RESOURCE_FILES LIST_DIRECTORIES false
+     "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.*"
+     )
+target_sources(${PROJECT_NAME} PUBLIC "${RESOURCE_FILES}")
+source_group("Resource Files" FILES ${RESOURCE_FILES})
+
+if(WIN32)
+    add_custom_command(
+        TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMENT "Copy resources"
+        COMMAND
+            ${CMAKE_COMMAND} -E copy_directory_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/resources
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>/../resources
+        VERBATIM
+        )
+endif()
+
 install(
     TARGETS ${PROJECT_NAME}
     RUNTIME CONFIGURATIONS Debug Release DESTINATION ${CMAKE_INSTALL_BINDIR}

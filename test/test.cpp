@@ -14,25 +14,27 @@
 
 // main() provided by linkage to Catch2WithMain
 
-#include <ball.hpp>
-#include <paddle.hpp>
-#include <background.hpp>
-#include <brick.hpp>
-#include <wallHelper.hpp>
-#include <constants.hpp>
 #include <PingPongGame.hpp>
+#include <background.hpp>
+#include <ball.hpp>
+#include <brick.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <vector>
-#include <memory>
+#include <catch2/benchmark/catch_benchmark_all.hpp>
+#include <constants.hpp>
 #include <filesystem>
+#include <memory>
+#include <paddle.hpp>
+#include <vector>
+#include <wallHelper.hpp>
 #ifdef _WIN32
-    #include <Windows.h>
+#include <Windows.h>
 #else
-    #include <unistd.h>
-    #include <linux/limits.h>
+#include <linux/limits.h>
+#include <unistd.h>
 #endif
 
-static std::filesystem::path getExecutablePath() {
+static std::filesystem::path getExecutablePath()
+{
 #ifdef _WIN32
     char path[MAX_PATH];
     GetModuleFileNameA(nullptr, path, MAX_PATH);
@@ -46,31 +48,43 @@ static std::filesystem::path getExecutablePath() {
 
 #define EXECUTABLE_PATH getExecutablePath()
 
-std::string constants::resoucesPath;
+std::string constants::resoucesPath = (EXECUTABLE_PATH / ".." / "resources" / "").string();
 
-TEST_CASE("Initializing entities", "[single-file]")
+TEST_CASE("Initializing entities", "[init]")
 {
-    constants::resoucesPath = (EXECUTABLE_PATH / ".." / "resources" / "").string();
-    UNSCOPED_INFO("LOG" << constants::resoucesPath + "wall.csv");
+    UNSCOPED_INFO("resoucesPath: " << constants::resoucesPath + "wall.csv");
 
-    CHECK_NOTHROW([&](){
-        auto entity = std::make_unique<ball>();
-    }());
+    SECTION("i1")
+    {
+        std::unique_ptr<ball> a_ball;
+        CHECK_NOTHROW(a_ball = std::make_unique<ball>());
+    }
 
-    CHECK_NOTHROW([&](){
-        auto entity = std::make_unique<paddle>();
-    }());
+    SECTION("i2")
+    {
+        std::unique_ptr<paddle> a_paddle;
+        CHECK_NOTHROW(a_paddle = std::make_unique<paddle>());
+    }
 
-    CHECK_NOTHROW([&](){
-        auto entity = std::make_unique<background>();
-    }());
+    SECTION("i3")
+    {
+        std::unique_ptr<background> a_background;
+        CHECK_NOTHROW(a_background = std::make_unique<background>());
+    }
 
-    CHECK_NOTHROW([&](){
-        auto entity = std::make_unique<brick>();
-    }());
+    SECTION("i4")
+    {
+        CHECK_NOTHROW([&]() {
+            wall a_wall;
+            wall_utils::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+        }());
+    }
+}
 
-    CHECK_NOTHROW([&](){
+TEST_CASE("Bechmark", "[!benchmark]")
+{
+    BENCHMARK("Bechmark creating a wall with benchmark.csv") {
         wall a_wall;
-        wall_utils::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
-    }());
+        return wall_utils::createWall(a_wall, (constants::resoucesPath + "benchmark.csv").c_str());
+    };
 }
