@@ -18,8 +18,8 @@
 #include <background.hpp>
 #include <ball.hpp>
 #include <brick.hpp>
-#include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark_all.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <constants.hpp>
 #include <filesystem>
 #include <memory>
@@ -81,9 +81,10 @@ TEST_CASE("Initializing entities", "[init]")
     }
 }
 
-TEST_CASE("Bechmark")
+TEST_CASE("Bechmark", "[!benchmark]")
 {
-    BENCHMARK("Bechmark creating a wall with benchmark.csv") {
+    BENCHMARK("Bechmark creating a wall with benchmark.csv")
+    {
         wall a_wall;
         return wall_utils::createWall(a_wall, (constants::resoucesPath + "benchmark.csv").c_str());
     };

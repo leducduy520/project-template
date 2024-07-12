@@ -19,6 +19,7 @@ option(BUILD_CMAKE_FORMAT "enable cmake format" ON)
 option(BUILD_GRAPH "build graph" ON)
 option(BUILD_DOCS "build documentation" ON)
 option(BUILD_TEST "enable build test executable" ON)
+option(BUILD_CLANG_FORMAT "enable clang format" ON)
 option(ENABLE_WARNINGS "enable warnings" ON)
 option(ENABLE_WARNINGS_AS_ERRORS "enable warnings as errors" OFF)
 option(ENABLE_CLANG_TIDY "enable clang tidy" OFF)
@@ -80,11 +81,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(rapidcsv)
 
 # FetchContent_Declare(
-#     SQLiteCpp GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
-#     GIT_TAG 3.3.1
-#     )
+# SQLiteCpp GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
+# GIT_TAG 3.3.1
+# )
 # FetchContent_MakeAvailable(SQLiteCpp)
-
 FetchContent_Declare(
     magic_enum GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
     GIT_TAG v0.9.6
@@ -101,17 +101,17 @@ if(BUILD_TEST)
 endif(BUILD_TEST)
 
 # if(NOT SUBPROJECT)
-#     configure_package_config_file(
-#         ${CMAKE_CURRENT_LIST_DIR}/cmake/ZooClassConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake
-#         INSTALL_DESTINATION ${INSTALL_CONFIG_DIR}
-#         )
+# configure_package_config_file(
+# ${CMAKE_CURRENT_LIST_DIR}/cmake/ZooClassConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake
+# INSTALL_DESTINATION ${INSTALL_CONFIG_DIR}
+# )
 
-#     write_basic_package_version_file(
-#         "${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake" COMPATIBILITY SameMajorVersion
-#         )
+# write_basic_package_version_file(
+# "${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake" COMPATIBILITY SameMajorVersion
+# )
 
-#     install(
-#         FILES ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake
-#         DESTINATION ${INSTALL_CONFIG_DIR}
-#         )
+# install(
+# FILES ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake
+# DESTINATION ${INSTALL_CONFIG_DIR}
+# )
 # endif(NOT SUBPROJECT)
