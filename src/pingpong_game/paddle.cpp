@@ -5,8 +5,10 @@ sf::Texture &paddle::getTexture()
 {
     static sf::Texture texture;
     static bool initialized = false;
-    if (!initialized) {
-        if (!texture.loadFromFile(constants::resoucesPath + "steel.png")) {
+    if (!initialized)
+    {
+        if (!texture.loadFromFile(constants::resoucesPath + "steel.png"))
+        {
             std::cerr << "Get texture failed\n";
         }
         initialized = true;
@@ -24,7 +26,7 @@ paddle::paddle(float px_x, float px_y) : moving_entity()
 void paddle::init(float px_x, float px_y)
 {
     m_sprite.setScale(constants::paddlle_width / m_sprite.getLocalBounds().width,
-                    constants::paddlle_height / m_sprite.getLocalBounds().height);
+                      constants::paddlle_height / m_sprite.getLocalBounds().height);
     m_sprite.setPosition(px_x, px_y);
     m_velocity = {0, 0};
 }
@@ -35,7 +37,8 @@ void paddle::update()
     {
         move_left();
     }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && x() <= constants::window_width - getGlobalbound().width / 2.0f)
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) &&
+             x() <= constants::window_width - getGlobalbound().width / 2.0f)
     {
         move_right();
     }

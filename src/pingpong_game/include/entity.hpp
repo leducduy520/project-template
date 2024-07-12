@@ -44,7 +44,7 @@ public:
     virtual void destroy() noexcept;
     virtual bool is_destroyed() const noexcept;
 
-    void set_position(const sf::Vector2f& pos) noexcept;
+    void set_position(const sf::Vector2f &pos) noexcept;
 };
 
 
@@ -54,13 +54,12 @@ protected:
     sf::Vector2f m_velocity;
 
 public:
-
     virtual void move_up() noexcept = 0;
     virtual void move_down() noexcept = 0;
     virtual void move_left() noexcept = 0;
     virtual void move_right() noexcept = 0;
     virtual void print_info() const noexcept = 0;
-    void set_velocity(const sf::Vector2f& vel) noexcept;
+    void set_velocity(const sf::Vector2f &vel) noexcept;
     sf::Vector2f get_velocity() const noexcept;
 };
 

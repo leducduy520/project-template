@@ -3,22 +3,24 @@
 
 #include <string>
 
-class IGame{
+class IGame
+{
 public:
-	virtual void run() = 0;
-    virtual void init(std::string&) = 0;
+    virtual void run() = 0;
+    virtual void init(std::string &) = 0;
     virtual ~IGame() = default;
 };
 
 #if defined _WIN32
-    #define EXPORT_API __declspec(dllexport)
+#define EXPORT_API __declspec(dllexport)
 #else
-    #define EXPORT_API
+#define EXPORT_API
 #endif
 
-extern "C" {
-    EXPORT_API IGame* createPingPongGame();
-    EXPORT_API void destroyGame(IGame* game);
+extern "C"
+{
+    EXPORT_API IGame *createPingPongGame();
+    EXPORT_API void destroyGame(IGame *game);
 }
 
 #endif // __IGAME__

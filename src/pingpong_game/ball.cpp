@@ -95,4 +95,3 @@ void ball::print_info() const noexcept
     // std::cout << "ball centre: " << get_centre().x << " " << get_centre().y << '\n';
     // std::cout << "ball position: " << x() << " " << y() << '\n';
 }
-

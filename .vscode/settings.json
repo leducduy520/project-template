@@ -98,7 +98,7 @@
         "editor.quickSuggestions": {
             "strings": true
         },
-        "editor.defaultFormatter": "cheshirekow.cmake-format",
+        "editor.defaultFormatter": "josetr.cmake-language-support-vscode",
         "editor.formatOnSave": true
     },
     "[yaml]": {

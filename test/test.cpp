@@ -81,7 +81,7 @@ TEST_CASE("Initializing entities", "[init]")
     }
 }
 
-TEST_CASE("Bechmark", "[!benchmark]")
+TEST_CASE("Bechmark")
 {
     BENCHMARK("Bechmark creating a wall with benchmark.csv") {
         wall a_wall;

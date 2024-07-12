@@ -1,15 +1,16 @@
 #include <filesystem>
 #ifdef _WIN32
-    #include <Windows.h>
+#include <Windows.h>
 #else
-    #include <unistd.h>
-    #include <linux/limits.h>
+#include <linux/limits.h>
+#include <unistd.h>
 #endif
 
-#include "ModuleManager.h"
 #include "IGame.h"
+#include "ModuleManager.h"
 
-static std::filesystem::path getExecutablePath() {
+static std::filesystem::path getExecutablePath()
+{
 #ifdef _WIN32
     char path[MAX_PATH];
     GetModuleFileNameA(nullptr, path, MAX_PATH);
@@ -23,7 +24,8 @@ static std::filesystem::path getExecutablePath() {
 
 #define EXECUTABLE_PATH getExecutablePath()
 
-int main() {
+int main()
+{
     ModuleManager moduleManager;
     std::cout << EXECUTABLE_PATH << std::endl;
 #if defined(_WIN32)
@@ -32,20 +34,23 @@ int main() {
     moduleManager.registerModule("PingPongGame", "libpingpong_game.so");
 #endif
     auto execPath = EXECUTABLE_PATH;
-    if (moduleManager.loadModule("PingPongGame")) {
+    if (moduleManager.loadModule("PingPongGame"))
+    {
         // Retrieve function pointers for creating and destroying the Game object
-        using CreateGameFunc = IGame* (*)();
-        using DestroyGameFunc = void (*)(IGame*);
+        using CreateGameFunc = IGame *(*)();
+        using DestroyGameFunc = void (*)(IGame *);
 
-        CreateGameFunc createGame = reinterpret_cast<CreateGameFunc>(
-            moduleManager.getFunction("PingPongGame", "createPingPongGame"));
-        DestroyGameFunc destroyGame = reinterpret_cast<DestroyGameFunc>(
-            moduleManager.getFunction("PingPongGame", "destroyGame"));
+        CreateGameFunc createGame =
+            reinterpret_cast<CreateGameFunc>(moduleManager.getFunction("PingPongGame", "createPingPongGame"));
+        DestroyGameFunc destroyGame =
+            reinterpret_cast<DestroyGameFunc>(moduleManager.getFunction("PingPongGame", "destroyGame"));
 
-        if (createGame && destroyGame) {
+        if (createGame && destroyGame)
+        {
             // Create the Game object
-            IGame* game = createGame();
-            if (game) {
+            IGame *game = createGame();
+            if (game)
+            {
                 std::string path = (getExecutablePath() / ".." / "resources" / "").string();
                 game->init(path);
                 game->run();
