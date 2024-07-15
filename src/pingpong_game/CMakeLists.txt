@@ -42,6 +42,7 @@ target_set_warnings(
     TARGET ${PROJECT_NAME}_util ENABLE ${ENABLE_WARNINGS} AS_ERRORS
     ${ENABLE_WARNINGS_AS_ERRORS}
 )
+target_compile_options(${PROJECT_NAME}_util PUBLIC -fPIC)
 
 if(WIN32)
     add_custom_command(
