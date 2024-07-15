@@ -1,6 +1,7 @@
 FROM ubuntu:latest
 
 RUN  apt-get update
+RUN  apt upgrade -y
 RUN  apt-get install -y build-essential
 RUN  apt-get install -y cmake
 RUN  apt-get install -y git doxygen
