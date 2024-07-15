@@ -21,4 +21,4 @@ libegl1-mesa-dev \
 libdrm-dev \
 libgbm-dev \
 libfreetype6-dev
-RUN apt install -y clang-tidy
+RUN apt install -y clang-tidy clang-format

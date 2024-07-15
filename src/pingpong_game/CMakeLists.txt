@@ -1,6 +1,7 @@
 project(pingpong_game)
 
 include(${CMAKE_CURRENT_LIST_DIR}/FetchLib.cmake)
+FetchLib()
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCE_FILES)
 list(APPEND GAME_SOURCE_FILE ${SOURCE_FILES})
