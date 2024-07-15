@@ -124,5 +124,8 @@
             "comments": "off",
             "strings": "off"
         }
-    }
+    },
+    "projectManager.git.baseFolders": [
+        "D:\\"
+    ]
 }
