@@ -2,24 +2,26 @@
 #define __SOUNDPLAYER_H__
 
 #include "SFML/Audio.hpp"
-#include <unordered_map>
 #include <mutex>
+#include <unordered_map>
 
-class SoundPlayer {
+class SoundPlayer
+{
 public:
-    static SoundPlayer* getInstance(){
-        std::call_once(m_callflag, []() mutable {
-            m_instance = new SoundPlayer();
-        });
+    static SoundPlayer *getInstance()
+    {
+        std::call_once(m_callflag, []() mutable { m_instance = new SoundPlayer(); });
         return m_instance;
     }
 
-    static void destroyInstance(){
+    static void destroyInstance()
+    {
         delete m_instance;
         m_instance = nullptr;
     }
 
-    enum SoundMode{
+    enum SoundMode
+    {
         WALL_BOUNCE,
         BRICK_BOUNCE,
         PADDLE_BOUNCE,
@@ -28,12 +30,12 @@ public:
     };
 
 
-    SoundPlayer (const SoundPlayer &other) = delete;
-    SoundPlayer (SoundPlayer &&other) = delete;
+    SoundPlayer(const SoundPlayer &other) = delete;
+    SoundPlayer(SoundPlayer &&other) = delete;
     SoundPlayer &operator=(const SoundPlayer &other) = delete;
     SoundPlayer &operator=(SoundPlayer &&other) = delete;
 
-    void playSound(const SoundMode& mode);
+    void playSound(const SoundMode &mode);
 
 protected:
     ~SoundPlayer();

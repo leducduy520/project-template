@@ -98,13 +98,14 @@
         "editor.quickSuggestions": {
             "strings": true
         },
-        "editor.defaultFormatter": "cheshirekow.cmake-format",
+        "editor.defaultFormatter": "josetr.cmake-language-support-vscode",
         "editor.formatOnSave": true
     },
     "[yaml]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 2,
         "editor.autoIndent": "keep",
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "diffEditor.ignoreTrimWhitespace": false,
         "editor.quickSuggestions": {
             "other": true,
@@ -127,5 +128,6 @@
     },
     "projectManager.git.baseFolders": [
         "D:\\"
-    ]
+    ],
+    "cmake.parallelJobs": 8
 }

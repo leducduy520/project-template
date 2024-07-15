@@ -1,14 +1,14 @@
 #include "brick.hpp"
-#include "wallHelper.hpp"
-#include <exception>
-#include <cstdlib>
 #include "soundplayer.hpp"
+#include "wallHelper.hpp"
+#include <cstdlib>
+#include <exception>
 
 // Define the static texture
 
 using namespace std::literals;
 
-sf::Image& getImage(brick::BrickProperty property)
+sf::Image &getImage(brick::BrickProperty property)
 {
     static bool initialized = false;
     static std::vector<sf::Image> list;
@@ -20,12 +20,12 @@ sf::Image& getImage(brick::BrickProperty property)
             const std::string message = "Cannot open source image "s + constants::resoucesPath + "brick.png";
             throw std::logic_error(message.c_str());
         }
-        
+
         const auto width = source.getSize().x;
         const auto height = source.getSize().y;
         const auto *const pixels = source.getPixelsPtr();
         std::vector<std::vector<sf::Uint8>> matrix(width / constants::brick_width);
-        
+
         for (unsigned int px_y = 0; px_y < height; ++px_y)
         {
             for (unsigned int px_x = 0; px_x < width; ++px_x)
@@ -39,7 +39,7 @@ sf::Image& getImage(brick::BrickProperty property)
             }
         }
 
-        for (const auto& elm: matrix)
+        for (const auto &elm : matrix)
         {
             sf::Image des;
             des.create(constants::brick_width, constants::brick_height, elm.data());
@@ -48,7 +48,7 @@ sf::Image& getImage(brick::BrickProperty property)
 
         initialized = true;
     }
-    
+
     return list.at(static_cast<size_t>(property) - size_t(1));
 }
 
@@ -60,7 +60,8 @@ sf::Texture &brick::getTexture(BrickProperty property)
     static sf::Texture bomb;
     static bool initialized = false;
     static int retryCount = 0;
-    while (!initialized) {
+    while (!initialized)
+    {
         try
         {
             if (!brick.loadFromImage(getImage(BRICK)))
@@ -76,19 +77,19 @@ sf::Texture &brick::getTexture(BrickProperty property)
                 throw std::logic_error("Get texture bomb from image data has failed\n");
             }
         }
-        catch (const std::exception& e)
+        catch (const std::exception &e)
         {
             std::cerr << "Get texture failed: \n" << e.what() << "\n";
-            if (retryCount < 5)
+            if (retryCount < 2)
             {
-                std::cout << "Retrying after 5 seconds...\n";
+                std::cout << "Retrying after 1 seconds...\n";
                 retryCount++;
-                sf::sleep(sf::seconds(5.0f));
+                sf::sleep(sf::seconds(1.0f));
                 continue;
             }
             throw e;
         }
-        
+
         initialized = true;
     }
     switch (property)
@@ -106,8 +107,7 @@ sf::Texture &brick::getTexture(BrickProperty property)
     }
 }
 
-brick::brick(float px_x, float px_y, BrickProperty property)
-    : m_property(property), m_hitCount(0)
+brick::brick(float px_x, float px_y, BrickProperty property) : m_property(property), m_hitCount(0)
 {
     m_sprite.setTexture(getTexture(property));
     brick::init(px_x, px_y);
@@ -140,46 +140,46 @@ void brick::hit(const int damage, const bool relate) noexcept
     bool destroyed = false;
     switch (m_property)
     {
-        case BRICK:
+    case BRICK:
+    {
+        if (m_hitCount >= constants::cap_brick_hit)
         {
-            if (m_hitCount >= constants::cap_brick_hit)
-            {
-                destroyed = true;
-            }
-            if(!relate)
-            {
-                SoundPlayer::getInstance()->playSound(SoundPlayer::BRICK_BOUNCE);
-            }
+            destroyed = true;
         }
-            break;
-        case DIAMOND:
+        if (!relate)
         {
-            if (m_hitCount >= constants::cap_diamond_hit)
-            {
-                destroyed = true;
-            }
-            if(!relate)
-            {
-                SoundPlayer::getInstance()->playSound(SoundPlayer::DIAMOND_DESTROY);
-            }
+            SoundPlayer::getInstance()->playSound(SoundPlayer::BRICK_BOUNCE);
         }
-            break;
-        case BOMB:
+    }
+    break;
+    case DIAMOND:
+    {
+        if (m_hitCount >= constants::cap_diamond_hit)
         {
-            if (m_hitCount >= constants::cap_bomb_hit)
-            {
-                destroyed = true;
-            }
-            if(!relate)
-            {
-                SoundPlayer::getInstance()->playSound(SoundPlayer::BOMB_EXPLOSION);
-            }
+            destroyed = true;
         }
-            break;
-        case NONE:
-            [[fallthrough]];
-        default:
-            break;
+        if (!relate)
+        {
+            SoundPlayer::getInstance()->playSound(SoundPlayer::DIAMOND_DESTROY);
+        }
+    }
+    break;
+    case BOMB:
+    {
+        if (m_hitCount >= constants::cap_bomb_hit)
+        {
+            destroyed = true;
+        }
+        if (!relate)
+        {
+            SoundPlayer::getInstance()->playSound(SoundPlayer::BOMB_EXPLOSION);
+        }
+    }
+    break;
+    case NONE:
+        [[fallthrough]];
+    default:
+        break;
     }
     if (destroyed)
     {
@@ -189,7 +189,7 @@ void brick::hit(const int damage, const bool relate) noexcept
 
 void wall::update()
 {
-    for(auto it = this->begin(); it != this->end();++it)
+    for (auto it = this->begin(); it != this->end(); ++it)
     {
         it->second->update();
     }
@@ -197,7 +197,7 @@ void wall::update()
 
 void wall::draw(sf::RenderWindow &window)
 {
-    for(auto it = this->begin(); it != this->end();++it)
+    for (auto it = this->begin(); it != this->end(); ++it)
     {
         it->second->draw(window);
     }

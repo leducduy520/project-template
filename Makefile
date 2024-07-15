@@ -14,6 +14,10 @@ fresh-ubuntu:
 	cmake --fresh --no-warn-unused-cli --graphviz=docs/graph/graph.dot --preset=ubuntu
 .PHONY: fresh-ubuntu
 
+run-ubuntu:
+	GALLIUM_DRIVER=llvmpipe ./out/install/ubuntu/bin/MySFMLApp
+.PHONY: run-ubuntu
+
 config-msvc:
 	cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=msvc
 .PHONY: config-msvc
@@ -21,3 +25,4 @@ config-msvc:
 fresh-msvc:
 	cmake --fresh --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=msvc
 .PHONY:fresh-msvc
+

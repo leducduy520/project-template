@@ -2,15 +2,14 @@
 #define BALL_H
 
 
-
+#include "SFML/Audio.hpp"
 #include "constants.hpp"
 #include "entity.hpp"
-#include "SFML/Audio.hpp"
 
 class ball : public moving_entity
 {
     // Private data members
-    static sf::Texture& getTexture();
+    static sf::Texture &getTexture();
 
 public:
     ball(float px_x, float px_y);

@@ -4,8 +4,10 @@ sf::Texture &background::getTexture()
 {
     static sf::Texture texture;
     static bool initialized = false;
-    if (!initialized) {
-        if (!texture.loadFromFile(constants::resoucesPath + "background.jpg")) {
+    if (!initialized)
+    {
+        if (!texture.loadFromFile(constants::resoucesPath + "background.jpg"))
+        {
             std::cerr << "Get texture failed\n";
         }
         initialized = true;
@@ -25,11 +27,13 @@ void background::init(float px_x, float px_y)
 }
 
 // Compute the background's new position
-void background::update() {
-  // Nothing to do here
+void background::update()
+{
+    // Nothing to do here
 }
 
-void background::draw(sf::RenderWindow& window) {
-  // Ask the window to draw the sprite for us
-  window.draw(m_sprite);
+void background::draw(sf::RenderWindow &window)
+{
+    // Ask the window to draw the sprite for us
+    window.draw(m_sprite);
 }

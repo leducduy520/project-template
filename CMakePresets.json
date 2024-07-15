@@ -60,6 +60,7 @@
         },
         {
             "name": "msvc",
+            "displayName": "MSVC configuration",
             "inherits": "windows",
             "generator": "Visual Studio 17 2022",
             "architecture":{
@@ -248,7 +249,7 @@
             "output": {
                 "verbosity": "verbose",
                 "shortProgress": true,
-                "debug": true
+                "labelSummary": true
             },
             "execution": {
                 "jobs": 8
@@ -272,6 +273,17 @@
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Linux"
+            }
+        },
+        {
+            "name": "msvc",
+            "displayName": "Test msvc build",
+            "configurePreset": "msvc",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
             }
         }
     ],

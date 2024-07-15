@@ -5,25 +5,24 @@ add_executable(MySFMLApp main.cpp ModuleManager.cpp)
 target_include_directories(
     MySFMLApp
     PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/game2>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>
-    )
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/pingpong_game>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>
+)
 
 # Link the GameManager library and SFML libraries
 # target_link_libraries(MySFMLApp PRIVATE sfml-graphics sfml-window sfml-system)
-
 target_set_warnings(
     TARGET MySFMLApp ENABLE ${ENABLE_WARNINGS} AS_ERRORS
     ${ENABLE_WARNINGS_AS_ERRORS}
-    )
+)
 
 if(WIN32)
     install(
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/mysfmlapp.ico
         DESTINATION resources COMPONENT Resources
-        )
+    )
 
     install(
         CODE "
@@ -31,7 +30,7 @@ if(WIN32)
             COMMAND powershell.exe -File ${CMAKE_CURRENT_SOURCE_DIR}/resources/create_shortcuts.ps1 -InstallDir \${CMAKE_INSTALL_PREFIX} -AppName MySFMLApp -ExePath \${CMAKE_INSTALL_PREFIX}/bin/MySFMLApp.exe -IconPath \${CMAKE_INSTALL_PREFIX}/resources/mysfmlapp.ico
         )
     "
-        )
+    )
 endif(WIN32)
 
 install(
@@ -39,4 +38,4 @@ install(
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
-    )
+)

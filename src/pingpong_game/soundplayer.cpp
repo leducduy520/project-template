@@ -1,7 +1,7 @@
+#include "soundplayer.hpp"
 #include "constants.hpp"
 #include "magic_enum.hpp"
 #include "magic_enum_all.hpp"
-#include "soundplayer.hpp"
 
 SoundPlayer *SoundPlayer::m_instance = nullptr;
 std::once_flag SoundPlayer::m_callflag;
@@ -11,8 +11,8 @@ SoundPlayer::SoundPlayer()
     m_music.openFromFile(constants::resoucesPath + "game_background.wav");
     m_music.setLoop(true);
     m_music.play();
-    
-    magic_enum::enum_for_each<SoundMode>([this] (auto val) {
+
+    magic_enum::enum_for_each<SoundMode>([this](auto val) {
         constexpr SoundMode mode = val;
         sf::SoundBuffer buffer;
         sf::Sound sound;
@@ -20,53 +20,52 @@ SoundPlayer::SoundPlayer()
         {
         case SoundMode::WALL_BOUNCE:
         {
-            if(buffer.loadFromFile(constants::resoucesPath + "wall_bounce.wav"))
+            if (buffer.loadFromFile(constants::resoucesPath + "wall_bounce.wav"))
             {
                 sound.setBuffer(buffer);
                 m_soundDict.emplace(mode, std::move(buffer));
             }
         }
-            break;
+        break;
         case SoundMode::BRICK_BOUNCE:
         {
-            if(buffer.loadFromFile(constants::resoucesPath + "brick_bounce.wav"))
+            if (buffer.loadFromFile(constants::resoucesPath + "brick_bounce.wav"))
             {
                 sound.setBuffer(buffer);
                 m_soundDict.emplace(mode, std::move(buffer));
             }
         }
-            break;
+        break;
         case SoundMode::PADDLE_BOUNCE:
         {
-            if(buffer.loadFromFile(constants::resoucesPath + "paddle_bounce.wav"))
+            if (buffer.loadFromFile(constants::resoucesPath + "paddle_bounce.wav"))
             {
                 sound.setBuffer(buffer);
                 m_soundDict.emplace(mode, std::move(buffer));
             }
         }
-            break;
+        break;
         case SoundMode::DIAMOND_DESTROY:
         {
-            if(buffer.loadFromFile(constants::resoucesPath + "diamond_destroy.wav"))
+            if (buffer.loadFromFile(constants::resoucesPath + "diamond_destroy.wav"))
             {
                 sound.setBuffer(buffer);
                 m_soundDict.emplace(mode, std::move(buffer));
             }
         }
-            break;
+        break;
         case SoundMode::BOMB_EXPLOSION:
         {
-            if(buffer.loadFromFile(constants::resoucesPath + "bomb_explosion.wav"))
+            if (buffer.loadFromFile(constants::resoucesPath + "bomb_explosion.wav"))
             {
                 sound.setBuffer(buffer);
                 m_soundDict.emplace(mode, std::move(buffer));
             }
         }
-            break;
+        break;
         default:
             break;
         }
-        
     });
 }
 
@@ -80,7 +79,7 @@ SoundPlayer::~SoundPlayer()
 void SoundPlayer::playSound(const SoundMode &mode)
 {
     auto iter = m_soundDict.find(mode);
-    if(iter != m_soundDict.end())
+    if (iter != m_soundDict.end())
     {
         m_player.setBuffer(iter->second);
         m_player.play();

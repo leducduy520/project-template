@@ -6,7 +6,7 @@
 
 class paddle : public moving_entity
 {
-    static sf::Texture& getTexture();
+    static sf::Texture &getTexture();
 
 public:
     paddle(float px_x, float px_y);

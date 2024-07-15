@@ -32,23 +32,28 @@ public:
     void hit(const int damage = 1, const bool relate = false) noexcept;
 
     friend class wall;
+
 private:
     BrickProperty m_property;
     int m_hitCount;
-    static sf::Texture& getTexture(BrickProperty property = BRICK);
-
+    static sf::Texture &getTexture(BrickProperty property = BRICK);
 };
+
+extern sf::Image &getImage(brick::BrickProperty property);
 
 typedef sf::Vector2f e_location;
 
-namespace std {
-    template<>
-    struct less<e_location> {
-        bool operator()(const e_location& lhs, const e_location& rhs) const {
-            return lhs.x < rhs.x ?  true : (lhs.x > rhs.x ? false : (lhs.y < rhs.y));
-        }
-    };
-}
+namespace std
+{
+template <>
+struct less<e_location>
+{
+    bool operator()(const e_location &lhs, const e_location &rhs) const
+    {
+        return lhs.x < rhs.x ? true : (lhs.x > rhs.x ? false : (lhs.y < rhs.y));
+    }
+};
+} // namespace std
 
 //// Custom hash function for e_location
 //struct PairHash {
@@ -71,7 +76,7 @@ class wall : public wall_map, public entity
 public:
     wall() = default;
     template <class T>
-    wall(T&& bricks) noexcept
+    wall(T &&bricks) noexcept
     {
         swap(std::forward<T>(bricks));
     }

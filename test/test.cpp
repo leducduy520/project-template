@@ -14,24 +14,78 @@
 
 // main() provided by linkage to Catch2WithMain
 
-#include <base.hpp>
+#include <PingPongGame.hpp>
+#include <background.hpp>
+#include <ball.hpp>
+#include <brick.hpp>
+#include <catch2/benchmark/catch_benchmark_all.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <constants.hpp>
+#include <filesystem>
+#include <memory>
+#include <paddle.hpp>
 #include <vector>
+#include <wallHelper.hpp>
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <linux/limits.h>
+#include <unistd.h>
+#endif
 
-static int Factorial(int number)
+static std::filesystem::path getExecutablePath()
 {
-    return number <= 1 ? number : Factorial(number - 1) * number; // fail
-    // return number <= 1 ? 1      : Factorial( number - 1 ) * number;  // pass
+#ifdef _WIN32
+    char path[MAX_PATH];
+    GetModuleFileNameA(nullptr, path, MAX_PATH);
+    return std::filesystem::path(path).parent_path();
+#else
+    char path[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
+    return std::filesystem::path(std::string(path, (count > 0) ? count : 0)).parent_path();
+#endif
 }
 
-// TEST_CASE( "Factorial of 0 is 1 (fail)", "[single-file]" ) {
-//     REQUIRE( Factorial(0) == 1 );
-// }
+#define EXECUTABLE_PATH getExecutablePath()
 
-TEST_CASE("Factorials of 1 and higher are computed (pass)", "[single-file]")
+std::string constants::resoucesPath = (EXECUTABLE_PATH / ".." / "resources" / "").string();
+
+TEST_CASE("Initializing entities", "[init]")
 {
-    REQUIRE(Factorial(1) == 1);
-    REQUIRE(Factorial(2) == 2);
-    REQUIRE(Factorial(3) == 6);
-    REQUIRE(Factorial(10) == 3628800);
+    UNSCOPED_INFO("resoucesPath: " << constants::resoucesPath + "wall.csv");
+
+    SECTION("i1")
+    {
+        std::unique_ptr<ball> a_ball;
+        CHECK_NOTHROW(a_ball = std::make_unique<ball>());
+    }
+
+    SECTION("i2")
+    {
+        std::unique_ptr<paddle> a_paddle;
+        CHECK_NOTHROW(a_paddle = std::make_unique<paddle>());
+    }
+
+    SECTION("i3")
+    {
+        std::unique_ptr<background> a_background;
+        CHECK_NOTHROW(a_background = std::make_unique<background>());
+    }
+
+    SECTION("i4")
+    {
+        CHECK_NOTHROW([&]() {
+            wall a_wall;
+            wall_utils::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+        }());
+    }
+}
+
+TEST_CASE("Bechmark", "[!benchmark]")
+{
+    BENCHMARK("Bechmark creating a wall with benchmark.csv")
+    {
+        wall a_wall;
+        return wall_utils::createWall(a_wall, (constants::resoucesPath + "benchmark.csv").c_str());
+    };
 }
