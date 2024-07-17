@@ -69,6 +69,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED ${GAME_SOURCE_FILE})
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_util)
+
 target_sources(
     ${PROJECT_NAME} PRIVATE FILE_SET ${PROJECT_NAME}_headers TYPE HEADERS FILES
     "${GAME_HEADER_FILE}"
@@ -76,6 +77,7 @@ target_sources(
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON
     PUBLIC_HEADER "${GAME_HEADER_FILE}"
+    PREFIX ""
 )
 target_set_warnings(
     TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS
