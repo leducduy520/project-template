@@ -2,6 +2,7 @@
 #include "interactions.hpp"
 #include "soundplayer.hpp"
 #include "wallHelper.hpp"
+#include "dbclientGame.hpp"
 
 std::string constants::resoucesPath;
 using namespace std;
@@ -249,6 +250,8 @@ void PingPongGame::clear()
 // Game loop
 void PingPongGame::run()
 {
+    DBClient::GetInstance();
+    DBClient::GetInstance()->GetDatabase("duyld");
     SoundPlayer::getInstance();
     while (game_window.isOpen())
     {
@@ -259,6 +262,7 @@ void PingPongGame::run()
         render();
     }
     SoundPlayer::destroyInstance();
+    DBClient::destroyInstance();
     m_entity_manager.clear();
 }
 

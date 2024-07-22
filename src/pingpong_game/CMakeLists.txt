@@ -43,8 +43,10 @@ target_set_warnings(
     ${ENABLE_WARNINGS_AS_ERRORS}
 )
 
+list(APPEND CMAKE_PREFIX_PATH "D:\\mongo-cxx-driver" "D:\\mongo-c-driver")
+include("D:\\mongo-cxx-driver\\lib\\cmake\\mongocxx-3.10.1\\mongocxx-config.cmake")
 add_library(${PROJECT_NAME} SHARED ${GAME_SOURCE_FILE})
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_util)
+target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_util mongo::mongocxx_shared)
 
 target_sources(
     ${PROJECT_NAME} PRIVATE FILE_SET ${PROJECT_NAME}_headers TYPE HEADERS FILES
@@ -83,6 +85,21 @@ if(WIN32)
         ${CMAKE_COMMAND} -E copy_directory_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/resources
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/../resources
+        VERBATIM
+    )
+
+    add_custom_command(
+        TARGET ${PROJECT_NAME}_util
+        POST_BUILD
+        COMMENT "Copy resources"
+        COMMAND
+        ${CMAKE_COMMAND} -E copy_directory_if_different
+        "D:\\mongo-cxx-driver\\bin"
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND
+        ${CMAKE_COMMAND} -E copy_directory_if_different
+        "D:\\mongo-c-driver\\bin"
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>
         VERBATIM
     )
 endif()
