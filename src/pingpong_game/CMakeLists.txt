@@ -42,7 +42,27 @@ target_set_warnings(
     TARGET ${PROJECT_NAME}_util ENABLE ${ENABLE_WARNINGS} AS_ERRORS
     ${ENABLE_WARNINGS_AS_ERRORS}
 )
-target_compile_options(${PROJECT_NAME}_util PUBLIC -fPIC)
+
+add_library(${PROJECT_NAME} SHARED ${GAME_SOURCE_FILE})
+target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_util)
+
+target_sources(
+    ${PROJECT_NAME} PRIVATE FILE_SET ${PROJECT_NAME}_headers TYPE HEADERS FILES
+    "${GAME_HEADER_FILE}"
+)
+set_target_properties(
+    ${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON
+    PUBLIC_HEADER "${GAME_HEADER_FILE}"
+    PREFIX ""
+)
+target_set_warnings(
+    TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS
+    ${ENABLE_WARNINGS_AS_ERRORS}
+)
+
+if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
+    target_compile_options(${PROJECT_NAME}_util PUBLIC -fPIC)
+endif(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
 
 if(WIN32)
     add_custom_command(
@@ -66,23 +86,6 @@ if(WIN32)
         VERBATIM
     )
 endif()
-
-add_library(${PROJECT_NAME} SHARED ${GAME_SOURCE_FILE})
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_util)
-
-target_sources(
-    ${PROJECT_NAME} PRIVATE FILE_SET ${PROJECT_NAME}_headers TYPE HEADERS FILES
-    "${GAME_HEADER_FILE}"
-)
-set_target_properties(
-    ${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON
-    PUBLIC_HEADER "${GAME_HEADER_FILE}"
-    PREFIX ""
-)
-target_set_warnings(
-    TARGET ${PROJECT_NAME} ENABLE ${ENABLE_WARNINGS} AS_ERRORS
-    ${ENABLE_WARNINGS_AS_ERRORS}
-)
 
 if(CLANG_TIDY_CHECK)
     set_target_properties(

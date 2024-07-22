@@ -66,10 +66,6 @@
             "architecture":{
                 "strategy": "set",
                 "value": "x64"
-            },
-            "toolset":{
-                "strategy": "set",
-                "value": "ClangCl"
             }
         }
     ],
