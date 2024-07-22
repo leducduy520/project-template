@@ -31,7 +31,7 @@ int main()
 #if defined(_WIN32)
     moduleManager.registerModule("PingPongGame", "pingpong_game.dll");
 #else
-    moduleManager.registerModule("PingPongGame", "libpingpong_game.so");
+    moduleManager.registerModule("PingPongGame", "pingpong_game.so");
 #endif
     auto execPath = EXECUTABLE_PATH;
     if (moduleManager.loadModule("PingPongGame"))
