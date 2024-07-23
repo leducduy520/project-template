@@ -15,14 +15,12 @@ SoundPlayer::SoundPlayer()
     magic_enum::enum_for_each<SoundMode>([this](auto val) {
         constexpr SoundMode mode = val;
         sf::SoundBuffer buffer;
-        sf::Sound sound;
         switch (mode)
         {
         case SoundMode::WALL_BOUNCE:
         {
             if (buffer.loadFromFile(constants::resoucesPath + "wall_bounce.wav"))
             {
-                sound.setBuffer(buffer);
                 m_soundDict.emplace(mode, std::move(buffer));
             }
         }
@@ -31,7 +29,6 @@ SoundPlayer::SoundPlayer()
         {
             if (buffer.loadFromFile(constants::resoucesPath + "brick_bounce.wav"))
             {
-                sound.setBuffer(buffer);
                 m_soundDict.emplace(mode, std::move(buffer));
             }
         }
@@ -40,7 +37,6 @@ SoundPlayer::SoundPlayer()
         {
             if (buffer.loadFromFile(constants::resoucesPath + "paddle_bounce.wav"))
             {
-                sound.setBuffer(buffer);
                 m_soundDict.emplace(mode, std::move(buffer));
             }
         }
@@ -49,7 +45,6 @@ SoundPlayer::SoundPlayer()
         {
             if (buffer.loadFromFile(constants::resoucesPath + "diamond_destroy.wav"))
             {
-                sound.setBuffer(buffer);
                 m_soundDict.emplace(mode, std::move(buffer));
             }
         }
@@ -58,7 +53,6 @@ SoundPlayer::SoundPlayer()
         {
             if (buffer.loadFromFile(constants::resoucesPath + "bomb_explosion.wav"))
             {
-                sound.setBuffer(buffer);
                 m_soundDict.emplace(mode, std::move(buffer));
             }
         }

@@ -1,11 +1,14 @@
 #include "PingPongGame.hpp"
+#include "dbclientGame.hpp"
 #include "interactions.hpp"
 #include "soundplayer.hpp"
 #include "wallHelper.hpp"
-#include "dbclientGame.hpp"
+#include <string>
+#include <iomanip>
 
 std::string constants::resoucesPath;
 using namespace std;
+using namespace std::literals;
 
 void PingPongGame::eventHandler()
 {
@@ -58,6 +61,15 @@ void PingPongGame::eventHandler()
             }
             reset();
             m_state = game_state::running;
+            try
+            {
+                DBINSTANCE->testFunc();
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Update document fail\n";
+                std::cerr << e.what() << '\n';
+            }
         }
         reset_key_active = true;
     }
@@ -132,11 +144,35 @@ void PingPongGame::update()
         if (m_entity_manager.get_all<wall>().empty())
         {
             m_state = game_state::player_wins;
+            auto filter = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")));
+            try
+            {
+                auto doc = DBINSTANCE->GetDocument(filter.view());
+                auto win = doc["win"].get_int32().value + 1;
+                DBINSTANCE->UpdateDocument(filter.view(), make_document(kvp("$set", make_document(kvp("win", win)))));
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Update document fail\n";
+                std::cerr << e.what() << '\n';
+            }
         }
 
         if (m_live == 0)
         {
             m_state = game_state::game_over;
+            auto filter = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")));
+            try
+            {
+                auto doc = DBINSTANCE->GetDocument(filter.view());
+                auto lose = doc["lose"].get_int32().value + 1;
+                DBINSTANCE->UpdateDocument(filter.view(), make_document(kvp("$set", make_document(kvp("lose", lose)))));
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Update document fail\n";
+                std::cerr << e.what() << '\n';
+            }
         }
     }
 }
@@ -250,8 +286,59 @@ void PingPongGame::clear()
 // Game loop
 void PingPongGame::run()
 {
-    DBClient::GetInstance();
-    DBClient::GetInstance()->GetDatabase("duyld");
+    try
+    {
+        DBINSTANCE->GetDatabase("duyld");
+        if (!DBINSTANCE->GetCollection("pingpong_game"))
+        {
+            DBINSTANCE->CreateCollection("pingpong_game");
+            auto document = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")), kvp("max_score", 0));
+            if (DBINSTANCE->InsertDocument(document))
+            {
+                cout << "Insert init document successful" << endl;
+            }
+        }
+
+        auto filter = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")),
+                                    kvp("history", make_document(kvp("$exists", true))));
+
+        if (DBINSTANCE->GetExistDocument(filter.view()))
+        {
+            /*cout << "history exists" << endl;
+            auto filter = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")));
+            DBINSTANCE->UpdateDocument(
+                filter.view(),
+                make_document(kvp(
+                    "$push", make_document(kvp("history", make_array(make_document(kvp("date",
+                                                                   std::chrono::duration_cast<std::chrono::seconds>(
+                                                                       chrono::system_clock::now().time_since_epoch())
+                                                                       .count()),
+                                                               kvp("score", 0),
+                                                               kvp("live", 3)
+                    )))))));*/
+        }
+        else
+        {
+            cout << "Not exist history, create one" << endl;
+            auto filter = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")));
+            DBINSTANCE->UpdateDocument(
+                filter.view(),
+                make_document(kvp(
+                    "$set",
+                    make_document(kvp("history",
+                                      make_array(make_document(kvp("date",
+                                                                   std::chrono::duration_cast<std::chrono::seconds>(
+                                                                       chrono::system_clock::now().time_since_epoch())
+                                                                       .count()),
+                                                               kvp("score", 0),
+                                                               kvp("live", 3))))))));
+        }
+    }
+    catch (const std::exception & e)
+    {
+        cerr << "Connecting to mongo DB failed: " << e.what() << endl;
+    }
+
     SoundPlayer::getInstance();
     while (game_window.isOpen())
     {
@@ -262,7 +349,7 @@ void PingPongGame::run()
         render();
     }
     SoundPlayer::destroyInstance();
-    DBClient::destroyInstance();
+    DBClient::DestroyInstance();
     m_entity_manager.clear();
 }
 
