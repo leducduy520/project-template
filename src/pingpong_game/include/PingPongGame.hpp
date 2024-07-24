@@ -27,8 +27,20 @@ class PingPongGame : public IGame
     sf::Text m_textState;
     sf::Text m_textLive;
 
-    int m_live;
+    uint8_t m_live;
+    uint16_t m_point;
+    int64_t m_GameSessionID;
+    int64_t m_userid;
+    std::string m_username;
 
+    void updateGameSesstionStartTime();
+    void updateGameSesstionEndTime();
+    void updateGameSessionID();
+    char* getFormatGMT(time_t time);
+    void databaseRetryUpdate();
+    void databaseResultUpdate(const bool& isWin);
+    void removeCurrentData();
+    void try_database();
     void eventHandler();
     void stateHandler();
     void update();

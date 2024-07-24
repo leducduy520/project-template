@@ -55,6 +55,7 @@ void handle_interaction(wall &a_wall, ball &a_ball, brick &a_brick)
         {
         case brick::BRICK:
         {
+            wall_utils::increasePoint(a_wall, 1);
             a_brick.hit();
             auto [less, from_left, from_top] = getDirection(a_ball, a_brick);
 
@@ -83,6 +84,7 @@ void handle_interaction(wall &a_wall, ball &a_ball, brick &a_brick)
         }
         break;
         case brick::DIAMOND:
+            wall_utils::increasePoint(a_wall, 5);
             a_brick.hit();
             break;
         case brick::BOMB:

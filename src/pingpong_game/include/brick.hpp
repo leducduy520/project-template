@@ -76,15 +76,21 @@ class wall : public wall_map, public entity
 public:
     wall() = default;
     template <class T>
-    wall(T &&bricks) noexcept
+    wall(T &&bricks)  noexcept
+        : point(0)
     {
         swap(std::forward<T>(bricks));
     }
     void update() override;
     void draw(sf::RenderWindow &window) override;
     void init(float x, float y) override;
+    inline int &getPoint()
+    {
+        return point;
+    }
 
 private:
+    int32_t point;
 };
 
 #endif // _BRICK_H

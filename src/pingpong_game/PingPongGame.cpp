@@ -10,6 +10,157 @@ std::string constants::resoucesPath;
 using namespace std;
 using namespace std::literals;
 
+void PingPongGame::updateGameSesstionStartTime()
+{
+    char buffer[constants::fmtnow] = {};
+    memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
+
+    DBINSTANCE->UpdateDocument(
+        make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)).view(),
+        make_document(
+            kvp("$set", make_document(
+                kvp("history.$.start_time", buffer)))));
+}
+
+void PingPongGame::updateGameSesstionEndTime()
+{
+    auto oldGameSessionID = m_GameSessionID;
+    updateGameSessionID();
+
+    char buffer[constants::fmtnow] = {};
+    memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
+
+    DBINSTANCE->UpdateDocument(
+        make_document(kvp("userid", m_userid), kvp("history.id", oldGameSessionID)).view(),
+        make_document(
+            kvp("$set", make_document(
+                kvp("history.$.end_time", buffer)))));
+}
+
+void PingPongGame::updateGameSessionID()
+{
+    m_GameSessionID = std::chrono::duration_cast<std::chrono::seconds>(chrono::system_clock::now().time_since_epoch()).count();
+}
+
+char* PingPongGame::getFormatGMT(time_t time)
+{
+    char buffer[constants::fmtnow] = {};
+    strftime(buffer, constants::fmtnow, "%D %T GMT", gmtime(&time));
+    return { buffer };
+}
+
+void PingPongGame::databaseRetryUpdate()
+{
+    if(m_state == game_state::running || m_state == game_state::paused)
+    {
+        DBINSTANCE->UpdateDocument(
+            make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)).view(),
+            make_document(
+                kvp("$set", make_document(
+                    kvp("history.$.result", "lose"), 
+                    kvp("history.$.live", m_live),
+                    kvp("history.$.score", (int32_t)m_point)
+                ))));
+    }
+    updateGameSesstionEndTime();
+
+    DBINSTANCE->UpdateDocument(
+        make_document(kvp("userid", m_userid)).view(),
+        make_document(
+            kvp(
+                "$push",
+                make_document(kvp("history",
+                    make_document(          
+                        kvp("id", m_GameSessionID),
+                        kvp("end_time", ""),
+                        kvp("result", ""),
+                        kvp("score", 0),
+                        kvp("live", 3)))))
+
+        ));
+    updateGameSesstionStartTime();
+}
+
+void PingPongGame::databaseResultUpdate(const bool& isWin)
+{
+    if (isWin)
+    {
+        DBINSTANCE->UpdateDocument(
+            make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)).view(),
+            make_document(
+                kvp("$set", make_document(
+                    kvp("history.$.result", "win"),
+                    kvp("history.$.live", m_live),
+                    kvp("history.$.score", (int32_t)m_point)
+                ))));
+    }
+    else
+    {
+        DBINSTANCE->UpdateDocument(
+            make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)).view(),
+            make_document(
+                kvp("$set", make_document(
+                    kvp("history.$.result", "lose"),
+                    kvp("history.$.live", m_live),
+                    kvp("history.$.score", (int32_t)m_point)
+                ))));
+    }
+}
+
+void PingPongGame::removeCurrentData()
+{
+    auto filter = make_document(kvp("userid", m_userid));
+    auto result = DBINSTANCE->UpdateDocument(
+        filter.view(),
+        make_document(kvp("$pop", make_document(kvp("history", 1)))));
+}
+
+void PingPongGame::try_database()
+{
+    try
+    {
+        m_username = { "duyleduc123"s };
+        m_userid = (int64_t)hash<string>{}(m_username);
+        DBINSTANCE->GetDatabase("duyld");
+        if (!DBINSTANCE->GetCollection("pingpong_game"))
+        {
+            DBINSTANCE->CreateCollection("pingpong_game");
+            auto document = make_document(kvp("username", "duyleduc123"),kvp("userid", m_userid), kvp("max_score", 0));
+            if (DBINSTANCE->InsertDocument(document))
+            {
+                cout << "Insert init document successful" << endl;
+            }
+        }
+
+        auto filter = make_document(kvp("userid", m_userid));
+
+        char buffer[constants::fmtnow] = {};
+        updateGameSessionID();
+        memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
+        cout << "start_time: " << buffer << endl;
+
+        DBINSTANCE->UpdateDocument(
+            filter.view(),
+            make_document(
+                kvp(
+                    "$push",
+                    make_document(kvp("history",
+                        make_document(          
+                            kvp("id", m_GameSessionID),
+                            kvp("start_time", buffer),
+                            kvp("end_time", ""),
+                            kvp("result", ""),
+                            kvp("score", 0),
+                            kvp("live", 3)))))
+
+            ));
+    }
+    catch (const std::exception& e)
+    {
+        throw e;
+    }
+}
+
 void PingPongGame::eventHandler()
 {
     static bool pause_key_active = false;
@@ -20,12 +171,28 @@ void PingPongGame::eventHandler()
     {
         if (event.type == sf::Event::Closed)
         {
+            if(m_state == game_state::running || m_state == game_state::paused)
+            {
+                removeCurrentData();
+            }
+            else
+            {
+                updateGameSesstionEndTime();
+            }
             game_window.close();
         }
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
     {
+        if(m_state == game_state::running || m_state == game_state::paused)
+        {
+            removeCurrentData();
+        }
+        else
+        {
+            updateGameSesstionEndTime();
+        }
         game_window.close();
     }
 
@@ -59,17 +226,18 @@ void PingPongGame::eventHandler()
             {
                 m_entity_manager.create<ball>();
             }
-            reset();
-            m_state = game_state::running;
+
             try
             {
-                DBINSTANCE->testFunc();
+                databaseRetryUpdate();
             }
             catch (const std::exception &e)
             {
                 cout << "Update document fail\n";
                 std::cerr << e.what() << '\n';
             }
+
+            reset();
         }
         reset_key_active = true;
     }
@@ -93,12 +261,14 @@ void PingPongGame::stateHandler()
     break;
     case game_state::game_over:
     {
+        databaseResultUpdate(false);
         m_textState.setString("Game Over");
         centeredText(m_textState);
     }
     break;
     case game_state::player_wins:
     {
+        databaseResultUpdate(true);
         m_textState.setString("Win");
         centeredText(m_textState);
     }
@@ -129,6 +299,15 @@ void PingPongGame::update()
             });
         });
 
+        m_point = 0;
+        auto walls = m_entity_manager.get_all<wall>();
+        for (auto &w : walls)
+        {
+            const auto wptr = dynamic_cast<wall*>(w);
+            m_point += wall_utils::getPoint(*wptr);
+        }
+        
+        
         m_entity_manager.refresh();
 
         if (m_entity_manager.get_all<ball>().empty())
@@ -144,35 +323,11 @@ void PingPongGame::update()
         if (m_entity_manager.get_all<wall>().empty())
         {
             m_state = game_state::player_wins;
-            auto filter = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")));
-            try
-            {
-                auto doc = DBINSTANCE->GetDocument(filter.view());
-                auto win = doc["win"].get_int32().value + 1;
-                DBINSTANCE->UpdateDocument(filter.view(), make_document(kvp("$set", make_document(kvp("win", win)))));
-            }
-            catch (const std::exception &e)
-            {
-                cout << "Update document fail\n";
-                std::cerr << e.what() << '\n';
-            }
         }
 
         if (m_live == 0)
         {
             m_state = game_state::game_over;
-            auto filter = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")));
-            try
-            {
-                auto doc = DBINSTANCE->GetDocument(filter.view());
-                auto lose = doc["lose"].get_int32().value + 1;
-                DBINSTANCE->UpdateDocument(filter.view(), make_document(kvp("$set", make_document(kvp("lose", lose)))));
-            }
-            catch (const std::exception &e)
-            {
-                cout << "Update document fail\n";
-                std::cerr << e.what() << '\n';
-            }
         }
     }
 }
@@ -226,12 +381,12 @@ void PingPongGame::centeredText(sf::Text &text)
     text.setPosition(constants::window_width / 2.0f, constants::window_height / 2.0f);
 }
 
-PingPongGame::PingPongGame(std::string resourcePath) : m_live(3)
+PingPongGame::PingPongGame(std::string resourcePath) : m_live(3), m_point(0), m_GameSessionID(0), m_userid(0)
 {
     PingPongGame::init(resourcePath);
 }
 
-PingPongGame::PingPongGame() : m_live(3)
+PingPongGame::PingPongGame() : m_live(3), m_point(0), m_GameSessionID(0), m_userid(0)
 {
 }
 
@@ -269,6 +424,8 @@ void PingPongGame::init(std::string &resourcePath)
 void PingPongGame::reset()
 {
     m_live = 3;
+    m_point = 0;
+    m_state = game_state::running;
     m_entity_manager.apply_all<ball>(
         [](ball &a_ball) { a_ball.init(constants::window_width / 2.0f, constants::window_height / 2.0f); });
     m_entity_manager.apply_all<paddle>(
@@ -288,51 +445,8 @@ void PingPongGame::run()
 {
     try
     {
-        DBINSTANCE->GetDatabase("duyld");
-        if (!DBINSTANCE->GetCollection("pingpong_game"))
-        {
-            DBINSTANCE->CreateCollection("pingpong_game");
-            auto document = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")), kvp("max_score", 0));
-            if (DBINSTANCE->InsertDocument(document))
-            {
-                cout << "Insert init document successful" << endl;
-            }
-        }
-
-        auto filter = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")),
-                                    kvp("history", make_document(kvp("$exists", true))));
-
-        if (DBINSTANCE->GetExistDocument(filter.view()))
-        {
-            /*cout << "history exists" << endl;
-            auto filter = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")));
-            DBINSTANCE->UpdateDocument(
-                filter.view(),
-                make_document(kvp(
-                    "$push", make_document(kvp("history", make_array(make_document(kvp("date",
-                                                                   std::chrono::duration_cast<std::chrono::seconds>(
-                                                                       chrono::system_clock::now().time_since_epoch())
-                                                                       .count()),
-                                                               kvp("score", 0),
-                                                               kvp("live", 3)
-                    )))))));*/
-        }
-        else
-        {
-            cout << "Not exist history, create one" << endl;
-            auto filter = make_document(kvp("userid", (int64_t)hash<string>{}("duyleduc123")));
-            DBINSTANCE->UpdateDocument(
-                filter.view(),
-                make_document(kvp(
-                    "$set",
-                    make_document(kvp("history",
-                                      make_array(make_document(kvp("date",
-                                                                   std::chrono::duration_cast<std::chrono::seconds>(
-                                                                       chrono::system_clock::now().time_since_epoch())
-                                                                       .count()),
-                                                               kvp("score", 0),
-                                                               kvp("live", 3))))))));
-        }
+        try_database();
+        DBINSTANCE->testFunc();
     }
     catch (const std::exception & e)
     {

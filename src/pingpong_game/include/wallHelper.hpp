@@ -7,6 +7,9 @@
 
 namespace wall_utils
 {
+void resetPoint(wall &a_wall);
+void increasePoint(wall &a_wall, int amount = 1);
+int  getPoint(wall &a_wall);
 void createWall(wall &a_wall, const char *path);
 void destroyAround(wall &a_wall, brick &a_brick, sf::Vector2i range);
 void checkAlive(wall &a_wall);

@@ -5,12 +5,25 @@
 
 namespace wall_utils
 {
+void resetPoint(wall &a_wall)
+{
+    a_wall.getPoint() = 0;
+}
+void increasePoint(wall &a_wall, int amount)
+{
+    a_wall.getPoint() += amount;
+}
+int getPoint(wall& a_wall)
+{
+    return a_wall.getPoint();
+}
 void createWall(wall &a_wall, const char *path)
 {
     if (!a_wall.empty())
     {
         a_wall.clear();
     }
+    resetPoint(a_wall);
 
     const rapidcsv::Document doc(path, rapidcsv::LabelParams(-1, -1));
 
@@ -52,6 +65,10 @@ void destroyAround(wall &a_wall, brick &a_brick, sf::Vector2i range)
                 }
                 else
                 {
+                    if (alias->getProperty() == brick::DIAMOND && !alias->is_destroyed())
+                        wall_utils::increasePoint(a_wall, 5);
+                    else if (alias->getProperty() == brick::BRICK && !alias->is_destroyed())
+                        wall_utils::increasePoint(a_wall, 1);
                     alias->hit(constants::cap_brick_hit, true);
                 }
             }

@@ -140,6 +140,24 @@ bool DBClient::GetExistDocument(bsoncxx::v_noabi::document::view_or_value filter
     return false;
 }
 
+bool DBClient::DeleteDocument(bsoncxx::v_noabi::document::view_or_value filter, mongocxx::collection* collection)
+{
+    if (!collection)
+    {
+        auto result = m_dbcollection.delete_one(filter.view());
+        if (result)
+            return true;
+        return false;
+    }
+    if (m_dbdatabase.has_collection(collection->name()))
+    {
+        auto result = collection->delete_one(filter.view());
+        if (result)
+            return true;
+    }
+    return false;
+}
+
 void DBClient::testFunc()
 {
     using bsoncxx::builder::stream::open_document;
@@ -147,35 +165,4 @@ void DBClient::testFunc()
     using bsoncxx::builder::stream::open_array;
     using bsoncxx::builder::stream::close_array;
     
-    char buff1[sizeof("history.0.score")] = {};
-    char buff2[sizeof("history.00.score")] = {};
-    char buff3[sizeof("history.000.score")] = {};
-    
-    auto filter = document{} << "userid" << (int64_t)hash<string>{}("duyleduc123") << finalize;
-
-    auto doc = GetDocument(filter.view());
-    auto history = doc["history"].get_array().value;
-    auto history_size = distance(history.begin(), history.end());
-    string query{"history." + to_string(history_size - 1) + ".score"};
-    if (history_size < 10)
-    {
-        memcpy(buff1, query.c_str(), query.length());
-        auto update = document{} << "$set" << open_document << buff1 << 1 << close_document << finalize;
-        auto result = m_dbcollection.update_one(filter.view(), update.view());
-        std::cout << "Update result: " << (result ? "success" : "failed") << std::endl;
-    }
-    else if (history_size <= 99)
-    {
-        memcpy(buff2, query.c_str(), query.length());
-        auto update = document{} << "$set" << open_document << buff2 << 1 << close_document << finalize;
-        auto result = m_dbcollection.update_one(filter.view(), update.view());
-        std::cout << "Update result: " << (result ? "success" : "failed") << std::endl;
-    }
-    else
-    {
-        memcpy(buff3, query.c_str(), query.length());
-        auto update = document{} << "$set" << open_document << buff3 << 1 << close_document << finalize;
-        auto result = m_dbcollection.update_one(filter.view(), update.view());
-        std::cout << "Update result: " << (result ? "success" : "failed") << std::endl;
-    }
 }
