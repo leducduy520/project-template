@@ -30,11 +30,13 @@ void PingPongGame::updateGameSesstionEndTime()
     char buffer[constants::fmtnow] = {};
     memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
 
+    auto duration = minus<decltype(m_GameSessionID)>{}(m_GameSessionID, oldGameSessionID);
+
     DBINSTANCE->UpdateDocument(
         make_document(kvp("userid", m_userid), kvp("history.id", oldGameSessionID)).view(),
         make_document(
             kvp("$set", make_document(
-                kvp("history.$.end_time", buffer)))));
+                kvp("history.$.end_time", buffer),kvp("history.$.duration", duration)))));
 }
 
 void PingPongGame::updateGameSessionID()
@@ -45,7 +47,7 @@ void PingPongGame::updateGameSessionID()
 char* PingPongGame::getFormatGMT(time_t time)
 {
     char buffer[constants::fmtnow] = {};
-    strftime(buffer, constants::fmtnow, "%D %T GMT", gmtime(&time));
+    strftime(buffer, constants::fmtnow, "%F %T GMT", gmtime(&time));
     return { buffer };
 }
 
