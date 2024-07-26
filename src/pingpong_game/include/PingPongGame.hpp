@@ -8,6 +8,8 @@
 #include "constants.hpp"
 #include "entityManager.hpp"
 #include "paddle.hpp"
+#include "bson/bson.h"
+#include "nlohmann/json.hpp"
 
 class PingPongGame : public IGame
 {
@@ -33,21 +35,23 @@ class PingPongGame : public IGame
     int64_t m_userid;
     std::string m_username;
 
-    void updateGameSessionStartTime();
-    void updateGameSessionEndTime();
-    void updateGameRecord();
-    void updateGameNewHistory();
-    int64_t updateGameSessionID();
     char* getFormatGMT(time_t time);
-    void databaseRetryUpdate();
+    int64_t updateGameSessionID();
+    nlohmann::json toJson(const uint8_t* data, size_t length);
+    std::string toJsonString(const uint8_t* data, size_t length);
     void databaseResultUpdate(const bool& isWin);
-    void removeCurrentData();
-    void try_database();
+    void databaseRetryUpdate();
     void eventHandler();
-    void stateHandler();
-    void update();
+    void removeCurrentData();
     void render();
+    void stateHandler();
     void try_createwall();
+    void try_database();
+    void update();
+    void updateGameNewHistory();
+    void updateGameRecord();
+    void updateGameSessionEndTime();
+    void updateGameSessionStartTime();
 
     static void centeredText(sf::Text &text);
 

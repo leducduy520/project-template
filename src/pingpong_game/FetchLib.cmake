@@ -16,6 +16,12 @@ macro(FetchLib)
     )
     FetchContent_MakeAvailable(magic_enum)
 
+    FetchContent_Declare(
+        json GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.11.3
+    )
+    FetchContent_MakeAvailable(json)
+
     # FetchContent_Declare(
     # SQLiteCpp GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
     # GIT_TAG 3.3.1

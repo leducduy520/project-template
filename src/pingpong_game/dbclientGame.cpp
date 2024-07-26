@@ -77,8 +77,8 @@ bool DBClient::InsertDocument(const bsoncxx::document::value &document, mongocxx
     return false;
 }
 
-bool DBClient::UpdateDocument(bsoncxx::v_noabi::document::view_or_value filter,
-                              bsoncxx::v_noabi::document::value update,
+bool DBClient::UpdateDocument(const bsoncxx::v_noabi::document::value &filter,
+                              const bsoncxx::v_noabi::document::value &update,
                               mongocxx::collection *collection)
 {
     if (!collection)
@@ -95,52 +95,21 @@ bool DBClient::UpdateDocument(bsoncxx::v_noabi::document::view_or_value filter,
     return false;
 }
 
-bsoncxx::document::value DBClient::GetDocument(bsoncxx::v_noabi::document::view_or_value filter,
+std::optional<bsoncxx::v_noabi::document::value> DBClient::GetDocument(const bsoncxx::v_noabi::document::value& filter,
                                                mongocxx::collection *collection)
 {
     if (!collection)
     {
-        auto value = m_dbcollection.find_one(filter.view());
-        if (value)
-        {
-            return value.value();
-        }
-        return make_document();
+        return m_dbcollection.find_one(filter.view());
     }
     if (m_dbdatabase.has_collection(collection->name()))
     {
-        auto value = collection->find_one(filter.view());
-        if (value)
-        {
-            return value.value();
-        }
+        return collection->find_one(filter.view());
     }
-    return make_document();
+    return {};
 }
 
-bool DBClient::GetExistDocument(bsoncxx::v_noabi::document::view_or_value filter, mongocxx::collection *collection)
-{
-    if (!collection)
-    {
-        auto value = m_dbcollection.find_one(filter.view());
-        if (value)
-        {
-            return true;
-        }
-        return false;
-    }
-    if (m_dbdatabase.has_collection(collection->name()))
-    {
-        auto value = collection->find_one(filter.view());
-        if (value)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool DBClient::DeleteDocument(bsoncxx::v_noabi::document::view_or_value filter, mongocxx::collection *collection)
+bool DBClient::DeleteDocument(const bsoncxx::v_noabi::document::value& filter, mongocxx::collection *collection)
 {
     if (!collection)
     {

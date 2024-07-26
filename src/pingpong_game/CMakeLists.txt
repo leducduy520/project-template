@@ -21,9 +21,12 @@ file(GLOB RESOURCE_FILES LIST_DIRECTORIES false
     "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.*"
 )
 
+list(APPEND CMAKE_PREFIX_PATH "D:\\mongo-cxx-driver" "D:\\mongo-c-driver")
+include("D:\\mongo-cxx-driver\\lib\\cmake\\mongocxx-3.10.1\\mongocxx-config.cmake")
+
 add_library(${PROJECT_NAME}_util STATIC ${UTIL_SOURCE_FILES})
 target_link_libraries(
-    ${PROJECT_NAME}_util sfml-graphics sfml-audio rapidcsv magic_enum
+    ${PROJECT_NAME}_util sfml-graphics sfml-audio rapidcsv magic_enum mongo::bson_static nlohmann_json::nlohmann_json
 )
 target_include_directories(
     ${PROJECT_NAME}_util
@@ -43,8 +46,6 @@ target_set_warnings(
     ${ENABLE_WARNINGS_AS_ERRORS}
 )
 
-list(APPEND CMAKE_PREFIX_PATH "D:\\mongo-cxx-driver" "D:\\mongo-c-driver")
-include("D:\\mongo-cxx-driver\\lib\\cmake\\mongocxx-3.10.1\\mongocxx-config.cmake")
 add_library(${PROJECT_NAME} SHARED ${GAME_SOURCE_FILE})
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_util mongo::mongocxx_shared)
 

@@ -34,10 +34,9 @@ public:
     const mongocxx::collection* GetCollection(const char* name);
     bool CreateCollection(const std::string& collectionName, mongocxx::database* db = nullptr);
     bool InsertDocument(const bsoncxx::document::value& document, mongocxx::collection* collection = nullptr);
-    bool UpdateDocument(bsoncxx::v_noabi::document::view_or_value filter, bsoncxx::v_noabi::document::value update, mongocxx::collection* collection = nullptr);
-    bsoncxx::document::value GetDocument(bsoncxx::v_noabi::document::view_or_value filter, mongocxx::collection* collection = nullptr);
-    bool GetExistDocument(bsoncxx::v_noabi::document::view_or_value filter, mongocxx::collection* collection = nullptr);
-    bool DeleteDocument(bsoncxx::v_noabi::document::view_or_value filter, mongocxx::collection *collection = nullptr);
+    bool UpdateDocument(const bsoncxx::v_noabi::document::value& filter, const bsoncxx::v_noabi::document::value& update, mongocxx::collection* collection = nullptr);
+    std::optional<bsoncxx::v_noabi::document::value> GetDocument(const bsoncxx::v_noabi::document::value& filter, mongocxx::collection* collection = nullptr);
+    bool DeleteDocument(const bsoncxx::v_noabi::document::value& filter, mongocxx::collection *collection = nullptr);
     void RunPipeLine(const mongocxx::pipeline pl, const mongocxx::options::aggregate opts, mongocxx::collection *collection = nullptr);
     void testFunc();
 };

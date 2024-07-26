@@ -9,6 +9,7 @@
 std::string constants::resoucesPath;
 using namespace std;
 using namespace std::literals;
+using json = nlohmann::json;
 
 void PingPongGame::updateGameSessionStartTime()
 {
@@ -16,10 +17,34 @@ void PingPongGame::updateGameSessionStartTime()
     memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
 
     DBINSTANCE->UpdateDocument(
-        make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)).view(),
+        make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)),
         make_document(
             kvp("$set", make_document(
                 kvp("history.$.start_time", buffer)))));
+}
+
+std::string PingPongGame::toJsonString(const uint8_t* data, size_t length)
+{
+    std::string ret;
+
+    bson_t bson;
+    bson_init_static(&bson, data, length);
+
+    size_t size;
+    auto result = bson_array_as_relaxed_extended_json(&bson, &size);
+
+    if (!result)
+        return {};
+
+    const auto deleter = [](char* result) { bson_free(result); };
+    const std::unique_ptr<char[], decltype(deleter)> cleanup(result, deleter);
+
+    return { result, size };
+}
+
+nlohmann::json PingPongGame::toJson(const uint8_t* data, size_t length)
+{
+    return json{ toJsonString(data, length) };
 }
 
 void PingPongGame::updateGameSessionEndTime()
@@ -32,7 +57,7 @@ void PingPongGame::updateGameSessionEndTime()
     auto duration = minus<decltype(m_GameSessionID)>{}(m_GameSessionID, oldGameSessionID);
 
     DBINSTANCE->UpdateDocument(
-        make_document(kvp("userid", m_userid), kvp("history.id", oldGameSessionID)).view(),
+        make_document(kvp("userid", m_userid), kvp("history.id", oldGameSessionID)),
         make_document(
             kvp("$set", make_document(
                 kvp("history.$.end_time", buffer),kvp("history.$.duration", duration)))));
@@ -66,7 +91,7 @@ void PingPongGame::updateGameRecord()
 void PingPongGame::updateGameNewHistory()
 {
     DBINSTANCE->UpdateDocument(
-        make_document(kvp("userid", m_userid)).view(),
+        make_document(kvp("userid", m_userid)),
         make_document(
             kvp(
                 "$push",
@@ -108,7 +133,7 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
     if (isWin)
     {
         DBINSTANCE->UpdateDocument(
-            make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)).view(),
+            make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)),
             make_document(
                 kvp("$set", make_document(
                     kvp("history.$.result", "win"),
@@ -119,7 +144,7 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
     else
     {
         DBINSTANCE->UpdateDocument(
-            make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)).view(),
+            make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)),
             make_document(
                 kvp("$set", make_document(
                     kvp("history.$.result", "lose"),
@@ -134,7 +159,7 @@ void PingPongGame::removeCurrentData()
 {
     auto filter = make_document(kvp("userid", m_userid));
     auto result = DBINSTANCE->UpdateDocument(
-        filter.view(),
+        filter,
         make_document(kvp("$pop", make_document(kvp("history", 1)))));
 }
 
@@ -302,7 +327,7 @@ void PingPongGame::update()
         });
 
         m_point = 0;
-        auto walls = m_entity_manager.get_all<wall>();
+        auto& walls = m_entity_manager.get_all<wall>();
         for (auto &w : walls)
         {
             const auto wptr = dynamic_cast<wall*>(w);
@@ -448,6 +473,11 @@ void PingPongGame::run()
     try
     {
         try_database();
+        auto optval = DBINSTANCE->GetDocument(make_document());
+        if(optval)
+        {
+            cout << toJsonString(optval.value().data(), optval.value().length()) << endl;
+        }
     }
     catch (const std::exception & e)
     {
