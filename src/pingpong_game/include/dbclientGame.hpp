@@ -38,6 +38,7 @@ public:
     bsoncxx::document::value GetDocument(bsoncxx::v_noabi::document::view_or_value filter, mongocxx::collection* collection = nullptr);
     bool GetExistDocument(bsoncxx::v_noabi::document::view_or_value filter, mongocxx::collection* collection = nullptr);
     bool DeleteDocument(bsoncxx::v_noabi::document::view_or_value filter, mongocxx::collection *collection = nullptr);
+    void RunPipeLine(const mongocxx::pipeline pl, const mongocxx::options::aggregate opts, mongocxx::collection *collection = nullptr);
     void testFunc();
 };
 

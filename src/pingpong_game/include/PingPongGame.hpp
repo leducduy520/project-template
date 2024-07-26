@@ -33,9 +33,11 @@ class PingPongGame : public IGame
     int64_t m_userid;
     std::string m_username;
 
-    void updateGameSesstionStartTime();
-    void updateGameSesstionEndTime();
-    void updateGameSessionID();
+    void updateGameSessionStartTime();
+    void updateGameSessionEndTime();
+    void updateGameRecord();
+    void updateGameNewHistory();
+    int64_t updateGameSessionID();
     char* getFormatGMT(time_t time);
     void databaseRetryUpdate();
     void databaseResultUpdate(const bool& isWin);

@@ -10,7 +10,7 @@ std::string constants::resoucesPath;
 using namespace std;
 using namespace std::literals;
 
-void PingPongGame::updateGameSesstionStartTime()
+void PingPongGame::updateGameSessionStartTime()
 {
     char buffer[constants::fmtnow] = {};
     memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
@@ -22,10 +22,9 @@ void PingPongGame::updateGameSesstionStartTime()
                 kvp("history.$.start_time", buffer)))));
 }
 
-void PingPongGame::updateGameSesstionEndTime()
+void PingPongGame::updateGameSessionEndTime()
 {
-    auto oldGameSessionID = m_GameSessionID;
-    updateGameSessionID();
+    auto oldGameSessionID = updateGameSessionID();
 
     char buffer[constants::fmtnow] = {};
     memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
@@ -37,35 +36,35 @@ void PingPongGame::updateGameSesstionEndTime()
         make_document(
             kvp("$set", make_document(
                 kvp("history.$.end_time", buffer),kvp("history.$.duration", duration)))));
+    updateGameRecord();
 }
 
-void PingPongGame::updateGameSessionID()
+void PingPongGame::updateGameRecord()
 {
-    m_GameSessionID = std::chrono::duration_cast<std::chrono::seconds>(chrono::system_clock::now().time_since_epoch()).count();
+    mongocxx::v_noabi::pipeline pl;
+    mongocxx::v_noabi::options::aggregate ag_opts;
+
+    ag_opts.allow_disk_use(true);
+    ag_opts.max_time(std::chrono::milliseconds{60000});
+
+    pl
+        .add_fields(make_document(
+            kvp("record",
+                make_document(kvp("$slice",
+                    make_array(make_document(kvp("$sortArray",
+                        make_document(kvp("input", "$history"),
+                            kvp("sortBy",
+                                make_document(kvp("score", -1),
+                                    kvp("duration", 1),
+                                    kvp("live", -1),
+                                    kvp("id", 1)))))),
+                        3))))))
+        .merge(make_document(kvp("into", make_document(kvp("db", "duyld"), kvp("coll", "pingpong_game")))));
+    DBINSTANCE->RunPipeLine(std::move(pl), std::move(ag_opts));
 }
 
-char* PingPongGame::getFormatGMT(time_t time)
+void PingPongGame::updateGameNewHistory()
 {
-    char buffer[constants::fmtnow] = {};
-    strftime(buffer, constants::fmtnow, "%F %T GMT", gmtime(&time));
-    return { buffer };
-}
-
-void PingPongGame::databaseRetryUpdate()
-{
-    if(m_state == game_state::running || m_state == game_state::paused)
-    {
-        DBINSTANCE->UpdateDocument(
-            make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)).view(),
-            make_document(
-                kvp("$set", make_document(
-                    kvp("history.$.result", "lose"), 
-                    kvp("history.$.live", m_live),
-                    kvp("history.$.score", (int32_t)m_point)
-                ))));
-    }
-    updateGameSesstionEndTime();
-
     DBINSTANCE->UpdateDocument(
         make_document(kvp("userid", m_userid)).view(),
         make_document(
@@ -80,7 +79,28 @@ void PingPongGame::databaseRetryUpdate()
                         kvp("live", 3)))))
 
         ));
-    updateGameSesstionStartTime();
+    updateGameSessionStartTime();
+}
+
+int64_t PingPongGame::updateGameSessionID()
+{
+    return std::exchange(m_GameSessionID, std::chrono::duration_cast<std::chrono::seconds>(chrono::system_clock::now().time_since_epoch()).count());
+}
+
+char* PingPongGame::getFormatGMT(time_t time)
+{
+    char buffer[constants::fmtnow] = {};
+    strftime(buffer, constants::fmtnow, "%F %T GMT", gmtime(&time));
+    return { buffer };
+}
+
+void PingPongGame::databaseRetryUpdate()
+{
+    if(m_state == game_state::running || m_state == game_state::paused)
+    {
+        databaseResultUpdate(false);
+    }
+    updateGameNewHistory();
 }
 
 void PingPongGame::databaseResultUpdate(const bool& isWin)
@@ -107,6 +127,7 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
                     kvp("history.$.score", (int32_t)m_point)
                 ))));
     }
+    updateGameSessionEndTime();
 }
 
 void PingPongGame::removeCurrentData()
@@ -127,35 +148,14 @@ void PingPongGame::try_database()
         if (!DBINSTANCE->GetCollection("pingpong_game"))
         {
             DBINSTANCE->CreateCollection("pingpong_game");
-            auto document = make_document(kvp("username", "duyleduc123"),kvp("userid", m_userid), kvp("max_score", 0));
+            auto document = make_document(kvp("username", "duyleduc123"),kvp("userid", m_userid));
             if (DBINSTANCE->InsertDocument(document))
             {
                 cout << "Insert init document successful" << endl;
             }
         }
-
-        auto filter = make_document(kvp("userid", m_userid));
-
-        char buffer[constants::fmtnow] = {};
         updateGameSessionID();
-        memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
-        cout << "start_time: " << buffer << endl;
-
-        DBINSTANCE->UpdateDocument(
-            filter.view(),
-            make_document(
-                kvp(
-                    "$push",
-                    make_document(kvp("history",
-                        make_document(          
-                            kvp("id", m_GameSessionID),
-                            kvp("start_time", buffer),
-                            kvp("end_time", ""),
-                            kvp("result", ""),
-                            kvp("score", 0),
-                            kvp("live", 3)))))
-
-            ));
+        updateGameNewHistory();
     }
     catch (const std::exception& e)
     {
@@ -179,7 +179,7 @@ void PingPongGame::eventHandler()
             }
             else
             {
-                updateGameSesstionEndTime();
+                updateGameSessionEndTime();
             }
             game_window.close();
         }
@@ -193,7 +193,7 @@ void PingPongGame::eventHandler()
         }
         else
         {
-            updateGameSesstionEndTime();
+            updateGameSessionEndTime();
         }
         game_window.close();
     }
@@ -448,7 +448,6 @@ void PingPongGame::run()
     try
     {
         try_database();
-        DBINSTANCE->testFunc();
     }
     catch (const std::exception & e)
     {

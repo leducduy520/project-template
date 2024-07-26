@@ -158,58 +158,47 @@ bool DBClient::DeleteDocument(bsoncxx::v_noabi::document::view_or_value filter, 
     return false;
 }
 
+void DBClient::RunPipeLine(const mongocxx::pipeline pl, const mongocxx::options::aggregate opts, mongocxx::collection *collection)
+{
+    if (!collection)
+    {
+        auto cursor = m_dbcollection.aggregate(pl, opts);
+        cout << "length:" << distance(cursor.begin(), cursor.end()) << endl;
+        return;
+    }
+    if (m_dbdatabase.has_collection(collection->name()))
+    {
+        auto cursor = collection->aggregate(pl, opts);
+    }
+}
+
 void DBClient::testFunc()
 {
     using bsoncxx::builder::stream::close_array;
     using bsoncxx::builder::stream::close_document;
     using bsoncxx::builder::stream::open_array;
     using bsoncxx::builder::stream::open_document;
-
+    
     mongocxx::v_noabi::pipeline pl;
     mongocxx::v_noabi::options::aggregate ag_opts;
 
-    ag_opts.allow_disk_use(true);
-    ag_opts.max_time(std::chrono::milliseconds{60000});
-
-    /*[
-        history: {
-    $sortArray: {
-      input: "$history",
-      sortBy: {
-        score: -1,
-        duration: 1,
-        live: -1
-      }
-    },
-    "stat.best": {
-        $arrayElemAt: ["$history", 0]
-        },
-    "stat.worst": {
-        $arrayElemAt: ["$history", -1]
-    }
-  }
-    ]*/
-
-
-    /*pl.unwind(make_document(kvp("path", "$history")))
-        .group(make_document(kvp("_id", "$_id"), kvp("best", make_document(kvp("$first", "$history")))))
-        .add_fields(make_document(kvp("abc", 1)))
-        .merge(make_document(kvp("into", make_document(kvp("db", "duyld"), kvp("coll", "pingpong_game")))));*/
+    ag_opts.allow_disk_use(true).max_time(std::chrono::milliseconds{60000});
 
     pl
         .add_fields(make_document(kvp(
             "lastModified",
             (int64_t)chrono::duration_cast<chrono::seconds>(chrono::system_clock::now().time_since_epoch()).count())))
         .add_fields(make_document(
-            kvp("history",
-                make_document(kvp(
-                    "$sortArray",
-                    make_document(
-                        kvp("input", "$history"),
-                        kvp("sortBy",
-                            make_document(kvp("score", -1), kvp("duration", 1), kvp("live", -1), kvp("id", -1)))))))))
-        .add_fields(make_document(kvp("stat.best", make_document(kvp("$arrayElemAt", make_array("$history", 0)))),
-                                  kvp("stat.worst", make_document(kvp("$arrayElemAt", make_array("$history", -1))))))
+            kvp("record",
+                make_document(kvp("$slice",
+                                  make_array(make_document(kvp("$sortArray",
+                                                               make_document(kvp("input", "$history"),
+                                                                             kvp("sortBy",
+                                                                                 make_document(kvp("score", -1),
+                                                                                               kvp("duration", 1),
+                                                                                               kvp("live", -1),
+                                                                                               kvp("id", 1)))))),
+                                             5))))))
         .merge(make_document(kvp("into", make_document(kvp("db", "duyld"), kvp("coll", "pingpong_game")))));
 
     auto cursor = m_dbdatabase["pingpong_game"].aggregate(pl, ag_opts);
