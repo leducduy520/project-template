@@ -21,8 +21,10 @@ file(GLOB RESOURCE_FILES LIST_DIRECTORIES false
     "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.*"
 )
 
-list(APPEND CMAKE_PREFIX_PATH "D:\\mongo-cxx-driver" "D:\\mongo-c-driver")
-include("D:\\mongo-cxx-driver\\lib\\cmake\\mongocxx-3.10.1\\mongocxx-config.cmake")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver")
+
+# include("${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver/lib/cmake/mongocxx-3.10.3-pre/mongocxx-config.cmake")
+find_package(mongocxx REQUIRED)
 
 add_library(${PROJECT_NAME}_util STATIC ${UTIL_SOURCE_FILES})
 target_link_libraries(
@@ -47,7 +49,7 @@ target_set_warnings(
 )
 
 add_library(${PROJECT_NAME} SHARED ${GAME_SOURCE_FILE})
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_util mongo::mongocxx_shared)
+target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_util mongo::mongocxx_static)
 
 target_sources(
     ${PROJECT_NAME} PRIVATE FILE_SET ${PROJECT_NAME}_headers TYPE HEADERS FILES
@@ -95,12 +97,9 @@ if(WIN32)
         COMMENT "Copy resources"
         COMMAND
         ${CMAKE_COMMAND} -E copy_directory_if_different
-        "D:\\mongo-cxx-driver\\bin"
+        "${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver/bin"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND
-        ${CMAKE_COMMAND} -E copy_directory_if_different
-        "D:\\mongo-c-driver\\bin"
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>
         VERBATIM
     )
 endif()

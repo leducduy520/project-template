@@ -5,6 +5,7 @@
 
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
+#include <mongocxx/collection.hpp>
 #include <mutex>
 #include <vector>
 #include <string>
@@ -15,6 +16,7 @@ using bsoncxx::builder::stream::finalize;
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_array;
 using bsoncxx::builder::basic::make_document;
+using bsoncxx::stdx::optional;
 using namespace std;
 
 class DBClient
@@ -35,7 +37,8 @@ public:
     bool CreateCollection(const std::string& collectionName, mongocxx::database* db = nullptr);
     bool InsertDocument(const bsoncxx::document::value& document, mongocxx::collection* collection = nullptr);
     bool UpdateDocument(const bsoncxx::v_noabi::document::value& filter, const bsoncxx::v_noabi::document::value& update, mongocxx::collection* collection = nullptr);
-    std::optional<bsoncxx::v_noabi::document::value> GetDocument(const bsoncxx::v_noabi::document::value& filter, mongocxx::collection* collection = nullptr);
+    optional<bsoncxx::v_noabi::document::value> GetDocument(const bsoncxx::v_noabi::document::value &filter,
+                                                                  mongocxx::collection *collection = nullptr);
     bool DeleteDocument(const bsoncxx::v_noabi::document::value& filter, mongocxx::collection *collection = nullptr);
     void RunPipeLine(const mongocxx::pipeline pl, const mongocxx::options::aggregate opts, mongocxx::collection *collection = nullptr);
     void testFunc();

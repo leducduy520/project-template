@@ -1,8 +1,5 @@
 .vs
 .git
-
-external/**
-
 out/
 docs/html
 docs/graph

@@ -95,7 +95,7 @@ bool DBClient::UpdateDocument(const bsoncxx::v_noabi::document::value &filter,
     return false;
 }
 
-std::optional<bsoncxx::v_noabi::document::value> DBClient::GetDocument(const bsoncxx::v_noabi::document::value& filter,
+optional<bsoncxx::v_noabi::document::value> DBClient::GetDocument(const bsoncxx::v_noabi::document::value &filter,
                                                mongocxx::collection *collection)
 {
     if (!collection)
@@ -170,15 +170,4 @@ void DBClient::testFunc()
                                              5))))))
         .merge(make_document(kvp("into", make_document(kvp("db", "duyld"), kvp("coll", "pingpong_game")))));
 
-    auto cursor = m_dbdatabase["pingpong_game"].aggregate(pl, ag_opts);
-    for (auto &&doc : cursor)
-    {
-        std::cout << doc["best"]["id"].get_int64().value << std::endl;
-        std::cout << doc["best"]["start_time"].get_utf8().value << std::endl;
-        std::cout << doc["best"]["end_time"].get_utf8().value << std::endl;
-        std::cout << doc["best"]["result"].get_utf8().value << std::endl;
-        std::cout << doc["best"]["score"].get_int32().value << std::endl;
-        std::cout << doc["best"]["live"].get_int32().value << std::endl;
-        std::cout << doc["abc"].get_int32().value << std::endl;
-    }
 }
