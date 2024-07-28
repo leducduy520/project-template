@@ -18,7 +18,7 @@ void PingPongGame::updateGameSessionStartTime()
     memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
 
     DBINSTANCE->UpdateDocument(
-        make_document(kvp("id", m_userid), kvp("history.id", m_GameSessionID)),
+        make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
         make_document(
             kvp("$set", make_document(
                 kvp("history.$.start_time", buffer)))));
@@ -60,7 +60,7 @@ void PingPongGame::updateGameSessionEndTime()
         auto duration = minus<decltype(m_GameSessionID)>{}(m_GameSessionID, oldGameSessionID);
 
         DBINSTANCE->UpdateDocument(
-            make_document(kvp("id", m_userid), kvp("history.id", oldGameSessionID)),
+            make_document(kvp("name", m_username), kvp("history.id", oldGameSessionID)),
             make_document(
                 kvp("$set", make_document(kvp("history.$.end_time", buffer), kvp("history.$.duration", duration)))));
         updateGameRecord();
@@ -95,7 +95,7 @@ void PingPongGame::updateGameRecord()
 void PingPongGame::updateGameNewHistory()
 {
     DBINSTANCE->UpdateDocument(
-        make_document(kvp("id", m_userid)),
+        make_document(kvp("name", m_username)),
         make_document(
             kvp(
                 "$push",
@@ -138,7 +138,7 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
     if (isWin)
     {
         DBINSTANCE->UpdateDocument(
-            make_document(kvp("id", m_userid), kvp("history.id", m_GameSessionID)),
+            make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
             make_document(
                 kvp("$set", make_document(
                     kvp("history.$.result", "win"),
@@ -149,7 +149,7 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
     else
     {
         DBINSTANCE->UpdateDocument(
-            make_document(kvp("id", m_userid), kvp("history.id", m_GameSessionID)),
+            make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
             make_document(
                 kvp("$set", make_document(
                     kvp("history.$.result", "lose"),
@@ -162,7 +162,7 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
 
 void PingPongGame::removeCurrentData()
 {
-    auto filter = make_document(kvp("id", m_userid));
+    auto filter = make_document(kvp("name", m_username));
     auto result = DBINSTANCE->UpdateDocument(
         filter,
         make_document(kvp("$pop", make_document(kvp("history", 1)))));
@@ -394,12 +394,12 @@ void PingPongGame::centeredText(sf::Text &text)
 }
 
 PingPongGame::PingPongGame(std::string resourcePath)
-    : m_live(3), m_point(0), m_GameSessionID(0), m_userid(0), savedData(false)
+    : m_live(3), m_point(0), m_GameSessionID(0), savedData(false)
 {
     PingPongGame::init(resourcePath);
 }
 
-PingPongGame::PingPongGame() : m_live(3), m_point(0), m_GameSessionID(0), m_userid(0), savedData(false)
+PingPongGame::PingPongGame() : m_live(3), m_point(0), m_GameSessionID(0), savedData(false)
 {
 }
 
@@ -462,7 +462,7 @@ void PingPongGame::run()
         auto result = window->run();
         if (result.first)
         {
-            m_userid = result.second;
+            m_username = result.second;
             updateGameSessionID();
             updateGameNewHistory();
 

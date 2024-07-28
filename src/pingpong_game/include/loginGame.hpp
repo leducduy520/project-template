@@ -12,7 +12,6 @@ class LoginWindow{
     sf::Font m_font;
     std::string m_strname;
     std::string m_strpass;
-    int64_t m_id;
     bool m_focusedName;
     bool m_loginSuccess;
     void centeredText(sf::Text &text, const sf::Vector2f &bound_size, const sf::Vector2f &bound_pos);
@@ -22,7 +21,7 @@ class LoginWindow{
     void render();
 public:
     LoginWindow();
-    std::pair<bool, int64_t> run();
+    std::pair<bool, std::string> run();
 };
 
 #endif //   __LOGIN_GAME__  //

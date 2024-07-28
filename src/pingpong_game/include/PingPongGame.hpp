@@ -31,7 +31,6 @@ class PingPongGame : public IGame
 
     bool savedData;
     int64_t m_GameSessionID;
-    int64_t m_userid;
     std::string m_username;
     uint16_t m_point;
     uint8_t m_live;
