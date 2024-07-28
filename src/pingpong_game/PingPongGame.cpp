@@ -15,7 +15,7 @@ using json = nlohmann::json;
 void PingPongGame::updateGameSessionStartTime()
 {
     char buffer[constants::fmtnow] = {};
-    memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
+    strftime(buffer, constants::fmtnow, "%F %T GMT", gmtime(&m_GameSessionID));
 
     DBINSTANCE->UpdateDocument(
         make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
@@ -55,7 +55,7 @@ void PingPongGame::updateGameSessionEndTime()
         auto oldGameSessionID = updateGameSessionID();
 
         char buffer[constants::fmtnow] = {};
-        memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
+        strftime(buffer, constants::fmtnow, "%F %T GMT", gmtime(&m_GameSessionID));
 
         auto duration = minus<decltype(m_GameSessionID)>{}(m_GameSessionID, oldGameSessionID);
 
@@ -115,13 +115,6 @@ void PingPongGame::updateGameNewHistory()
 int64_t PingPongGame::updateGameSessionID()
 {
     return std::exchange(m_GameSessionID, std::chrono::duration_cast<std::chrono::seconds>(chrono::system_clock::now().time_since_epoch()).count());
-}
-
-char* PingPongGame::getFormatGMT(time_t time)
-{
-    char buffer[constants::fmtnow] = {};
-    strftime(buffer, constants::fmtnow, "%F %T GMT", gmtime(&time));
-    return { buffer };
 }
 
 void PingPongGame::databaseRetryUpdate()
@@ -460,6 +453,7 @@ void PingPongGame::run()
     {
         auto *window = new LoginWindow();
         auto result = window->run();
+        delete window;
         if (result.first)
         {
             m_username = result.second;
@@ -501,3 +495,56 @@ extern "C" void destroyGame(IGame *game)
     delete game;
     game = nullptr;
 }
+
+/*
+[
+  {
+    $group: {
+      _id: null,
+      password: {
+        $first: "$password"
+      },
+      name: {
+        $first: "$name"
+      },
+      worldrecord: {
+        $push: "$history"
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      password: 1,
+      name: 1,
+      worldrecord: {
+        $slice: [
+          {
+            $sortArray: {
+              input: {
+                $reduce: {
+                  input: "$worldrecord",
+                  initialValue: [],
+                  in: {
+                    $concatArrays: [
+                      "$$value",
+                      "$$this"
+                    ]
+                  }
+                }
+              },
+              sortBy: {
+                score: -1,
+                live: -1,
+                duration: 1,
+                id: 1
+              }
+            }
+          },
+          20
+        ]
+      }
+    }
+  }
+]
+*/

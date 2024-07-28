@@ -38,7 +38,6 @@ class PingPongGame : public IGame
     std::string toJsonString(const uint8_t* data, size_t length);
     nlohmann::json toJson(const uint8_t* data, size_t length);
     int64_t updateGameSessionID();
-    char* getFormatGMT(time_t time);
 
     void databaseResultUpdate(const bool& isWin);
     void databaseRetryUpdate();
