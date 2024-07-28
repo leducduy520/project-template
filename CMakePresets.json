@@ -228,7 +228,7 @@
                 "rhs": "Windows"
             },
             "targets": "ALL_BUILD",
-            "configuration": "Debug"
+            "configuration": "RelWithDebInfo"
         },
         {
             "name": "msvc-release",

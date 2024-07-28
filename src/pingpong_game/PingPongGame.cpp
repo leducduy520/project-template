@@ -5,6 +5,7 @@
 #include "wallHelper.hpp"
 #include <string>
 #include <iomanip>
+#include "loginGame.hpp"
 
 std::string constants::resoucesPath;
 using namespace std;
@@ -17,7 +18,7 @@ void PingPongGame::updateGameSessionStartTime()
     memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
 
     DBINSTANCE->UpdateDocument(
-        make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)),
+        make_document(kvp("id", m_userid), kvp("history.id", m_GameSessionID)),
         make_document(
             kvp("$set", make_document(
                 kvp("history.$.start_time", buffer)))));
@@ -49,28 +50,31 @@ nlohmann::json PingPongGame::toJson(const uint8_t* data, size_t length)
 
 void PingPongGame::updateGameSessionEndTime()
 {
-    auto oldGameSessionID = updateGameSessionID();
+    if (!savedData)
+    {
+        auto oldGameSessionID = updateGameSessionID();
 
-    char buffer[constants::fmtnow] = {};
-    memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
+        char buffer[constants::fmtnow] = {};
+        memmove(buffer, getFormatGMT(m_GameSessionID), constants::fmtnow);
 
-    auto duration = minus<decltype(m_GameSessionID)>{}(m_GameSessionID, oldGameSessionID);
+        auto duration = minus<decltype(m_GameSessionID)>{}(m_GameSessionID, oldGameSessionID);
 
-    DBINSTANCE->UpdateDocument(
-        make_document(kvp("userid", m_userid), kvp("history.id", oldGameSessionID)),
-        make_document(
-            kvp("$set", make_document(
-                kvp("history.$.end_time", buffer),kvp("history.$.duration", duration)))));
-    updateGameRecord();
+        DBINSTANCE->UpdateDocument(
+            make_document(kvp("id", m_userid), kvp("history.id", oldGameSessionID)),
+            make_document(
+                kvp("$set", make_document(kvp("history.$.end_time", buffer), kvp("history.$.duration", duration)))));
+        updateGameRecord();
+        savedData = true;
+    }
 }
 
 void PingPongGame::updateGameRecord()
 {
     mongocxx::v_noabi::pipeline pl;
-    mongocxx::v_noabi::options::aggregate ag_opts;
+    mongocxx::v_noabi::options::aggregate opts;
 
-    ag_opts.allow_disk_use(true);
-    ag_opts.max_time(std::chrono::milliseconds{60000});
+    opts.allow_disk_use(true);
+    opts.max_time(std::chrono::milliseconds{60000});
 
     pl
         .add_fields(make_document(
@@ -85,13 +89,13 @@ void PingPongGame::updateGameRecord()
                                     kvp("id", 1)))))),
                         3))))))
         .merge(make_document(kvp("into", make_document(kvp("db", "duyld"), kvp("coll", "pingpong_game")))));
-    DBINSTANCE->RunPipeLine(std::move(pl), std::move(ag_opts));
+    DBINSTANCE->RunPipeLine(std::move(pl), std::move(opts));
 }
 
 void PingPongGame::updateGameNewHistory()
 {
     DBINSTANCE->UpdateDocument(
-        make_document(kvp("userid", m_userid)),
+        make_document(kvp("id", m_userid)),
         make_document(
             kvp(
                 "$push",
@@ -105,6 +109,7 @@ void PingPongGame::updateGameNewHistory()
 
         ));
     updateGameSessionStartTime();
+    savedData = false;
 }
 
 int64_t PingPongGame::updateGameSessionID()
@@ -133,18 +138,18 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
     if (isWin)
     {
         DBINSTANCE->UpdateDocument(
-            make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)),
+            make_document(kvp("id", m_userid), kvp("history.id", m_GameSessionID)),
             make_document(
                 kvp("$set", make_document(
                     kvp("history.$.result", "win"),
                     kvp("history.$.live", m_live),
-                    kvp("history.$.score", (int32_t)m_point)
+                    kvp("history.$.score", (int32_t)m_point + (int32_t)(20 * m_live))
                 ))));
     }
     else
     {
         DBINSTANCE->UpdateDocument(
-            make_document(kvp("userid", m_userid), kvp("history.id", m_GameSessionID)),
+            make_document(kvp("id", m_userid), kvp("history.id", m_GameSessionID)),
             make_document(
                 kvp("$set", make_document(
                     kvp("history.$.result", "lose"),
@@ -157,7 +162,7 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
 
 void PingPongGame::removeCurrentData()
 {
-    auto filter = make_document(kvp("userid", m_userid));
+    auto filter = make_document(kvp("id", m_userid));
     auto result = DBINSTANCE->UpdateDocument(
         filter,
         make_document(kvp("$pop", make_document(kvp("history", 1)))));
@@ -165,27 +170,7 @@ void PingPongGame::removeCurrentData()
 
 void PingPongGame::try_database()
 {
-    try
-    {
-        m_username = { "duyleduc123"s };
-        m_userid = (int64_t)hash<string>{}(m_username);
-        DBINSTANCE->GetDatabase("duyld");
-        if (!DBINSTANCE->GetCollection("pingpong_game"))
-        {
-            DBINSTANCE->CreateCollection("pingpong_game");
-            auto document = make_document(kvp("username", "duyleduc123"),kvp("userid", m_userid));
-            if (DBINSTANCE->InsertDocument(document))
-            {
-                cout << "Insert init document successful" << endl;
-            }
-        }
-        updateGameSessionID();
-        updateGameNewHistory();
-    }
-    catch (const std::exception& e)
-    {
-        throw e;
-    }
+    
 }
 
 void PingPongGame::eventHandler()
@@ -408,12 +393,13 @@ void PingPongGame::centeredText(sf::Text &text)
     text.setPosition(constants::window_width / 2.0f, constants::window_height / 2.0f);
 }
 
-PingPongGame::PingPongGame(std::string resourcePath) : m_live(3), m_point(0), m_GameSessionID(0), m_userid(0)
+PingPongGame::PingPongGame(std::string resourcePath)
+    : m_live(3), m_point(0), m_GameSessionID(0), m_userid(0), savedData(false)
 {
     PingPongGame::init(resourcePath);
 }
 
-PingPongGame::PingPongGame() : m_live(3), m_point(0), m_GameSessionID(0), m_userid(0)
+PingPongGame::PingPongGame() : m_live(3), m_point(0), m_GameSessionID(0), m_userid(0), savedData(false)
 {
 }
 
@@ -472,30 +458,38 @@ void PingPongGame::run()
 {
     try
     {
-        try_database();
-        auto optval = DBINSTANCE->GetDocument(make_document());
-        if(optval)
+        auto *window = new LoginWindow();
+        auto result = window->run();
+        if (result.first)
         {
-            cout << toJsonString(optval.value().data(), optval.value().length()) << endl;
+            m_userid = result.second;
+            updateGameSessionID();
+            updateGameNewHistory();
+
+            auto optval = DBINSTANCE->GetDocument(make_document());
+            if(optval)
+            {
+                cout << toJsonString(optval.value().data(), optval.value().length()) << endl;
+            }
+
+            SoundPlayer::getInstance();
+            while (game_window.isOpen())
+            {
+                game_window.clear(sf::Color::Black);
+                eventHandler();
+                stateHandler();
+                update();
+                render();
+            }
+            SoundPlayer::destroyInstance();
+            DBClient::DestroyInstance();
+            m_entity_manager.clear();
         }
     }
     catch (const std::exception & e)
     {
-        cerr << "Connecting to mongo DB failed: " << e.what() << endl;
+        cerr << "Playing PingPong Game failed: " << e.what() << endl;
     }
-
-    SoundPlayer::getInstance();
-    while (game_window.isOpen())
-    {
-        game_window.clear(sf::Color::Black);
-        eventHandler();
-        stateHandler();
-        update();
-        render();
-    }
-    SoundPlayer::destroyInstance();
-    DBClient::DestroyInstance();
-    m_entity_manager.clear();
 }
 
 extern "C" IGame *createPingPongGame()

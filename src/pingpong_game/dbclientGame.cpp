@@ -132,7 +132,7 @@ void DBClient::RunPipeLine(const mongocxx::pipeline pl, const mongocxx::options:
     if (!collection)
     {
         auto cursor = m_dbcollection.aggregate(pl, opts);
-        cout << "length:" << distance(cursor.begin(), cursor.end()) << endl;
+        cout << "distance: " << distance(cursor.begin(), cursor.end()) << endl;
         return;
     }
     if (m_dbdatabase.has_collection(collection->name()))
@@ -148,26 +148,5 @@ void DBClient::testFunc()
     using bsoncxx::builder::stream::open_array;
     using bsoncxx::builder::stream::open_document;
     
-    mongocxx::v_noabi::pipeline pl;
-    mongocxx::v_noabi::options::aggregate ag_opts;
-
-    ag_opts.allow_disk_use(true).max_time(std::chrono::milliseconds{60000});
-
-    pl
-        .add_fields(make_document(kvp(
-            "lastModified",
-            (int64_t)chrono::duration_cast<chrono::seconds>(chrono::system_clock::now().time_since_epoch()).count())))
-        .add_fields(make_document(
-            kvp("record",
-                make_document(kvp("$slice",
-                                  make_array(make_document(kvp("$sortArray",
-                                                               make_document(kvp("input", "$history"),
-                                                                             kvp("sortBy",
-                                                                                 make_document(kvp("score", -1),
-                                                                                               kvp("duration", 1),
-                                                                                               kvp("live", -1),
-                                                                                               kvp("id", 1)))))),
-                                             5))))))
-        .merge(make_document(kvp("into", make_document(kvp("db", "duyld"), kvp("coll", "pingpong_game")))));
-
+    
 }

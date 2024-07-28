@@ -29,16 +29,18 @@ class PingPongGame : public IGame
     sf::Text m_textState;
     sf::Text m_textLive;
 
-    uint8_t m_live;
-    uint16_t m_point;
+    bool savedData;
     int64_t m_GameSessionID;
     int64_t m_userid;
     std::string m_username;
+    uint16_t m_point;
+    uint8_t m_live;
 
-    char* getFormatGMT(time_t time);
-    int64_t updateGameSessionID();
-    nlohmann::json toJson(const uint8_t* data, size_t length);
     std::string toJsonString(const uint8_t* data, size_t length);
+    nlohmann::json toJson(const uint8_t* data, size_t length);
+    int64_t updateGameSessionID();
+    char* getFormatGMT(time_t time);
+
     void databaseResultUpdate(const bool& isWin);
     void databaseRetryUpdate();
     void eventHandler();
