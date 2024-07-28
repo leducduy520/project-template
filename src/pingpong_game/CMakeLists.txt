@@ -28,7 +28,7 @@ find_package(mongocxx REQUIRED)
 
 add_library(${PROJECT_NAME}_util STATIC ${UTIL_SOURCE_FILES})
 target_link_libraries(
-    ${PROJECT_NAME}_util sfml-graphics sfml-audio rapidcsv magic_enum mongo::bson_static nlohmann_json::nlohmann_json
+    ${PROJECT_NAME}_util sfml-graphics sfml-audio rapidcsv magic_enum mongo::bson_static nlohmann_json::nlohmann_json mongo::bsoncxx_static
 )
 target_include_directories(
     ${PROJECT_NAME}_util
