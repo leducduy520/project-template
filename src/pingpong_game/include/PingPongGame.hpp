@@ -35,13 +35,13 @@ class PingPongGame : public IGame
     uint16_t m_point;
     uint8_t m_live;
 
-    std::string toJsonString(const uint8_t* data, size_t length);
-    nlohmann::json toJson(const uint8_t* data, size_t length);
+    static std::string toJsonString(const uint8_t* data, size_t length);
+    static nlohmann::json toJson(const uint8_t* data, size_t length);
     int64_t updateGameSessionID();
 
     void databaseResultUpdate(const bool& isWin);
     void databaseRetryUpdate();
-    void eventHandler();
+    void listening();
     void removeCurrentData();
     void render();
     void stateHandler();
@@ -49,7 +49,7 @@ class PingPongGame : public IGame
     void try_database();
     void update();
     void updateGameNewHistory();
-    void updateGameRecord();
+    static void updateGameRecord();
     void updateGameSessionEndTime();
     void updateGameSessionStartTime();
 

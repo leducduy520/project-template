@@ -14,11 +14,13 @@ class LoginWindow{
     std::string m_strpass;
     bool m_focusedName;
     bool m_loginSuccess;
-    void centeredText(sf::Text &text, const sf::Vector2f &bound_size, const sf::Vector2f &bound_pos);
-    void login(const std::string username, const std::string password);
-    void eventHandler();
+    static void centeredText(sf::Text &text, const sf::Vector2f &bound_size, const sf::Vector2f &bound_pos);
+    void login(const std::string& username, const std::string& password);
+    void listening();
     void update();
     void render();
+    void updateText(const sf::Uint32& code);
+    void handleKeyPress(const sf::Event& event);
 public:
     LoginWindow();
     std::pair<bool, std::string> run();

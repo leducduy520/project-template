@@ -3,9 +3,10 @@
 #include "interactions.hpp"
 #include "soundplayer.hpp"
 #include "wallHelper.hpp"
+#include "loginGame.hpp"
 #include <string>
 #include <iomanip>
-#include "loginGame.hpp"
+#include <ctime>
 
 std::string constants::resoucesPath;
 using namespace std;
@@ -14,30 +15,36 @@ using json = nlohmann::json;
 
 void PingPongGame::updateGameSessionStartTime()
 {
-    char buffer[constants::fmtnow] = {};
+    std::array<char, constants::fmtnow> buffer {};
     std::tm tmbuff{ 0 };
+
+#if defined(_WIN32) || defined(_WIN64)
     gmtime_s(&tmbuff, &m_GameSessionID);
-    strftime(buffer, constants::fmtnow, "%F %T GMT", &tmbuff);
+#else
+    gmtime_r(&m_GameSessionID, &tmbuff);
+#endif
+
+    strftime(buffer.data(), constants::fmtnow, "%F %T GMT", &tmbuff);
 
     DBINSTANCE->UpdateDocument(
         make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
         make_document(
             kvp("$set", make_document(
-                kvp("history.$.start_time", buffer)))));
+                kvp("history.$.start_time", buffer.data())))));
 }
 
 std::string PingPongGame::toJsonString(const uint8_t* data, size_t length)
 {
-    std::string ret;
-
     bson_t bson;
     bson_init_static(&bson, data, length);
 
-    size_t size;
-    auto result = bson_array_as_relaxed_extended_json(&bson, &size);
+    size_t size {0};
+    auto *result = bson_array_as_relaxed_extended_json(&bson, &size);
 
-    if (!result)
+    if (result != nullptr)
+    {
         return {};
+    }
 
     const auto deleter = [](char* result) { bson_free(result); };
     const std::unique_ptr<char[], decltype(deleter)> cleanup(result, deleter);
@@ -56,17 +63,23 @@ void PingPongGame::updateGameSessionEndTime()
     {
         auto oldGameSessionID = updateGameSessionID();
 
-        char buffer[constants::fmtnow] = {};
+        std::array<char, constants::fmtnow> buffer {};
         std::tm tmbuff{ 0 };
+
+#if defined(_WIN32) || defined(_WIN64)
         gmtime_s(&tmbuff, &m_GameSessionID);
-        strftime(buffer, constants::fmtnow, "%F %T GMT", &tmbuff);
+#else
+        gmtime_r(&m_GameSessionID, &tmbuff);
+#endif
+
+        strftime(buffer.data(), constants::fmtnow, "%F %T GMT", &tmbuff);
 
         auto duration = minus<decltype(m_GameSessionID)>{}(m_GameSessionID, oldGameSessionID);
 
         DBINSTANCE->UpdateDocument(
             make_document(kvp("name", m_username), kvp("history.id", oldGameSessionID)),
             make_document(
-                kvp("$set", make_document(kvp("history.$.end_time", buffer), kvp("history.$.duration", duration)))));
+                kvp("$set", make_document(kvp("history.$.end_time", buffer.data()), kvp("history.$.duration", duration)))));
         updateGameRecord();
         savedData = true;
     }
@@ -74,13 +87,13 @@ void PingPongGame::updateGameSessionEndTime()
 
 void PingPongGame::updateGameRecord()
 {
-    mongocxx::v_noabi::pipeline pl;
+    mongocxx::v_noabi::pipeline pipeline;
     mongocxx::v_noabi::options::aggregate opts;
 
     opts.allow_disk_use(true);
     opts.max_time(std::chrono::milliseconds{60000});
 
-    pl
+    pipeline
         .add_fields(make_document(
             kvp("record",
                 make_document(kvp("$slice",
@@ -93,7 +106,7 @@ void PingPongGame::updateGameRecord()
                                     kvp("id", 1)))))),
                         3))))))
         .merge(make_document(kvp("into", make_document(kvp("db", "duyld"), kvp("coll", "pingpong_game")))));
-    DBINSTANCE->RunPipeLine(std::move(pl), std::move(opts));
+    DBINSTANCE->RunPipeLine(std::move(pipeline), std::move(opts));
 }
 
 void PingPongGame::updateGameNewHistory()
@@ -140,7 +153,7 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
                 kvp("$set", make_document(
                     kvp("history.$.result", "win"),
                     kvp("history.$.live", m_live),
-                    kvp("history.$.score", (int32_t)m_point + (int32_t)(20 * m_live))
+                    kvp("history.$.score", static_cast<int32_t>(m_point) + static_cast<int32_t>(20 * m_live))
                 ))));
     }
     else
@@ -151,7 +164,7 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
                 kvp("$set", make_document(
                     kvp("history.$.result", "lose"),
                     kvp("history.$.live", m_live),
-                    kvp("history.$.score", (int32_t)m_point)
+                    kvp("history.$.score", static_cast<int32_t>(m_point))
                 ))));
     }
     updateGameSessionEndTime();
@@ -169,7 +182,7 @@ void PingPongGame::try_database()
     
 }
 
-void PingPongGame::eventHandler()
+void PingPongGame::listening()
 {
     static bool pause_key_active = false;
     static bool reset_key_active = false;
@@ -179,28 +192,16 @@ void PingPongGame::eventHandler()
     {
         if (event.type == sf::Event::Closed)
         {
-            if(m_state == game_state::running || m_state == game_state::paused)
-            {
-                removeCurrentData();
-            }
-            else
-            {
-                updateGameSessionEndTime();
-            }
+            (m_state == game_state::running || m_state == game_state::paused) ? \
+                removeCurrentData() : updateGameSessionEndTime();
             game_window.close();
         }
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
     {
-        if(m_state == game_state::running || m_state == game_state::paused)
-        {
-            removeCurrentData();
-        }
-        else
-        {
-            updateGameSessionEndTime();
-        }
+        (m_state == game_state::running || m_state == game_state::paused) ? \
+            removeCurrentData() : updateGameSessionEndTime();
         game_window.close();
     }
 
@@ -209,14 +210,7 @@ void PingPongGame::eventHandler()
         // If it was not pressed on the last iteration, toggle the status
         if (!pause_key_active)
         {
-            if (m_state == game_state::paused)
-            {
-                m_state = game_state::running;
-            }
-            else
-            {
-                m_state = game_state::paused;
-            }
+            (m_state == game_state::paused) ? (m_state = game_state::running) : (m_state = game_state::paused);
         }
         pause_key_active = true;
     }
@@ -309,9 +303,9 @@ void PingPongGame::update()
 
         m_point = 0;
         auto& walls = m_entity_manager.get_all<wall>();
-        for (auto &w : walls)
+        for (auto &a_wall : walls)
         {
-            const auto wptr = dynamic_cast<wall*>(w);
+            auto *const wptr = dynamic_cast<wall*>(a_wall);
             m_point += wall_utils::getPoint(*wptr);
         }
         
@@ -456,9 +450,11 @@ void PingPongGame::run()
 {
     try
     {
-        auto *window = new LoginWindow();
-        auto result = window->run();
-        delete window;
+        std::pair<bool, std::string> result;
+        {
+            const auto window = make_unique<LoginWindow>();
+            result = window->run();
+        }
         if (result.first)
         {
             m_username = result.second;
@@ -468,14 +464,14 @@ void PingPongGame::run()
             auto optval = DBINSTANCE->GetDocument(make_document());
             if(optval)
             {
-                cout << toJsonString(optval.value().data(), optval.value().length()) << endl;
+                cout << toJsonString(optval.value().data(), optval.value().length()) << '\n';
             }
 
             SoundPlayer::getInstance();
             while (game_window.isOpen())
             {
                 game_window.clear(sf::Color::Black);
-                eventHandler();
+                listening();
                 stateHandler();
                 update();
                 render();
@@ -487,7 +483,7 @@ void PingPongGame::run()
     }
     catch (const std::exception & e)
     {
-        cerr << "Playing PingPong Game failed: " << e.what() << endl;
+        cerr << "Playing PingPong Game failed: " << e.what() << '\n';
     }
 }
 

@@ -16,6 +16,47 @@ void LoginWindow::centeredText(sf::Text &text, const sf::Vector2f &bound_size, c
                       bound_pos.y + bound_size.y / 2.0f);
 }
 
+void LoginWindow::login(const std::string &username, const std::string &password)
+{
+    try
+    {
+        DBINSTANCE->GetDatabase("duyld");
+        if (!DBINSTANCE->GetCollection("pingpong_game"))
+        {
+            DBINSTANCE->CreateCollection("pingpong_game");
+            if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
+            {
+                cout << "successfully insert initial data for " << username << '\n';
+                m_loginSuccess = true;
+                return;
+            }
+            throw std::runtime_error("Failed to insert initial data for "s + username);
+        }
+        if (DBINSTANCE->GetDocument(make_document(kvp("name", username))))
+        {
+            cout << "User " << username << " exists" << '\n';
+            if (DBINSTANCE->GetDocument(make_document(kvp("name", username), kvp("password", password))))
+            {
+                cout << "User " << username << " login successfully\n";
+                m_loginSuccess = true;
+                return;
+            }
+            throw std::runtime_error("It's not correct password for user "s + username );
+        }
+        if (DBINSTANCE->InsertDocument(
+                make_document(kvp("name", username), kvp("password", password))))
+        {
+            cout << "successfully insert initial data for " << username << '\n';
+            m_loginSuccess = true;
+            return;
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+}
+
 LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false)
 {
     m_window.create(sf::VideoMode(800, 600), "Login Window");
@@ -40,59 +81,18 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false)
     m_static_pass.setPosition(sf::Vector2f{100, 200});
 }
 
-void LoginWindow::login(const std::string username, const std::string password)
-{
-    try
-    {
-        DBINSTANCE->GetDatabase("duyld");
-        if (!DBINSTANCE->GetCollection("pingpong_game"))
-        {
-            DBINSTANCE->CreateCollection("pingpong_game");
-            if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
-            {
-                cout << "successfully insert initial data for " << username << endl;
-                m_loginSuccess = true;
-                return;
-            }
-            throw std::runtime_error("Failed to insert initial data for "s + username);
-        }
-        if (DBINSTANCE->GetDocument(make_document(kvp("name", username))))
-        {
-            cout << "User " << username << " exists" << endl;
-            if (DBINSTANCE->GetDocument(make_document(kvp("name", username), kvp("password", password))))
-            {
-                cout << "User " << username << " login successfully\n";
-                m_loginSuccess = true;
-                return;
-            }
-            throw std::runtime_error("It's not correct password for user "s + username );
-        }
-        if (DBINSTANCE->InsertDocument(
-                make_document(kvp("name", username), kvp("password", password))))
-        {
-            cout << "successfully insert initial data for " << username << endl;
-            m_loginSuccess = true;
-            return;
-        }
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
-}
-
 std::pair<bool, std::string> LoginWindow::run()
 {
     while(m_window.isOpen())
     {
-        eventHandler();
+        listening();
         update();
         render();
     }
     return std::make_pair(m_loginSuccess, m_strname);
 }
 
-void LoginWindow::eventHandler()
+void LoginWindow::listening()
 {
     sf::Event event{};
     while(m_window.pollEvent(event))
@@ -100,62 +100,15 @@ void LoginWindow::eventHandler()
         if(event.type == sf::Event::TextEntered)
         {
             auto code = event.text.unicode;
-            wcout << code << ": " << static_cast<char>(code) << endl;
+            wcout << code << ": " << static_cast<char>(code) << '\n';
             if(code < 128 && code != 0x09)
             {
-                
-                sf::String str = m_focusedName ? m_textname.getString() : m_textpass.getString();
-
-                if (str.getSize() > 0 && (code == 0x7F || code == 0x08))
-                {
-                    str.erase(str.getSize() - 1);
-                    m_focusedName ? m_textname.setString(str) : m_textpass.setString(str);
-                    m_focusedName ? (m_strname = str) : (m_strpass = str);
-                }
-                else if (m_focusedName && code > 20)
-                {
-                    str += static_cast<char>(code);
-                    m_strname = str;
-                    m_textname.setString(str);
-                }
-                else if (code > 20)
-                {
-                    str += '*';
-                    m_strpass += static_cast<char>(code);
-                    m_textpass.setString(str);
-                }
+                updateText(code);
             }
         }
         if(event.type == sf::Event::KeyPressed)
         {
-            switch(event.key.code)
-            {
-            case sf::Keyboard::Tab:
-            {
-                m_focusedName = !m_focusedName;
-            }
-            break;
-            case sf::Keyboard::Return:
-            {
-                if (!m_strname.empty() && !m_strpass.empty())
-                {
-                    login(m_strname, m_strpass);
-                    if (m_loginSuccess)
-                    {
-                        m_window.close();
-                    }
-                }
-            }
-            break;
-            case sf::Keyboard::Escape:
-            {
-                m_window.close();
-            }
-            break;
-            default:
-                break;
-            }
-            
+            handleKeyPress(event);
         }
     }
 }
@@ -186,5 +139,60 @@ void LoginWindow::render()
         m_window.draw(m_textname);
         m_window.draw(m_textpass);
         m_window.display();
+    }
+}
+
+void LoginWindow::updateText(const sf::Uint32 &code)
+{
+    sf::String str = m_focusedName ? m_textname.getString() : m_textpass.getString();
+
+    if (str.getSize() > 0 && (code == 0x7F || code == 0x08))
+    {
+        str.erase(str.getSize() - 1);
+        m_focusedName ? m_textname.setString(str) : m_textpass.setString(str);
+        m_focusedName ? (m_strname = str) : (m_strpass = str);
+    }
+    else if (m_focusedName && code > 20)
+    {
+        str += static_cast<char>(code);
+        m_strname = str;
+        m_textname.setString(str);
+    }
+    else if (code > 20)
+    {
+        str += '*';
+        m_strpass += static_cast<char>(code);
+        m_textpass.setString(str);
+    }
+}
+
+void LoginWindow::handleKeyPress(const sf::Event &event)
+{
+    switch (event.key.code)
+    {
+    case sf::Keyboard::Tab:
+    {
+        m_focusedName = !m_focusedName;
+    }
+    break;
+    case sf::Keyboard::Return:
+    {
+        if (!m_strname.empty() && !m_strpass.empty())
+        {
+            login(m_strname, m_strpass);
+            if (m_loginSuccess)
+            {
+                m_window.close();
+            }
+        }
+    }
+    break;
+    case sf::Keyboard::Escape:
+    {
+        m_window.close();
+    }
+    break;
+    default:
+        break;
     }
 }
