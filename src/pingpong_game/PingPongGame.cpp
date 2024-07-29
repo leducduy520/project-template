@@ -15,7 +15,9 @@ using json = nlohmann::json;
 void PingPongGame::updateGameSessionStartTime()
 {
     char buffer[constants::fmtnow] = {};
-    strftime(buffer, constants::fmtnow, "%F %T GMT", gmtime(&m_GameSessionID));
+    std::tm tmbuff{ 0 };
+    gmtime_s(&tmbuff, &m_GameSessionID);
+    strftime(buffer, constants::fmtnow, "%F %T GMT", &tmbuff);
 
     DBINSTANCE->UpdateDocument(
         make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
@@ -55,7 +57,9 @@ void PingPongGame::updateGameSessionEndTime()
         auto oldGameSessionID = updateGameSessionID();
 
         char buffer[constants::fmtnow] = {};
-        strftime(buffer, constants::fmtnow, "%F %T GMT", gmtime(&m_GameSessionID));
+        std::tm tmbuff{ 0 };
+        gmtime_s(&tmbuff, &m_GameSessionID);
+        strftime(buffer, constants::fmtnow, "%F %T GMT", &tmbuff);
 
         auto duration = minus<decltype(m_GameSessionID)>{}(m_GameSessionID, oldGameSessionID);
 
@@ -155,9 +159,8 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
 
 void PingPongGame::removeCurrentData()
 {
-    auto filter = make_document(kvp("name", m_username));
-    auto result = DBINSTANCE->UpdateDocument(
-        filter,
+    DBINSTANCE->UpdateDocument(
+        make_document(kvp("name", m_username)),
         make_document(kvp("$pop", make_document(kvp("history", 1)))));
 }
 
@@ -362,12 +365,14 @@ void PingPongGame::try_createwall()
     catch (const std::ios::failure &e)
     {
         std::cerr << "terminate by ios::failure\n";
+        std::cerr << e.what() << std::endl;
         clear();
         return;
     }
     catch (const std::exception &e)
     {
         std::cerr << "terminate by exception\n";
+        std::cerr << e.what() << std::endl;
         clear();
         return;
     }

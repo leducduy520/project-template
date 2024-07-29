@@ -21,7 +21,7 @@ file(GLOB RESOURCE_FILES LIST_DIRECTORIES false
     "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.*"
 )
 
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/msvc-cl/mongo-cxx-driver")
 
 # include("${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver/lib/cmake/mongocxx-3.10.3-pre/mongocxx-config.cmake")
 find_package(mongocxx REQUIRED)
@@ -92,19 +92,19 @@ if(WIN32)
     )
 
     add_custom_command(
-        TARGET ${PROJECT_NAME}_util
+        TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMENT "Copy resources"
         COMMAND
         ${CMAKE_COMMAND} -E copy_directory_if_different
-        "${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver/bin"
+        "${CMAKE_SOURCE_DIR}/external/msvc-cl/mongo-cxx-driver/bin"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND
         VERBATIM
     )
 endif()
 
-if(CLANG_TIDY_CHECK)
+if(ENABLE_CLANG_TIDY)
     set_target_properties(
         ${PROJECT_NAME}_util
         PROPERTIES CXX_CLANG_TIDY
@@ -116,7 +116,7 @@ if(CLANG_TIDY_CHECK)
         PROPERTIES CXX_CLANG_TIDY
         "clang-tidy;--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy"
     )
-endif(CLANG_TIDY_CHECK)
+endif(ENABLE_CLANG_TIDY)
 
 install(
     TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_util

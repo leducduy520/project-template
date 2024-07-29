@@ -84,13 +84,13 @@ public:
     void update() override;
     void draw(sf::RenderWindow &window) override;
     void init(float x, float y) override;
-    inline int &getPoint()
+    inline uint16_t &getPoint()
     {
         return point;
     }
 
 private:
-    int32_t point;
+    uint16_t point;
 };
 
 #endif // _BRICK_H

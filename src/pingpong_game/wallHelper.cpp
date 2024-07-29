@@ -9,11 +9,11 @@ void resetPoint(wall &a_wall)
 {
     a_wall.getPoint() = 0;
 }
-void increasePoint(wall &a_wall, int amount)
+void increasePoint(wall &a_wall, uint16_t amount)
 {
     a_wall.getPoint() += amount;
 }
-int getPoint(wall& a_wall)
+uint16_t getPoint(wall& a_wall)
 {
     return a_wall.getPoint();
 }
