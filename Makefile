@@ -1,28 +1,26 @@
-config-win:
-	cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=windows
-.PHONY: config-win
+CONFIG ?= RelWithDebInfo
+PRESET ?= msvc
 
-config-ubuntu:
-	cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=ubuntu
-.PHONY: config-ubuntu
+ifeq ($(origin FRESH), undefined)
+    FRESH_VAR = 
+else
+	FRESH_VAR = --fresh
+endif
 
-fresh-win:
-	cmake --fresh --no-warn-unused-cli --graphviz=docs/graph/graph.dot  --preset=windows
-.PHONY: fresh-win
+ifeq ($(origin VERBOSE), undefined)
+    VERBOSE_VAR = 
+else
+	VERBOSE_VAR = -DCMAKE_VERBOSE_MAKEFILE=ON
+endif
 
-fresh-ubuntu:
-	cmake --fresh --no-warn-unused-cli --graphviz=docs/graph/graph.dot --preset=ubuntu
-.PHONY: fresh-ubuntu
+configure:
+	cmake $(FRESH_VAR) --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=$(PRESET) -DCMAKE_BUILD_TYPE=$(CONFIG) $(VERBOSE_VAR)
 
-run-ubuntu:
-	GALLIUM_DRIVER=llvmpipe ./out/install/ubuntu/bin/MySFMLApp
-.PHONY: run-ubuntu
+mongo-gcc:
+	cmake -S mongo-cxx-driver -B mongo-cxx-driver/build --fresh -DCMAKE_INSTALL_PREFIX="external/msvc-cl/mongo-cxx-driver" -DBUILD_SHARED_LIBS=OFF -DENABLE_BSONCXX_POLY_USE_IMPLS=ON -DBUILD_VERSION="3.10.2" -DCMAKE_BUILD_TYPE=$(CONFIG) -DCMAKE_CXX_FLAGS_INIT="-fPIC"
+	cmake --build mongo-cxx-driver/build -t install --config $(CONFIG) -j8
 
-config-msvc:
-	cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=msvc
-.PHONY: config-msvc
-
-fresh-msvc:
-	cmake --fresh --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=msvc
-.PHONY:fresh-msvc
-
+.PHONY:mongo-msvc
+mongo-msvc:
+	cmake -S mongo-cxx-driver -B mongo-cxx-driver/build --fresh -DCMAKE_INSTALL_PREFIX="external/msvc-cl/mongo-cxx-driver" -DBUILD_SHARED_LIBS=OFF -DENABLE_BSONCXX_POLY_USE_IMPLS=ON -DBUILD_VERSION="3.10.2" -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=$(CONFIG)
+	cmake --build mongo-cxx-driver/build -t install --config $(CONFIG) -j8

@@ -25,28 +25,8 @@
             }
         },
         {
-            "name": "windows",
-            "inherits": "base",
-            "generator": "MinGW Makefiles",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": {
-                    "type": "FILEPATH",
-                    "value": "gcc.exe"
-                },
-                "CMAKE_CXX_COMPILER": {
-                    "type": "FILEPATH",
-                    "value": "g++.exe"
-                }
-            },
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
-        },
-        {
             "name": "ubuntu",
-            "inherits": "windows",
+            "inherits": "base",
             "generator": "Unix Makefiles",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
@@ -61,11 +41,16 @@
         {
             "name": "msvc",
             "displayName": "MSVC configuration",
-            "inherits": "windows",
+            "inherits": "base",
             "generator": "Visual Studio 17 2022",
             "architecture":{
                 "strategy": "set",
                 "value": "x64"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
             }
         }
     ],
@@ -119,56 +104,6 @@
             ]
         },
         {
-            "name": "windows",
-            "configurePreset": "windows",
-            "inherits": "base",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
-        },
-        {
-            "name": "windows-graphviz",
-            "configurePreset": "windows",
-            "inherits": [
-                "base-graphviz",
-                "windows"
-            ]
-        },
-        {
-            "name": "windows-document",
-            "configurePreset": "windows",
-            "inherits": [
-                "base-document",
-                "windows"
-            ]
-        },
-        {
-            "name": "windows-format",
-            "configurePreset": "windows",
-            "inherits": [
-                "base-format",
-                "windows"
-            ]
-        },
-        {
-            "name": "windows-install",
-            "configurePreset": "windows",
-            "inherits": [
-                "base-install",
-                "windows"
-            ]
-        },
-        {
-            "name": "windows-complete",
-            "configurePreset": "windows",
-            "inherits": [
-                "base-complete",
-                "windows"
-            ]
-        },
-        {
             "name": "ubuntu",
             "configurePreset": "ubuntu",
             "inherits": "base",
@@ -219,7 +154,7 @@
             ]
         },
         {
-            "name": "msvc-debug",
+            "name": "msvc-reldebinfo",
             "configurePreset": "msvc",
             "inherits": "base",
             "condition": {
@@ -233,8 +168,14 @@
         {
             "name": "msvc-release",
             "configurePreset": "msvc",
-            "inherits": "msvc-debug",
+            "inherits": "msvc-reldebinfo",
             "configuration": "Release"
+        },
+        {
+            "name": "msvc-debug",
+            "configurePreset": "msvc",
+            "inherits": "msvc-reldebinfo",
+            "configuration": "Debug"
         }
     ],
     "testPresets": [
@@ -249,16 +190,6 @@
             },
             "execution": {
                 "jobs": 8
-            }
-        },
-        {
-            "name": "windows",
-            "configurePreset": "windows",
-            "inherits": "base",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
             }
         },
         {
@@ -290,23 +221,6 @@
         }
     ],
     "workflowPresets": [
-        {
-            "name": "windows",
-            "steps": [
-                {
-                    "type": "configure",
-                    "name": "windows"
-                },
-                {
-                    "type": "build",
-                    "name": "windows-complete"
-                },
-                {
-                    "type": "test",
-                    "name": "windows"
-                }
-            ]
-        },
         {
             "name": "ubuntu",
             "steps": [
