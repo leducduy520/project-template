@@ -3,4 +3,4 @@
 out/
 docs/html
 docs/graph
-external
+external/msvc-cl/mongo-cxx-driver
