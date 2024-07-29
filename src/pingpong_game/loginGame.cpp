@@ -100,7 +100,7 @@ void LoginWindow::listening()
         if(event.type == sf::Event::TextEntered)
         {
             auto code = event.text.unicode;
-            wcout << code << ": " << static_cast<char>(code) << '\n';
+            // wcout << code << ": " << static_cast<char>(code) << '\n';
             if(code < 128 && code != 0x09)
             {
                 updateText(code);

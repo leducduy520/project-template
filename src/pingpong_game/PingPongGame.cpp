@@ -38,18 +38,18 @@ std::string PingPongGame::toJsonString(const uint8_t* data, size_t length)
     bson_t bson;
     bson_init_static(&bson, data, length);
 
-    size_t size {0};
-    auto *result = bson_array_as_relaxed_extended_json(&bson, &size);
+    size_t size;
+    auto result = bson_array_as_json(&bson, &size);
 
-    if (result != nullptr)
+    if (!result)
     {
         return {};
     }
 
-    const auto deleter = [](char* result) { bson_free(result); };
+    const auto deleter = [](char *result) { bson_free(result); };
     const std::unique_ptr<char[], decltype(deleter)> cleanup(result, deleter);
 
-    return { result, size };
+    return {result, size};
 }
 
 nlohmann::json PingPongGame::toJson(const uint8_t* data, size_t length)
@@ -461,11 +461,11 @@ void PingPongGame::run()
             updateGameSessionID();
             updateGameNewHistory();
 
-            auto optval = DBINSTANCE->GetDocument(make_document());
+            /*auto optval = DBINSTANCE->GetDocument(make_document());
             if(optval)
             {
-                cout << toJsonString(optval.value().data(), optval.value().length()) << '\n';
-            }
+                cout << "User data: " << toJsonString(optval.value().data(), optval.value().length()) << '\n';
+            }*/
 
             SoundPlayer::getInstance();
             while (game_window.isOpen())

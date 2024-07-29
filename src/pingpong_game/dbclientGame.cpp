@@ -132,7 +132,6 @@ void DBClient::RunPipeLine(const mongocxx::pipeline pl, const mongocxx::options:
     if (!collection)
     {
         auto cursor = m_dbcollection.aggregate(pl, opts);
-        cout << "distance: " << distance(cursor.begin(), cursor.end()) << endl;
         return;
     }
     if (m_dbdatabase.has_collection(collection->name()))
