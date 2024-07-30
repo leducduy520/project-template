@@ -2,6 +2,9 @@
 #define __LOGIN_GAME__
 
 #include "SFML/Graphics.hpp"
+#include <mutex>
+#include <future>
+#include <thread>
 
 class LoginWindow{
     sf::RenderWindow m_window;
@@ -14,6 +17,11 @@ class LoginWindow{
     std::string m_strpass;
     bool m_focusedName;
     bool m_loginSuccess;
+
+    std::future<void> m_blink_fut;
+    std::mutex m_blink_mt;
+    bool m_blink_run;
+
     static void centeredText(sf::Text &text, const sf::Vector2f &bound_size, const sf::Vector2f &bound_pos);
     void login(const std::string& username, const std::string& password);
     void listening();
@@ -21,6 +29,8 @@ class LoginWindow{
     void render();
     void updateText(const sf::Uint32& code);
     void handleKeyPress(const sf::Event& event);
+    void blinkAnimation();
+
 public:
     LoginWindow();
     std::pair<bool, std::string> run();

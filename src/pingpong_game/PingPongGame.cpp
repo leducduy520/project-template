@@ -1,9 +1,9 @@
 #include "PingPongGame.hpp"
-#include "dbclientGame.hpp"
+#include "DBClientGame.hpp"
 #include "interactions.hpp"
 #include "soundplayer.hpp"
 #include "wallHelper.hpp"
-#include "loginGame.hpp"
+#include "LoginGame.hpp"
 #include <string>
 #include <iomanip>
 #include <ctime>
@@ -400,6 +400,7 @@ void PingPongGame::init(std::string &resourcePath)
     constants::resoucesPath = resourcePath;
     game_window.setFramerateLimit(60);
     game_window.setVerticalSyncEnabled(true);
+    game_window.setPosition(sf::Vector2i{(1920 - constants::window_width) / 2, (1080 - constants::window_height) / 2});
 
     m_entity_manager.create<background>(0.0F, 0.0F);
     m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
@@ -460,12 +461,6 @@ void PingPongGame::run()
             m_username = result.second;
             updateGameSessionID();
             updateGameNewHistory();
-
-            /*auto optval = DBINSTANCE->GetDocument(make_document());
-            if(optval)
-            {
-                cout << "User data: " << toJsonString(optval.value().data(), optval.value().length()) << '\n';
-            }*/
 
             SoundPlayer::getInstance();
             while (game_window.isOpen())
