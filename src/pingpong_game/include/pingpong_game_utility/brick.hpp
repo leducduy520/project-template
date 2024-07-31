@@ -15,7 +15,8 @@ public:
         NONE = 0,
         BRICK,
         DIAMOND,
-        BOMB
+        BOMB,
+        SCALEUP
     };
 
     brick(float x, float y, BrickProperty property = BRICK);

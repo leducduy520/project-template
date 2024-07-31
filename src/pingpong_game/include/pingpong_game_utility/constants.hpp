@@ -25,6 +25,8 @@ struct constants
     static constexpr int cap_brick_hit{5};
     static constexpr int cap_diamond_hit{1};
     static constexpr int cap_bomb_hit{1};
+    static constexpr int cap_scaleup_hit{1};
+    static constexpr int init_live{5};
     static constexpr size_t fmtnow{ std::size("0000-00-00 00:00:00 GMT") };
     static std::string resoucesPath;
 };

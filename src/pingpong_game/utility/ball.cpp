@@ -18,14 +18,14 @@ sf::Texture &ball::getTexture()
     return texture;
 }
 
-ball::ball(float px_x, float px_y) : moving_entity()
+ball::ball(float px_x, float px_y) : moving_entity(), m_scaleflag(false), m_strength(1)
 {
     m_sprite.setTexture(getTexture());
     m_sprite.setOrigin(get_centre());
     ball::init(px_x, px_y);
 }
 
-ball::ball()
+ball::ball() : m_scaleflag(false), m_strength(1)
 {
     m_sprite.setTexture(getTexture());
     m_sprite.setOrigin(get_centre());
@@ -94,4 +94,28 @@ void ball::print_info() const noexcept
 {
     // std::cout << "ball centre: " << get_centre().x << " " << get_centre().y << '\n';
     // std::cout << "ball position: " << x() << " " << y() << '\n';
+}
+
+void ball::scale(const int &n) noexcept
+{
+    if(!m_scaleflag)
+    {
+        m_scaleflag = true;
+        m_scale = n;
+        m_strength = 3;
+        m_sprite.setScale(n * 1.0F, n * 1.0F);
+    }
+}
+
+void ball::resetsize() noexcept
+{
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    m_sprite.setScale(1.0F, 1.0F);
+    m_scaleflag = false;
+    m_strength = 1;
+}
+
+int ball::getStrength() noexcept
+{
+    return m_strength;
 }

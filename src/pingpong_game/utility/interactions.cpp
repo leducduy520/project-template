@@ -1,9 +1,15 @@
 #include "interactions.hpp"
 #include "soundplayer.hpp"
 #include "wallHelper.hpp"
+#include <future>
+#include <thread>
+#include <mutex>
 
 namespace interactions
 {
+
+static std::thread t;
+
 bool is_interacting(const entity *element1, const entity *element2) noexcept
 {
     auto box1 = element1->getGlobalbound();
@@ -56,7 +62,7 @@ void handle_interaction(wall &a_wall, ball &a_ball, brick &a_brick)
         case brick::BRICK:
         {
             wall_utils::increasePoint(a_wall, 1);
-            a_brick.hit();
+            a_brick.hit(a_ball.getStrength());
             auto [more_at_side, from_left, from_top] = getDirection(a_ball, a_brick);
 
             if (more_at_side)
@@ -84,13 +90,23 @@ void handle_interaction(wall &a_wall, ball &a_ball, brick &a_brick)
         }
         break;
         case brick::DIAMOND:
+        {
             wall_utils::increasePoint(a_wall, 5);
-            a_brick.hit();
-            break;
+            a_brick.hit(a_ball.getStrength());
+        }
+        break;
         case brick::BOMB:
         {
             wall_utils::destroyAround(a_wall, a_brick, {3, 3});
             a_ball.set_velocity({-a_ball.get_velocity().x, -a_ball.get_velocity().y});
+        }
+        break;
+        case brick::SCALEUP:
+        {
+            a_brick.hit(a_ball.getStrength());
+            a_ball.scale(2);
+            t = std::thread(&ball::resetsize, &a_ball);
+            t.detach();
         }
         break;
         case brick::NONE:

@@ -378,12 +378,12 @@ void PingPongGame::centeredText(sf::Text &text)
 }
 
 PingPongGame::PingPongGame(std::string resourcePath)
-    : m_live(3), m_point(0), m_GameSessionID(0), savedData(false)
+    : m_live(constants::init_live), m_point(0), m_GameSessionID(0), savedData(false)
 {
     PingPongGame::init(resourcePath);
 }
 
-PingPongGame::PingPongGame() : m_live(3), m_point(0), m_GameSessionID(0), savedData(false)
+PingPongGame::PingPongGame() : m_live(constants::init_live), m_point(0), m_GameSessionID(0), savedData(false)
 {
 }
 
@@ -421,7 +421,7 @@ void PingPongGame::init(std::string &resourcePath)
 // Reinitialize the PingPongGame
 void PingPongGame::reset()
 {
-    m_live = 3;
+    m_live = constants::init_live;
     m_point = 0;
     m_state = game_state::running;
     m_entity_manager.apply_all<ball>(

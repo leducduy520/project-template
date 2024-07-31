@@ -58,6 +58,7 @@ sf::Texture &brick::getTexture(BrickProperty property)
     static sf::Texture brick;
     static sf::Texture diamond;
     static sf::Texture bomb;
+    static sf::Texture scaleup;
     static bool initialized = false;
     static int retryCount = 0;
     while (!initialized)
@@ -75,6 +76,10 @@ sf::Texture &brick::getTexture(BrickProperty property)
             if (!bomb.loadFromImage(getImage(BOMB)))
             {
                 throw std::logic_error("Get texture bomb from image data has failed\n");
+            }
+            if (!scaleup.loadFromImage(getImage(SCALEUP)))
+            {
+                throw std::logic_error("Get texture scaleup from image data has failed\n");
             }
         }
         catch (const std::exception &e)
@@ -100,6 +105,8 @@ sf::Texture &brick::getTexture(BrickProperty property)
         return diamond;
     case BOMB:
         return bomb;
+    case SCALEUP:
+        return scaleup;
     case NONE:
         [[fallthrough]];
     default:
@@ -173,6 +180,18 @@ void brick::hit(const int damage, const bool relate) noexcept
         if (!relate)
         {
             SoundPlayer::getInstance()->playSound(SoundPlayer::BOMB_EXPLOSION);
+        }
+    }
+    break;
+    case SCALEUP:
+    {
+        if(m_hitCount >= constants::cap_scaleup_hit)
+        {
+            destroyed = true;
+        }
+        if(!relate)
+        {
+            // SoundPlayer::getInstance()->playSound(SoundPlayer::SCALEUP_EFFECT);
         }
     }
     break;
