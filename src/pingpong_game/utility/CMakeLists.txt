@@ -54,7 +54,7 @@ target_sources(
 target_sources(${PROJECT_NAME} PRIVATE ${RESOURCE_FILES})
 source_group("Resource Files" FILES ${RESOURCE_FILES})
 
-if(WIN32)
+if(THIS_OS_WINDOWS)
     add_custom_command(
         TARGET ${PROJECT_NAME}
         POST_BUILD
@@ -65,7 +65,7 @@ if(WIN32)
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/../resources
         VERBATIM
     )
-endif(WIN32)
+endif(THIS_OS_WINDOWS)
 
 install(
     TARGETS ${PROJECT_NAME}
