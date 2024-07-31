@@ -7,7 +7,7 @@ FetchContent_MakeAvailable(Catch2)
 
 add_executable(${PROJECT_NAME} test.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE pingpong_game_utility)
+target_link_libraries(${PROJECT_NAME} PRIVATE pingpong_game)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Catch2WithMain)
 

@@ -12,13 +12,18 @@ file(GLOB RESOURCE_FILES LIST_DIRECTORIES false
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC sfml-graphics sfml-audio rapidcsv magic_enum nlohmann_json::nlohmann_json mongo::bsoncxx_static mongo::bson_static
+    ${PROJECT_NAME} PUBLIC sfml-graphics sfml-audio rapidcsv magic_enum nlohmann_json::nlohmann_json
+    INTERFACE mongo::bson_static mongo::mongocxx_static
 )
 
 target_include_directories(
     ${PROJECT_NAME}
-    PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PARENT_PROJECT_NAME}/${PROJECT_NAME}>
-    PUBLIC $<BUILD_INTERFACE:${THIS_PARENT_PATH}/include/${PROJECT_NAME}>
+    PUBLIC
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PARENT_PROJECT_NAME}/${PROJECT_NAME}>
+    $<BUILD_INTERFACE:${THIS_PARENT_PATH}/include/${PROJECT_NAME}>
+    INTERFACE
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface>
 )
 
 target_set_warnings(
@@ -41,16 +46,6 @@ source_group("Resource Files" FILES ${RESOURCE_FILES})
 
 # source_group(" Header Files " FILES ${HEADER_FILES})
 if(WIN32)
-    add_custom_command(
-        TARGET ${PROJECT_NAME}
-        COMMENT " Copy OpenAL DLL "
-        PRE_BUILD
-        COMMAND
-        ${CMAKE_COMMAND} -E copy
-        ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        VERBATIM
-    )
     add_custom_command(
         TARGET ${PROJECT_NAME}
         POST_BUILD
