@@ -228,17 +228,7 @@ void PingPongGame::listening()
             {
                 m_entity_manager.create<ball>();
             }
-
-            try
-            {
-                databaseRetryUpdate();
-            }
-            catch (const std::exception &e)
-            {
-                cout << "Update document fail\n";
-                std::cerr << e.what() << '\n';
-            }
-
+            databaseRetryUpdate();
             reset();
         }
         reset_key_active = true;
@@ -315,21 +305,23 @@ void PingPongGame::update()
         if (m_entity_manager.get_all<ball>().empty())
         {
             --m_live;
-            m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
-            m_entity_manager.apply_all<paddle>([](paddle &a_paddle) {
-                a_paddle.init(constants::window_width / 2.0F, constants::window_height * 1.0F);
-            });
-            m_state = game_state::paused;
+            if(m_live > 0)
+            {
+                m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
+                m_entity_manager.apply_all<paddle>([](paddle &a_paddle) {
+                    a_paddle.init(constants::window_width / 2.0F, constants::window_height * 1.0F);
+                    });
+                m_state = game_state::paused;
+            }
+            else
+            {
+                m_state = game_state::game_over;
+            }
         }
 
         if (m_entity_manager.get_all<wall>().empty())
         {
             m_state = game_state::player_wins;
-        }
-
-        if (m_live == 0)
-        {
-            m_state = game_state::game_over;
         }
     }
 }

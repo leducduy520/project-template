@@ -1,5 +1,3 @@
-//cmake -S. -Bcmakebuild -G "Visual Studio 17 2022" -A x64 -DCMAKE_INSTALL_PREFIX="D:\mongo-c-driver" -DENABLE_MONGOC=ON
-//cmake .. --fresh -G "Visual Studio 17 2022" -A x64 -DBOOST_ROOT="C:\Boost" -DCMAKE_PREFIX_PATH="D:\mongo-c-driver" -DCMAKE_CXX_STANDARD=17
 #include "DBClientGame.hpp"
 
 DBClient *DBClient::m_instance;
@@ -25,8 +23,11 @@ DBClient *DBClient::GetInstance()
 
 void DBClient::DestroyInstance()
 {
-    delete m_instance;
-    m_instance = nullptr;
+    if (m_instance != nullptr)
+    {
+        delete m_instance;
+        m_instance = nullptr;
+    }
 }
 
 const mongocxx::database *DBClient::GetDatabase(const char *name)
@@ -127,7 +128,7 @@ bool DBClient::DeleteDocument(const bsoncxx::v_noabi::document::value& filter, m
     return false;
 }
 
-void DBClient::RunPipeLine(const mongocxx::pipeline pl, const mongocxx::options::aggregate opts, mongocxx::collection *collection)
+void DBClient::RunPipeLine(const mongocxx::pipeline& pl, const mongocxx::options::aggregate& opts, mongocxx::collection *collection)
 {
     if (!collection)
     {

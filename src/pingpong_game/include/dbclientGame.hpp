@@ -40,7 +40,7 @@ public:
     optional<bsoncxx::v_noabi::document::value> GetDocument(const bsoncxx::v_noabi::document::value &filter,
                                                                   mongocxx::collection *collection = nullptr);
     bool DeleteDocument(const bsoncxx::v_noabi::document::value& filter, mongocxx::collection *collection = nullptr);
-    void RunPipeLine(const mongocxx::pipeline pl, const mongocxx::options::aggregate opts, mongocxx::collection *collection = nullptr);
+    void RunPipeLine(const mongocxx::pipeline& pl, const mongocxx::options::aggregate& opts, mongocxx::collection *collection = nullptr);
     void testFunc();
 };
 

@@ -57,9 +57,9 @@ void handle_interaction(wall &a_wall, ball &a_ball, brick &a_brick)
         {
             wall_utils::increasePoint(a_wall, 1);
             a_brick.hit();
-            auto [less, from_left, from_top] = getDirection(a_ball, a_brick);
+            auto [more_at_side, from_left, from_top] = getDirection(a_ball, a_brick);
 
-            if (less)
+            if (more_at_side)
             {
                 if (from_left)
                 {
