@@ -38,10 +38,6 @@ set(CMAKE_MESSAGE_LOG_LEVEL VERBOSE)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-if(THIS_OS_LINUX)
-    set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
-endif(THIS_OS_LINUX)
-
 # Set custom variables
 set(INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
@@ -98,6 +94,10 @@ include(Config)
 include(Tools)
 include(Document)
 include(Warnings)
+
+if(THIS_OS_LINUX)
+    set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+endif(THIS_OS_LINUX)
 
 add_subdirectory(src)
 add_subdirectory(app)

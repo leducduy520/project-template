@@ -73,4 +73,4 @@ install(
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
 )
 
-install(DIRECTORY ${THIS_PARENT_PATH}/resources DESTINATION "resources" COMPONENT Resources)
+install(DIRECTORY ${THIS_PARENT_PATH}/resources DESTINATION "." COMPONENT Resources)

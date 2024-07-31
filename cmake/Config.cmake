@@ -1,7 +1,9 @@
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set(THIS_OS_WINDOWS 1)
+    message(STATUS "WINDOWS OS")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set(THIS_OS_LINUX 1)
+    message(STATUS "LINUX OS")
 endif()
 
 if(MSVC)
