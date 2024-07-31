@@ -15,7 +15,7 @@ class LoginWindow{
     sf::Font m_font;
     std::string m_strname;
     std::string m_strpass;
-    bool m_focusedName;
+    std::atomic_bool m_focusedName;
     bool m_loginSuccess;
 
     std::future<void> m_blink_fut;

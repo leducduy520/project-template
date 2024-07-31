@@ -155,12 +155,12 @@ void LoginWindow::render()
 
 void LoginWindow::updateText(const sf::Uint32 &code)
 {
-    sf::String str = m_focusedName ? m_textname.getString() : m_textpass.getString();
+    sf::String str = m_focusedName.load() ? m_textname.getString() : m_textpass.getString();
 
     if (str.getSize() > 0 && (code == 0x7F || code == 0x08))
     {
         str.erase(str.getSize() - 1);
-        if (m_focusedName)
+        if (m_focusedName.load())
         {
             m_textname.setString(str);
             m_textname.setFillColor(sf::Color::Red);
@@ -179,7 +179,7 @@ void LoginWindow::updateText(const sf::Uint32 &code)
                          sf::Vector2f{400, 200});
         }
     }
-    else if (m_focusedName && code > 20)
+    else if (m_focusedName.load() && code > 20)
     {
         str += static_cast<char>(code);
         m_strname = str;
@@ -207,11 +207,8 @@ void LoginWindow::handleKeyPress(const sf::Event &event)
     {
     case sf::Keyboard::Tab:
     {
-        {
-            const std::unique_lock<std::mutex> lock(m_blink_mt);
-            m_focusedName = !m_focusedName;
-        }
-        if (m_focusedName)
+        m_focusedName.store(!m_focusedName.load());
+        if (m_focusedName.load())
         {
             m_textname.setFillColor(sf::Color::Red);
             m_textpass.setFillColor(sf::Color::White);
@@ -263,8 +260,8 @@ void LoginWindow::blinkAnimation()
         std::this_thread::sleep_for(500ms);
 
         lock.lock();
-        m_focusedName ? m_static_name.setFillColor(sf::Color::White) : m_static_pass.setFillColor(sf::Color::White);
+        m_focusedName.load() ? m_static_name.setFillColor(sf::Color::White) : m_static_pass.setFillColor(sf::Color::White);
         std::this_thread::sleep_for(500ms);
-        m_focusedName ? m_static_name.setFillColor(sf::Color::Red) : m_static_pass.setFillColor(sf::Color::Red);
+        m_focusedName.load() ? m_static_name.setFillColor(sf::Color::Red) : m_static_pass.setFillColor(sf::Color::Red);
     }
 }
