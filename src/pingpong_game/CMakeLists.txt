@@ -28,6 +28,7 @@ set_target_properties(
     ${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON
     PUBLIC_HEADER "${CMAKE_CURRENT_LIST_DIR}/include/PingPongGame.hpp"
     PREFIX ""
+    FOLDER "PingPong Game"
 )
 
 target_sources(

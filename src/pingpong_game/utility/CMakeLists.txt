@@ -35,6 +35,8 @@ if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
     target_compile_options(${PROJECT_NAME} PUBLIC -fPIC)
 endif(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
 
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "PingPong Game")
+
 target_sources(
     ${PROJECT_NAME} PRIVATE FILE_SET ${PROJECT_NAME}_headers TYPE HEADERS
     BASE_DIRS ${THIS_PARENT_PATH}/include # must be set
@@ -72,4 +74,4 @@ install(
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
 )
 
-install(DIRECTORY ${THIS_PARENT_PATH}/resources/ DESTINATION " resources " COMPONENT Resources)
+install(DIRECTORY ${THIS_PARENT_PATH}/resources DESTINATION "resources" COMPONENT Resources)

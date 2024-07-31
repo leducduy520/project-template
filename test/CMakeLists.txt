@@ -16,6 +16,8 @@ set_target_properties(
     ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
 )
 
+set_target_properties(${PROJECT_NAME} Catch2 Catch2WithMain PROPERTIES FOLDER "Test")
+
 list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
 include(Catch)
 catch_discover_tests(${PROJECT_NAME})
