@@ -38,58 +38,63 @@ set(CMAKE_MESSAGE_LOG_LEVEL VERBOSE)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-if(UNIX)
+if(THIS_OS_LINUX)
     set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
-endif(UNIX)
+endif(THIS_OS_LINUX)
 
 # Set custom variables
 set(INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
-if(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+if(THIS_COMPILER_GCC OR THIS_COMPILER_CLANG)
     message("CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}")
     set(CMAKE_COLOR_DIAGNOSTICS ON)
 
     # Set common flags for each build type
-    set(CMAKE_C_FLAGS_DEBUG "-g -O0")
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+    set(CMAKE_C_FLAGS_DEBUG_INIT "-g -O0")
+    set(CMAKE_CXX_FLAGS_DEBUG_INIT "-g -O0")
 
-    set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+    set(CMAKE_C_FLAGS_RELEASE_INIT "-O3 -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3 -DNDEBUG")
 
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
 
-    set(CMAKE_C_FLAGS_MINSIZEREL "-Os -DNDEBUG")
-    set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
-else(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    set(CMAKE_C_FLAGS_MINSIZEREL_INIT "-Os -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT "-Os -DNDEBUG")
+elseif(THIS_COMPILER_MSVC OR THIS_COMPILER_CLANG_CL)
     # Set common flags for each build type
-    set(CMAKE_C_FLAGS_DEBUG "/Zi /Od /Ob0 /RTC1")
-    set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /Ob0 /RTC1")
+    set(CMAKE_C_FLAGS_DEBUG_INIT "/Zi /Od /Ob0 /RTC1")
+    set(CMAKE_CXX_FLAGS_DEBUG_INIT "/Zi /Od /Ob0 /RTC1")
 
-    set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /DNDEBUG")
+    set(CMAKE_C_FLAGS_RELEASE_INIT "/O2 /Ob2 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE_INIT "/O2 /Ob2 /DNDEBUG")
 
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO "/Zi /O2 /Ob2 /DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/Zi /O2 /Ob2 /DNDEBUG")
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "/Zi /O2 /Ob2 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "/Zi /O2 /Ob2 /DNDEBUG")
 
-    set(CMAKE_C_FLAGS_MINSIZEREL "/O1 /Ob1 /DNDEBUG")
-    set(CMAKE_CXX_FLAGS_MINSIZEREL "/O1 /Ob1 /DNDEBUG")
-endif(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    set(CMAKE_C_FLAGS_MINSIZEREL_INIT "/O1 /Ob1 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT "/O1 /Ob1 /DNDEBUG")
+endif()
 
 # Set output directory for each configuration
-foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
-    string(TOUPPER ${build_type} build_type_upper)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper}
-        ${CMAKE_BINARY_DIR}/${build_type}/lib
-    )
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${build_type_upper}
-        ${CMAKE_BINARY_DIR}/${build_type}/lib
-    )
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper}
-        ${CMAKE_BINARY_DIR}/${build_type}/bin
-    )
-endforeach()
+get_property(THIS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
+if(THIS_MULTI_CONFIG)
+    foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
+        string(TOUPPER ${build_type} build_type_upper)
+        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper}
+            ${CMAKE_BINARY_DIR}/${build_type}/lib
+        )
+        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${build_type_upper}
+            ${CMAKE_BINARY_DIR}/${build_type}/lib
+        )
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper}
+            ${CMAKE_BINARY_DIR}/${build_type}/bin
+        )
+    endforeach()
+endif()
+
+include(Config)
 include(Tools)
 include(Document)
 include(Warnings)

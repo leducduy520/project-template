@@ -31,12 +31,20 @@ set_target_properties(
     FOLDER "PingPong Game"
 )
 
+if(ENABLE_CLANG_TIDY AND(THIS_COMPILER_GCC OR THIS_COMPILER_CLANG OR THIS_COMPILER_CLANG_CL))
+    set_target_properties(
+        ${PROJECT_NAME}
+        PROPERTIES CXX_CLANG_TIDY
+        "clang-tidy;--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy"
+    )
+endif()
+
 target_sources(
     ${PROJECT_NAME} PRIVATE FILE_SET ${PROJECT_NAME}_headers TYPE HEADERS FILES
     "${HEADER_FILES}"
 )
 
-if(WIN32)
+if(THIS_OS_WINDOWS)
     add_custom_command(
         TARGET ${PROJECT_NAME}
         COMMENT " Copy OpenAL DLL "
@@ -60,14 +68,6 @@ if(WIN32)
         VERBATIM
     )
 endif()
-
-if(ENABLE_CLANG_TIDY)
-    set_target_properties(
-        ${PROJECT_NAME}
-        PROPERTIES CXX_CLANG_TIDY
-        "clang-tidy;--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy"
-    )
-endif(ENABLE_CLANG_TIDY)
 
 install(
     TARGETS ${PROJECT_NAME}

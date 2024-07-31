@@ -37,6 +37,14 @@ endif(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "PingPong Game")
 
+if(ENABLE_CLANG_TIDY AND(THIS_COMPILER_GCC OR THIS_COMPILER_CLANG OR THIS_COMPILER_CLANG_CL))
+    set_target_properties(
+        ${PROJECT_NAME}
+        PROPERTIES CXX_CLANG_TIDY
+        "clang-tidy;--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy"
+    )
+endif()
+
 target_sources(
     ${PROJECT_NAME} PRIVATE FILE_SET ${PROJECT_NAME}_headers TYPE HEADERS
     BASE_DIRS ${THIS_PARENT_PATH}/include # must be set
@@ -46,7 +54,6 @@ target_sources(
 target_sources(${PROJECT_NAME} PRIVATE ${RESOURCE_FILES})
 source_group("Resource Files" FILES ${RESOURCE_FILES})
 
-# source_group(" Header Files " FILES ${HEADER_FILES})
 if(WIN32)
     add_custom_command(
         TARGET ${PROJECT_NAME}
@@ -59,14 +66,6 @@ if(WIN32)
         VERBATIM
     )
 endif(WIN32)
-
-if(ENABLE_CLANG_TIDY)
-    set_target_properties(
-        ${PROJECT_NAME}
-        PROPERTIES CXX_CLANG_TIDY
-        " clang-tidy;--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy "
-    )
-endif(ENABLE_CLANG_TIDY)
 
 install(
     TARGETS ${PROJECT_NAME}

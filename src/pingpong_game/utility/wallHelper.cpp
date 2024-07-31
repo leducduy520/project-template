@@ -33,8 +33,8 @@ void createWall(wall &a_wall, const char *path)
         const auto rows = doc.GetRow<int>(i);
         for (decltype(rows.size()) j = 0; j < rows.size(); j++)
         {
-            const float px_x = padding + j * constants::brick_width;
-            const float px_y = i * constants::brick_height;
+            const float px_x = (padding + j * constants::brick_width) * 1.0F;
+            const float px_y = (i * constants::brick_height) * 1.0F;
             const auto property = static_cast<brick::BrickProperty>(doc.GetCell<int>(j, i));
             a_wall[{px_x, px_y}] = std::make_unique<brick>(px_x, px_y, property);
         }
