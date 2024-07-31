@@ -30,15 +30,20 @@ if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
     target_compile_options(${PROJECT_NAME} PUBLIC -fPIC)
 endif(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
 
-target_sources(${PROJECT_NAME} PRIVATE "${HEADER_FILES}")
+target_sources(
+    ${PROJECT_NAME} PRIVATE FILE_SET ${PROJECT_NAME}_headers TYPE HEADERS
+    BASE_DIRS ${THIS_PARENT_PATH}/include # must be set
+    FILES ${HEADER_FILES}
+)
+
 target_sources(${PROJECT_NAME} PRIVATE ${RESOURCE_FILES})
 source_group("Resource Files" FILES ${RESOURCE_FILES})
-source_group("Header Files" FILES ${HEADER_FILES})
 
+# source_group(" Header Files " FILES ${HEADER_FILES})
 if(WIN32)
     add_custom_command(
         TARGET ${PROJECT_NAME}
-        COMMENT "Copy OpenAL DLL"
+        COMMENT " Copy OpenAL DLL "
         PRE_BUILD
         COMMAND
         ${CMAKE_COMMAND} -E copy
@@ -49,7 +54,7 @@ if(WIN32)
     add_custom_command(
         TARGET ${PROJECT_NAME}
         POST_BUILD
-        COMMENT "Copy resources"
+        COMMENT " Copy resources "
         COMMAND
         ${CMAKE_COMMAND} -E copy_directory_if_different
         ${THIS_PARENT_PATH}/resources
@@ -62,7 +67,7 @@ if(ENABLE_CLANG_TIDY)
     set_target_properties(
         ${PROJECT_NAME}
         PROPERTIES CXX_CLANG_TIDY
-        "clang-tidy;--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy"
+        " clang-tidy;--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy "
     )
 endif(ENABLE_CLANG_TIDY)
 
@@ -72,4 +77,4 @@ install(
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
 )
 
-install(DIRECTORY ${THIS_PARENT_PATH}/resources/ DESTINATION "resources" COMPONENT Resources)
+install(DIRECTORY ${THIS_PARENT_PATH}/resources/ DESTINATION " resources " COMPONENT Resources)
