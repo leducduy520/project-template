@@ -28,8 +28,8 @@ if(WIN32)
         CODE "
         execute_process(
             COMMAND powershell.exe -File ${CMAKE_CURRENT_SOURCE_DIR}/resources/create_shortcuts.ps1 -InstallDir \${CMAKE_INSTALL_PREFIX} -AppName MySFMLApp -ExePath \${CMAKE_INSTALL_PREFIX}/bin/MySFMLApp.exe -IconPath \${CMAKE_INSTALL_PREFIX}/resources/mysfmlapp.ico
-        )
-    "
+            )
+            "
     )
 endif(WIN32)
 
@@ -39,3 +39,5 @@ install(
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
 )
+
+set_directory_properties(PROPERTIES VS_STARTUP_PROJECT MySFMLApp)
