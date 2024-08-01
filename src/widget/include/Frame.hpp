@@ -7,8 +7,9 @@
 
 
 namespace duyld{
+    
     class Frame;
-    using ListChild = std::list<duyld::Frame*>;
+    // using ListChild = std::list<duyld::Frame*>;
 
     class Frame : public sf::RectangleShape
     {
@@ -37,7 +38,7 @@ namespace duyld{
         };
 
         explicit Frame(Frame *parent = nullptr, const sf::Vector2f &shape = sf::Vector2f{0, 0});
-        virtual void addChild(duyld::Frame* shape);
+        virtual void addChild(std::unique_ptr<Frame> shape);
         virtual void setLayout(Frame::Layout layout);
         virtual void setHorizontalResizing(Frame::Resizing resizing);
         virtual void setVerticalResizing(Frame::Resizing resizing);
@@ -55,6 +56,9 @@ namespace duyld{
         virtual void updateWrapLayout();
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states);
         virtual ~Frame();
+
+    
+    using ListChild = std::list<std::unique_ptr<Frame>>;
 
     protected:
         ListChild m_children;

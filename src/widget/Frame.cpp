@@ -9,14 +9,22 @@ Frame::Frame(Frame *parent, const sf::Vector2f &shape)
 {
 }
 
-void Frame::addChild(duyld::Frame* shape)
+void Frame::addChild(std::unique_ptr<Frame> shape)
 {
-    m_children.push_back(shape);
+    m_children.push_back(std::move(shape));
 }
 
 void Frame::setLayout(Frame::Layout layout)
 {
     m_layout = layout;
+    if (layout == Frame::Horizontal && m_horizontal_gap == -1)
+    {
+        m_horizontal_gap = 0;
+    }
+    else if (layout == Frame::Vertical && m_horizontal_gap == -1)
+    {
+        m_vertical_gap = 0;
+    }
 }
 
 void Frame::setHorizontalResizing(Frame::Resizing resizing)
@@ -128,7 +136,7 @@ void Frame::updateVerticalLayout()
     float init_y = this->getGlobalBounds().getPosition().y + m_vertical_pad.x;
     for (auto &child : m_children)
     {
-        auto* child_alias = child;
+        auto* child_alias = child.get();
         auto child_size = child_alias->getGlobalBounds().getSize();
         switch(m_vertical_alignment)
         {
@@ -150,7 +158,7 @@ void Frame::updateVerticalLayout()
             default: break;
         }
         child->update();
-        (m_vertical_gap != -1.0F) ? (init_y += (m_vertical_gap + child_alias->getSize().y) ) : (init_y);
+        (m_vertical_gap != -1.0F) ? (init_y += (m_vertical_gap + child_size.y)) : (init_y);
     }
 }
 void Frame::updateHorizontalLayout()
@@ -193,7 +201,7 @@ void Frame::updateHorizontalLayout()
     float init_x = this->getGlobalBounds().getPosition().x + m_horizontal_pad.x;
     for (auto &child : m_children)
     {
-        auto* child_alias = child;
+        auto* child_alias = child.get();
         auto child_size = child_alias->getGlobalBounds().getSize();
         switch(m_horizontal_alignment)
         {
@@ -214,7 +222,8 @@ void Frame::updateHorizontalLayout()
             break;
             default: break;
         }
-        (m_horizontal_gap != -1.0F) ? (init_x += m_horizontal_gap) : (init_x);
+        child->update();
+        (m_horizontal_gap != -1.0F) ? (init_x += (m_horizontal_gap + child_size.x)) : (init_x);
     }
 }
 void Frame::updateWrapLayout()
@@ -222,6 +231,7 @@ void Frame::updateWrapLayout()
 }
 void Frame::draw(sf::RenderTarget &target, sf::RenderStates states)
 {
+    update();
     target.draw(*this, states);
     for (const auto &child : m_children)
     {
@@ -231,10 +241,6 @@ void Frame::draw(sf::RenderTarget &target, sf::RenderStates states)
 }
 Frame::~Frame()
 {
-    for(auto &child : m_children)
-    {
-        delete child;
-        child = nullptr;
-    }
+    m_children.clear();
 }
 } // namespace duyld
