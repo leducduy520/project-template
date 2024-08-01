@@ -12,7 +12,7 @@ file(GLOB RESOURCE_FILES LIST_DIRECTORIES false
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC sfml-graphics sfml-audio rapidcsv magic_enum nlohmann_json::nlohmann_json
+    ${PROJECT_NAME} PUBLIC widget sfml-audio rapidcsv magic_enum nlohmann_json::nlohmann_json
     INTERFACE mongo::bson_static mongo::mongocxx_static
 )
 
