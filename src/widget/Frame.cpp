@@ -4,7 +4,7 @@
 namespace duyld
 {
 Frame::Frame(Frame *parent, const sf::Vector2f &shape)
-    : sf::RectangleShape(shape) ,m_parent(parent), m_vertical_pad({0, 0}), m_horizontal_pad({0, 0}), m_vertical_gap(-1), m_horizontal_gap(-1),
+    : sf::RectangleShape(shape) , needupdate(true), m_parent(parent), m_vertical_pad({0, 0}), m_horizontal_pad({0, 0}), m_vertical_gap(-1), m_horizontal_gap(-1),
     m_layout(Vertical), m_horizontal_resizing(Hug), m_vertical_resizing(Hug), m_vertical_alignment(LEFT), m_horizontal_alignment(MIDDLE)
 {
 }
@@ -12,89 +12,172 @@ Frame::Frame(Frame *parent, const sf::Vector2f &shape)
 void Frame::addChild(std::unique_ptr<Frame> shape)
 {
     m_children.push_back(std::move(shape));
+    needupdate = true;
 }
 
 void Frame::setLayout(Frame::Layout layout)
 {
-    m_layout = layout;
+    if(m_layout != layout)
+    {
+        m_layout = layout;
+        needupdate = true;
+    }
     if (layout == Frame::Horizontal && m_horizontal_gap == -1)
     {
         m_horizontal_gap = 0;
+        needupdate = true;
     }
     else if (layout == Frame::Vertical && m_horizontal_gap == -1)
     {
         m_vertical_gap = 0;
+        needupdate = true;
     }
 }
 
 void Frame::setHorizontalResizing(Frame::Resizing resizing)
 {
-    m_horizontal_resizing = resizing;
+    if(m_horizontal_resizing != resizing)
+    {
+        m_horizontal_resizing = resizing;
+        needupdate;
+    }
 }
 
 void Frame::setVerticalResizing(Frame::Resizing resizing)
 {
-    m_vertical_resizing = resizing;
+    if(m_vertical_resizing != resizing)
+    {
+        m_vertical_resizing = resizing;
+        needupdate = true;
+    }
 }
 
 void Frame::setPadding(const sf::Vector2f &vertical, const sf::Vector2f &horizontal)
 {
-    m_vertical_pad = vertical;
-    m_horizontal_pad = horizontal;
+
+    if(m_vertical_pad != vertical)
+    {
+        m_vertical_pad = vertical;
+        needupdate = true;
+    }
+    if(m_horizontal_pad != horizontal)
+    {
+        m_horizontal_pad = horizontal;
+        needupdate = true;
+    }
 }
 
 void Frame::setHorizontalPadding(const sf::Vector2f &horizontal)
 {
-    m_horizontal_pad = horizontal;
+    if(m_horizontal_pad != horizontal)
+    {
+        m_horizontal_pad = horizontal;
+        needupdate = true;
+    }
 }
 
 void Frame::setVerticalPadding(const sf::Vector2f &vertical)
 {
-    m_vertical_pad = vertical;
+    if(m_vertical_pad != vertical)
+    {
+        m_vertical_pad = vertical;
+        needupdate = true;
+    }
 }
 
 void Frame::setGaps(sf::Int16 vertical, sf::Int16 horizontal)
 {
-    m_vertical_gap = vertical;
-    m_horizontal_gap = horizontal;
+    if(m_vertical_gap != vertical)
+    {
+        m_vertical_gap = vertical;
+        needupdate = true;
+    }
+    if(m_horizontal_gap != horizontal)
+    {
+        m_horizontal_gap = horizontal;
+        needupdate = true;
+    }
 }
 
 void Frame::setHorizontalGap(sf::Int16 horizontal)
 {
-    m_horizontal_gap = horizontal;
+    if(m_horizontal_gap != horizontal)
+    {
+        m_horizontal_gap = horizontal;
+        needupdate = true;
+    }
 }
 
 void Frame::setVerticalGap(sf::Int16 vertical)
 {
-    m_vertical_gap = vertical;
+    if(m_vertical_gap != vertical)
+    {
+        m_vertical_gap = vertical;
+        needupdate = true;
+    }
 }
 
 void Frame::setHorizontalAligment(Frame::Alignment alignment)
 {
-    m_horizontal_alignment = alignment;
+    if(m_horizontal_alignment != alignment)
+    {
+        m_horizontal_alignment = alignment;
+        needupdate = true;
+    }
 }
 
 void Frame::setVerticalAligment(Frame::Alignment alignment)
 {
-    m_vertical_alignment = alignment;
+    if(m_vertical_alignment != alignment)
+    {
+        m_vertical_alignment = alignment;
+        needupdate = true;
+    }
+}
+
+void Frame::setSize(const sf::Vector2f &size)
+{
+    if (size != getSize())
+    {
+        needupdate = true;
+    }
+    sf::RectangleShape::setSize(size);
+}
+
+void Frame::checkingChildUpdate()
+{
+    for(auto& child : m_children)
+    {
+        child->checkingChildUpdate();
+        if (child->needupdate)
+        {
+            needupdate = true;
+        }
+    }
 }
 
 void Frame::update()
 {
-    switch (m_layout)
+    checkingChildUpdate();
+    if(needupdate)
     {
-    case Layout::Vertical:
-        updateVerticalLayout();
-        break;
-    case Layout::Horizontal:
-        updateHorizontalLayout();
-        break;
-    case Layout::Wrap:
-        updateWrapLayout();
-        break;
-    default:
-        break;
+        switch (m_layout)
+        {
+        case Layout::Vertical:
+            updateVerticalLayout();
+            break;
+        case Layout::Horizontal:
+            updateHorizontalLayout();
+            break;
+        case Layout::Wrap:
+            updateWrapLayout();
+            break;
+        default:
+            break;
+        }
+        needupdate = false;
     }
+    
 }
 void Frame::updateVerticalLayout()
 {
@@ -133,11 +216,11 @@ void Frame::updateVerticalLayout()
     }
 
     auto this_pos = this->getPosition();
-    float init_y = this->getGlobalBounds().getPosition().y + m_vertical_pad.x;
+    float init_y = this_pos.y + m_vertical_pad.x;
     for (auto &child : m_children)
     {
         auto* child_alias = child.get();
-        auto child_size = child_alias->getGlobalBounds().getSize();
+        auto child_size = child_alias->getLocalBounds().getSize();
         switch(m_vertical_alignment)
         {
             case Alignment::LEFT:

@@ -50,6 +50,8 @@ namespace duyld{
         virtual void setVerticalGap(sf::Int16 vertical);
         virtual void setHorizontalAligment(Frame::Alignment alignment);
         virtual void setVerticalAligment(Frame::Alignment alignment);
+        virtual void setSize(const sf::Vector2f& size);
+        virtual void checkingChildUpdate();
         virtual void update();
         virtual void updateVerticalLayout();
         virtual void updateHorizontalLayout();
@@ -61,6 +63,7 @@ namespace duyld{
     using ListChild = std::list<std::unique_ptr<Frame>>;
 
     protected:
+        bool needupdate;
         ListChild m_children;
         Frame *m_parent;
         sf::Vector2f m_vertical_pad;

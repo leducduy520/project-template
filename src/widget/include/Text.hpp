@@ -11,6 +11,7 @@ public:
     void setText(sf::Text& text);
     void update() override;
     void updateHorizontalLayout() override;
+    void checkingChildUpdate() override;
     void draw(sf::RenderTarget& target, sf::RenderStates states) override;
     ~Text();
 private:

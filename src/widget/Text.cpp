@@ -7,6 +7,7 @@ namespace duyld
         : Frame(parent, shape)
     {
         m_layout = Frame::Horizontal;
+        needupdate = true;
     }
 
     void Text::setText(sf::Text &text)
@@ -16,7 +17,11 @@ namespace duyld
 
     void Text::update()
     {
-        updateHorizontalLayout();
+        if(needupdate)
+        {
+            updateHorizontalLayout();
+            needupdate = false;
+        }
     }
 
     void Text::updateHorizontalLayout()
@@ -26,10 +31,6 @@ namespace duyld
         auto text_pos = m_text->getPosition();
         auto this_size = this->getSize();
         auto this_pos = this->getPosition();
-        // std::cout << "this_size: " << this_size.x << " - " << this_size.y << std::endl;
-        // std::cout << "text_size: " << text_size_x << " - " << text_size_y << std::endl;
-        // std::cout << "text_pos: " << text_pos.x << " - " << text_pos.y << std::endl;
-        // std::cout << "this_pos: " << this_pos.x << " - " << this_pos.y << std::endl;
 
         if (m_vertical_resizing == Hug)
         {
@@ -52,27 +53,20 @@ namespace duyld
             this_size = this->getSize();
         }
 
-        // std::cout << "this_size: " << this_size.x << " - " << this_size.y << std::endl;
-        // std::cout << "text_size: " << text_size_x << " - " << text_size_y << std::endl;
-        // std::cout << "text_pos: " << text_pos.x << " - " << text_pos.y << std::endl;
-        // std::cout << "this_pos: " << this_pos.x << " - " << this_pos.y << std::endl;
         switch (m_vertical_alignment)
         {
         case Alignment::LEFT:
         {
-            //std::cout << "left\n";
             m_text->setPosition({this_pos.x + m_horizontal_pad.x, text_pos.y});
         }
         break;
         case Alignment::CENTER:
         {
-            //std::cout << "center\n";
             m_text->setPosition({this_pos.x + m_horizontal_pad.x + (this_size.x - text_size_x)/2, text_pos.y});
         }
         break;
         case Alignment::RIGHT:
         {
-            //std::cout << "right\n";
             m_text->setPosition({this_pos.x + m_horizontal_pad.x + (this_size.x - text_size_x), text_pos.y});
         }
         break;
@@ -81,39 +75,35 @@ namespace duyld
         }
 
         text_pos = m_text->getPosition();
-        // std::cout << "this_size: " << this_size.x << " - " << this_size.y << std::endl;
-        // std::cout << "text_size: " << text_size_x << " - " << text_size_y << std::endl;
-        // std::cout << "text_pos: " << text_pos.x << " - " << text_pos.y << std::endl;
-        // std::cout << "this_pos: " << this_pos.x << " - " << this_pos.y << std::endl;
 
         switch (m_horizontal_alignment)
         {
         case Alignment::TOP:
         {
-            //std::cout << "top\n";
             m_text->setPosition({text_pos.x, this_pos.y + m_vertical_pad.x});
         }
         break;
         case Alignment::MIDDLE:
         {
-            //std::cout << "middle\n";
             m_text->setPosition({text_pos.x, this_pos.y + m_vertical_pad.x + (this_size.y - text_size_y) / 2});
         }
         break;
         case Alignment::BOTTOM:
         {
-            //std::cout << "bottom\n";
             m_text->setPosition({text_pos.x, this_pos.y + m_vertical_pad.x + (this_size.y - text_size_y)});
         }
         break;
         default:
             break;
         }
-        text_pos = m_text->getPosition();
-        /*std::cout << "this_size: " << this_size.x << " - " << this_size.y << std::endl;
-        std::cout << "text_size: " << text_size_x << " - " << text_size_y << std::endl;
-        std::cout << "text_pos: " << text_pos.x << " - " << text_pos.y << std::endl;
-        std::cout << "this_pos: " << this_pos.x << " - " << this_pos.y << std::endl;*/
+    }
+
+    void Text::checkingChildUpdate()
+    {
+        if (m_horizontal_resizing == Hug && (m_text->getGlobalBounds().getPosition().x != this->getPosition().x + m_horizontal_pad.x))
+        {
+            needupdate = true;
+        }
     }
 
     void Text::draw(sf::RenderTarget &target, sf::RenderStates states)
