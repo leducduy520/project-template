@@ -9,8 +9,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Build mongocxx-driver
+        run: make mongo-gcc
       - name: Configure Project
-        run: cmake --graphviz=docs/graph/graph.dot --no-warn-unused-cli --preset=ubuntu
+        run: make configure PRESET=ubuntu
       - name: Build Project
         run: cmake --build --preset=ubuntu
           
