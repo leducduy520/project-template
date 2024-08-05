@@ -37,8 +37,8 @@ int main()
     if (moduleManager.loadModule("PingPongGame"))
     {
         // Retrieve function pointers for creating and destroying the Game object
-        using CreateGameFunc = IGame *(*)();
-        using DestroyGameFunc = void (*)(IGame *);
+        using CreateGameFunc = IGame* (*)();
+        using DestroyGameFunc = void (*)(IGame*);
 
         CreateGameFunc createGame =
             reinterpret_cast<CreateGameFunc>(moduleManager.getFunction("PingPongGame", "createPingPongGame"));
@@ -48,7 +48,7 @@ int main()
         if (createGame && destroyGame)
         {
             // Create the Game object
-            IGame *game = createGame();
+            IGame* game = createGame();
             if (game)
             {
                 std::string path = (getExecutablePath() / ".." / "resources" / "").string();

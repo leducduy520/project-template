@@ -1,6 +1,6 @@
 #include "background.hpp"
 
-sf::Texture &background::getTexture()
+sf::Texture& background::getTexture()
 {
     static sf::Texture texture;
     static bool initialized = false;
@@ -32,7 +32,7 @@ void background::update()
     // Nothing to do here
 }
 
-void background::draw(sf::RenderWindow &window)
+void background::draw(sf::RenderWindow& window)
 {
     // Ask the window to draw the sprite for us
     window.draw(m_sprite);

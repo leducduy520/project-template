@@ -1,13 +1,13 @@
 #include "ModuleManager.h"
 
 // Register a module with its expected path
-void ModuleManager::registerModule(const std::string &moduleName, const std::string &modulePath)
+void ModuleManager::registerModule(const std::string& moduleName, const std::string& modulePath)
 {
     modulePaths[moduleName] = modulePath;
 }
 
 // Load a registered module
-bool ModuleManager::loadModule(const std::string &moduleName)
+bool ModuleManager::loadModule(const std::string& moduleName)
 {
     auto it = modulePaths.find(moduleName);
     if (it == modulePaths.end())
@@ -33,7 +33,7 @@ bool ModuleManager::loadModule(const std::string &moduleName)
 }
 
 // Get a function pointer from a loaded module
-FunctionAddress ModuleManager::getFunction(const std::string &moduleName, const std::string &functionName)
+FunctionAddress ModuleManager::getFunction(const std::string& moduleName, const std::string& functionName)
 {
     auto it = loadedModules.find(moduleName);
     if (it == loadedModules.end())
@@ -52,7 +52,7 @@ FunctionAddress ModuleManager::getFunction(const std::string &moduleName, const 
 }
 
 // Release a loaded module
-void ModuleManager::releaseModule(const std::string &moduleName)
+void ModuleManager::releaseModule(const std::string& moduleName)
 {
     auto it = loadedModules.find(moduleName);
     if (it != loadedModules.end())
@@ -70,7 +70,7 @@ void ModuleManager::releaseModule(const std::string &moduleName)
 // Destructor to ensure all modules are released
 ModuleManager::~ModuleManager()
 {
-    for (const auto &pair : loadedModules)
+    for (const auto& pair : loadedModules)
     {
         UnloadLibrary(pair.second);
         std::cout << "Released module in destructor: " << modulePaths[pair.first] << std::endl;
@@ -79,7 +79,7 @@ ModuleManager::~ModuleManager()
 }
 
 // Helper function to get the actual path of a loaded module (DLL)
-std::string ModuleManager::getModulePath(const std::string &moduleName)
+std::string ModuleManager::getModulePath(const std::string& moduleName)
 {
     auto it = loadedModules.find(moduleName);
     if (it == loadedModules.end())

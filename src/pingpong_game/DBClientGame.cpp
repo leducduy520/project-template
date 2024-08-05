@@ -1,12 +1,13 @@
 #include "DBClientGame.hpp"
 
-DBClient *DBClient::m_instance;
+DBClient* DBClient::m_instance;
 std::once_flag DBClient::m_flag;
 
 DBClient::DBClient()
 {
     // Connect to the MongoDB server
-    const auto uri = mongocxx::uri{"mongodb+srv://duyleduc123:vfmFqkgYRXOzKaDI@cluster0.24ewqox.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"};
+    const auto uri = mongocxx::uri{
+        "mongodb+srv://duyleduc123:vfmFqkgYRXOzKaDI@cluster0.24ewqox.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"};
     mongocxx::options::client client_options;
     const auto api = mongocxx::options::server_api{mongocxx::options::server_api::version::k_version_1};
     client_options.server_api_opts(api);
@@ -15,7 +16,7 @@ DBClient::DBClient()
     m_dbcollection = m_dbdatabase[m_dbdatabase.list_collection_names().front()];*/
 }
 
-DBClient *DBClient::GetInstance()
+DBClient* DBClient::GetInstance()
 {
     std::call_once(m_flag, []() { m_instance = new DBClient(); });
     return m_instance;
@@ -30,13 +31,13 @@ void DBClient::DestroyInstance()
     }
 }
 
-const mongocxx::database *DBClient::GetDatabase(const char *name)
+const mongocxx::database* DBClient::GetDatabase(const char* name)
 {
     m_dbdatabase = m_dbclient[name];
     return &m_dbdatabase;
 }
 
-const mongocxx::collection *DBClient::GetCollection(const char *name)
+const mongocxx::collection* DBClient::GetCollection(const char* name)
 {
     if (m_dbdatabase.has_collection(name))
     {
@@ -46,7 +47,7 @@ const mongocxx::collection *DBClient::GetCollection(const char *name)
     return nullptr;
 }
 
-bool DBClient::CreateCollection(const std::string &collectionName, mongocxx::database *db)
+bool DBClient::CreateCollection(const std::string& collectionName, mongocxx::database* db)
 {
     if (!db)
     {
@@ -63,7 +64,7 @@ bool DBClient::CreateCollection(const std::string &collectionName, mongocxx::dat
     return false;
 }
 
-bool DBClient::InsertDocument(const bsoncxx::document::value &document, mongocxx::collection *collection)
+bool DBClient::InsertDocument(const bsoncxx::document::value& document, mongocxx::collection* collection)
 {
     if (!collection)
     {
@@ -78,9 +79,9 @@ bool DBClient::InsertDocument(const bsoncxx::document::value &document, mongocxx
     return false;
 }
 
-bool DBClient::UpdateDocument(const bsoncxx::v_noabi::document::value &filter,
-                              const bsoncxx::v_noabi::document::value &update,
-                              mongocxx::collection *collection)
+bool DBClient::UpdateDocument(const bsoncxx::v_noabi::document::value& filter,
+                              const bsoncxx::v_noabi::document::value& update,
+                              mongocxx::collection* collection)
 {
     if (!collection)
     {
@@ -96,8 +97,8 @@ bool DBClient::UpdateDocument(const bsoncxx::v_noabi::document::value &filter,
     return false;
 }
 
-optional<bsoncxx::v_noabi::document::value> DBClient::GetDocument(const bsoncxx::v_noabi::document::value &filter,
-                                               mongocxx::collection *collection)
+optional<bsoncxx::v_noabi::document::value> DBClient::GetDocument(const bsoncxx::v_noabi::document::value& filter,
+                                                                  mongocxx::collection* collection)
 {
     if (!collection)
     {
@@ -110,7 +111,7 @@ optional<bsoncxx::v_noabi::document::value> DBClient::GetDocument(const bsoncxx:
     return {};
 }
 
-bool DBClient::DeleteDocument(const bsoncxx::v_noabi::document::value& filter, mongocxx::collection *collection)
+bool DBClient::DeleteDocument(const bsoncxx::v_noabi::document::value& filter, mongocxx::collection* collection)
 {
     if (!collection)
     {
@@ -128,7 +129,9 @@ bool DBClient::DeleteDocument(const bsoncxx::v_noabi::document::value& filter, m
     return false;
 }
 
-void DBClient::RunPipeLine(const mongocxx::pipeline& pl, const mongocxx::options::aggregate& opts, mongocxx::collection *collection)
+void DBClient::RunPipeLine(const mongocxx::pipeline& pl,
+                           const mongocxx::options::aggregate& opts,
+                           mongocxx::collection* collection)
 {
     if (!collection)
     {
@@ -147,6 +150,4 @@ void DBClient::testFunc()
     using bsoncxx::builder::stream::close_document;
     using bsoncxx::builder::stream::open_array;
     using bsoncxx::builder::stream::open_document;
-    
-    
 }

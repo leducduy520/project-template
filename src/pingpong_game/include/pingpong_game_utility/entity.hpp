@@ -13,14 +13,14 @@ protected:
 public:
     virtual ~Ientity() = default;
     virtual void update() = 0;
-    virtual void draw(sf::RenderWindow &window) = 0;
+    virtual void draw(sf::RenderWindow& window) = 0;
     virtual void init(float px_x, float px_y) = 0;
 
     Ientity() = default;
-    Ientity(const Ientity &other) noexcept = default;
-    Ientity &operator=(const Ientity &other) noexcept = default;
-    Ientity(Ientity &&other) noexcept = default;
-    Ientity &operator=(Ientity &&other) noexcept = default;
+    Ientity(const Ientity& other) noexcept = default;
+    Ientity& operator=(const Ientity& other) noexcept = default;
+    Ientity(Ientity&& other) noexcept = default;
+    Ientity& operator=(Ientity&& other) noexcept = default;
 };
 
 class entity : public Ientity
@@ -44,7 +44,7 @@ public:
     virtual void destroy() noexcept;
     virtual bool is_destroyed() const noexcept;
 
-    void set_position(const sf::Vector2f &pos) noexcept;
+    void set_position(const sf::Vector2f& pos) noexcept;
 };
 
 
@@ -59,7 +59,7 @@ public:
     virtual void move_left() noexcept = 0;
     virtual void move_right() noexcept = 0;
     virtual void print_info() const noexcept = 0;
-    void set_velocity(const sf::Vector2f &vel) noexcept;
+    void set_velocity(const sf::Vector2f& vel) noexcept;
     sf::Vector2f get_velocity() const noexcept;
 };
 

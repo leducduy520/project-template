@@ -1,23 +1,23 @@
 #include "interactions.hpp"
-#include "soundplayer.hpp"
 #include "helper.hpp"
+#include "soundplayer.hpp"
 #include <future>
-#include <thread>
 #include <mutex>
+#include <thread>
 
 namespace interactions
 {
 
 static std::thread t;
 
-bool is_interacting(const entity *element1, const entity *element2) noexcept
+bool is_interacting(const entity* element1, const entity* element2) noexcept
 {
     auto box1 = element1->getGlobalbound();
     auto box2 = element2->getGlobalbound();
     return box1.intersects(box2);
 }
 
-std::tuple<bool, bool, bool> getDirection(ball &a_ball, entity &an_entity) noexcept
+std::tuple<bool, bool, bool> getDirection(ball& a_ball, entity& an_entity) noexcept
 {
     const float left_overlap = a_ball.right() - an_entity.left();
     const float right_overlap = an_entity.right() - a_ball.left();
@@ -33,7 +33,7 @@ std::tuple<bool, bool, bool> getDirection(ball &a_ball, entity &an_entity) noexc
     return std::make_tuple(min_left < min_top, from_left, from_top);
 }
 
-void handle_interaction(ball &a_ball, const paddle &a_paddle)
+void handle_interaction(ball& a_ball, const paddle& a_paddle)
 {
     if (is_interacting(&a_ball, &a_paddle))
     {
@@ -52,7 +52,7 @@ void handle_interaction(ball &a_ball, const paddle &a_paddle)
     }
 }
 
-void handle_interaction(wall &a_wall, ball &a_ball, brick &a_brick)
+void handle_interaction(wall& a_wall, ball& a_ball, brick& a_brick)
 {
     if (is_interacting(&a_ball, &a_brick))
     {

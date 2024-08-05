@@ -26,7 +26,7 @@ public:
 
     // Implement the pure virtual functions
     void update() override;
-    void draw(sf::RenderWindow &window) override;
+    void draw(sf::RenderWindow& window) override;
 
     BrickProperty getProperty() const noexcept;
 
@@ -37,10 +37,10 @@ public:
 private:
     BrickProperty m_property;
     int m_hitCount;
-    static sf::Texture &getTexture(BrickProperty property = BRICK);
+    static sf::Texture& getTexture(BrickProperty property = BRICK);
 };
 
-extern sf::Image &getImage(brick::BrickProperty property);
+extern sf::Image& getImage(brick::BrickProperty property);
 
 typedef sf::Vector2f e_location;
 
@@ -49,7 +49,7 @@ namespace std
 template <>
 struct less<e_location>
 {
-    bool operator()(const e_location &lhs, const e_location &rhs) const
+    bool operator()(const e_location& lhs, const e_location& rhs) const
     {
         return lhs.x < rhs.x ? true : (lhs.x > rhs.x ? false : (lhs.y < rhs.y));
     }
@@ -77,15 +77,14 @@ class wall : public wall_map, public entity
 public:
     wall() = default;
     template <class T>
-    wall(T &&bricks)  noexcept
-        : point(0)
+    wall(T&& bricks) noexcept : point(0)
     {
         swap(std::forward<T>(bricks));
     }
     void update() override;
-    void draw(sf::RenderWindow &window) override;
+    void draw(sf::RenderWindow& window) override;
     void init(float x, float y) override;
-    inline uint16_t &getPoint()
+    inline uint16_t& getPoint()
     {
         return point;
     }

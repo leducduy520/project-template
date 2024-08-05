@@ -7,7 +7,7 @@
 class background : public entity
 {
     // Private data members
-    static sf::Texture &getTexture();
+    static sf::Texture& getTexture();
 
 public:
     background(float px_x, float px_y);
@@ -17,7 +17,7 @@ public:
 
     // Implement the pure virtual functions
     void update() override;
-    void draw(sf::RenderWindow &window) override;
+    void draw(sf::RenderWindow& window) override;
 };
 
 #endif // BACKGROUND_H

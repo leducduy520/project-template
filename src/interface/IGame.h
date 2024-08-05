@@ -7,7 +7,7 @@ class IGame
 {
 public:
     virtual void run() = 0;
-    virtual void init(std::string &) = 0;
+    virtual void init(std::string&) = 0;
     virtual ~IGame() = default;
 };
 
@@ -19,8 +19,8 @@ public:
 
 extern "C"
 {
-    EXPORT_API IGame *createPingPongGame();
-    EXPORT_API void destroyGame(IGame *game);
+    EXPORT_API IGame* createPingPongGame();
+    EXPORT_API void destroyGame(IGame* game);
 }
 
 #endif // __IGAME__

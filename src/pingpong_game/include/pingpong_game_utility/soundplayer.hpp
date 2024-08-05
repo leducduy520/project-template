@@ -8,7 +8,7 @@
 class SoundPlayer
 {
 public:
-    static SoundPlayer *getInstance()
+    static SoundPlayer* getInstance()
     {
         std::call_once(m_callflag, []() mutable { m_instance = new SoundPlayer(); });
         return m_instance;
@@ -30,12 +30,12 @@ public:
     };
 
 
-    SoundPlayer(const SoundPlayer &other) = delete;
-    SoundPlayer(SoundPlayer &&other) = delete;
-    SoundPlayer &operator=(const SoundPlayer &other) = delete;
-    SoundPlayer &operator=(SoundPlayer &&other) = delete;
+    SoundPlayer(const SoundPlayer& other) = delete;
+    SoundPlayer(SoundPlayer&& other) = delete;
+    SoundPlayer& operator=(const SoundPlayer& other) = delete;
+    SoundPlayer& operator=(SoundPlayer&& other) = delete;
 
-    void playSound(const SoundMode &mode);
+    void playSound(const SoundMode& mode);
 
 protected:
     ~SoundPlayer();
@@ -46,7 +46,7 @@ private:
     sf::Music m_music;
     std::unordered_map<SoundMode, sf::SoundBuffer> m_soundDict;
     static std::once_flag m_callflag;
-    static SoundPlayer *m_instance;
+    static SoundPlayer* m_instance;
 };
 
 #endif // __SOUNDPLAYER_H__

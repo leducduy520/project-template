@@ -22,10 +22,10 @@
 #include <catch2/catch_test_macros.hpp>
 #include <constants.hpp>
 #include <filesystem>
+#include <helper.hpp>
 #include <memory>
 #include <paddle.hpp>
 #include <vector>
-#include <helper.hpp>
 #ifdef _WIN32
 #include <Windows.h>
 #else

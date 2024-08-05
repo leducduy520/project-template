@@ -3,7 +3,7 @@
 #include "magic_enum.hpp"
 #include "magic_enum_all.hpp"
 
-SoundPlayer *SoundPlayer::m_instance = nullptr;
+SoundPlayer* SoundPlayer::m_instance = nullptr;
 std::once_flag SoundPlayer::m_callflag;
 
 SoundPlayer::SoundPlayer()
@@ -70,7 +70,7 @@ SoundPlayer::~SoundPlayer()
     m_music.stop();
 }
 
-void SoundPlayer::playSound(const SoundMode &mode)
+void SoundPlayer::playSound(const SoundMode& mode)
 {
     auto iter = m_soundDict.find(mode);
     if (iter != m_soundDict.end())

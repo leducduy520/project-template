@@ -7,7 +7,7 @@
 #include <memory>
 
 using entity_vector = std::vector<std::unique_ptr<entity>>;
-using entity_alias_vector = std::vector<entity *>;
+using entity_alias_vector = std::vector<entity*>;
 
 class entity_manager
 {
@@ -26,7 +26,7 @@ public:
     // We use a variadic template to pass any number of arguments
     // We use perfect forwarding to avoid any unnecessary copying of the arguments
     template <typename T, typename... Args>
-    T &create(Args &&...args)
+    T& create(Args&&... args)
     {
         // Check that the type parameter is derived from the entity base class
         static_assert(std::is_base_of<entity, T>::value,
@@ -61,26 +61,26 @@ public:
 
     // Function to retrieve all the objects of a given type
     template <typename T>
-    auto &get_all()
+    auto& get_all()
     {
         return grouped_entities[typeid(T).hash_code()];
     }
 
     // Apply a function to all entities of a given type
     template <typename T, typename Func>
-    void apply_all(const Func &func)
+    void apply_all(const Func& func)
     {
-        auto &entity_group{get_all<T>()};
+        auto& entity_group{get_all<T>()};
 
         for (auto ptr : entity_group)
-            func(*dynamic_cast<T *>(ptr));
+            func(*dynamic_cast<T*>(ptr));
     }
 
     // Function to update all the entities
     void update();
 
     // Function to make all the entities draw themselves
-    void draw(sf::RenderWindow &window);
+    void draw(sf::RenderWindow& window);
 };
 
 #endif // __ENTITY_MANAGER_H__

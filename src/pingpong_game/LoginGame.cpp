@@ -1,6 +1,6 @@
-#include "constants.hpp"
-#include "DBClientGame.hpp"
 #include "LoginGame.hpp"
+#include "DBClientGame.hpp"
+#include "constants.hpp"
 #include "helper.hpp"
 
 #define INPUT_BOUND_WIDTH 200
@@ -11,20 +11,19 @@
 
 using namespace utilities;
 
-void LoginWindow::centeredText(sf::Text &text, const sf::Vector2f &bound_size, const sf::Vector2f &bound_pos)
+void LoginWindow::centeredText(sf::Text& text, const sf::Vector2f& bound_size, const sf::Vector2f& bound_pos)
 {
-    if(bound_size.x > constants::window_width || bound_size.y > constants::window_height)
+    if (bound_size.x > constants::window_width || bound_size.y > constants::window_height)
     {
         return;
     }
-    
+
     auto textRect = text.getLocalBounds();
     text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
-    text.setPosition(bound_pos.x + bound_size.x / 2.0f,
-                      bound_pos.y + bound_size.y / 2.0f);
+    text.setPosition(bound_pos.x + bound_size.x / 2.0f, bound_pos.y + bound_size.y / 2.0f);
 }
 
-void LoginWindow::login(const std::string &username, const std::string &password)
+void LoginWindow::login(const std::string& username, const std::string& password)
 {
     try
     {
@@ -49,17 +48,16 @@ void LoginWindow::login(const std::string &username, const std::string &password
                 m_loginSuccess = true;
                 return;
             }
-            throw std::runtime_error("It's not correct password for user "s + username );
+            throw std::runtime_error("It's not correct password for user "s + username);
         }
-        if (DBINSTANCE->InsertDocument(
-                make_document(kvp("name", username), kvp("password", password))))
+        if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
         {
             cout << "successfully insert initial data for " << username << '\n';
             m_loginSuccess = true;
             return;
         }
     }
-    catch(const std::exception& e)
+    catch (const std::exception& e)
     {
         std::cerr << e.what() << '\n';
     }
@@ -74,12 +72,12 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
     m_font.loadFromFile(constants::resoucesPath + "ModesticSans/ModesticSans-BoldItalic.ttf");
 
     m_textname = make_unique<sf::Text>();
-    m_textname->setFillColor(sf::Color{128,128,128,128});
+    m_textname->setFillColor(sf::Color{128, 128, 128, 128});
     m_textname->setCharacterSize(FONT_SIZE);
     m_textname->setFont(m_font);
 
     m_textpass = make_unique<sf::Text>();
-    m_textpass->setFillColor(sf::Color{128,128,128,128});
+    m_textpass->setFillColor(sf::Color{128, 128, 128, 128});
     m_textpass->setCharacterSize(FONT_SIZE);
     m_textpass->setFont(m_font);
 
@@ -88,14 +86,18 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
     m_static_name->setFillColor(sf::Color::Black);
     m_static_name->setCharacterSize(FONT_SIZE);
     m_static_name->setFont(m_font);
-    texthelper::aligning::getInstance()->operator()(m_static_name.get(), sf::FloatRect{{100,235},{200,50}}, texthelper::aligning::ML);
+    texthelper::aligning::getInstance()->operator()(m_static_name.get(),
+                                                    sf::FloatRect{{100, 235}, {200, 50}},
+                                                    texthelper::aligning::ML);
 
     m_static_pass = make_unique<sf::Text>();
     m_static_pass->setString("Password: ");
     m_static_pass->setFillColor(sf::Color::Black);
     m_static_pass->setCharacterSize(FONT_SIZE);
     m_static_pass->setFont(m_font);
-    texthelper::aligning::getInstance()->operator()(m_static_pass.get(), sf::FloatRect{{100,315},{200,50}}, texthelper::aligning::ML);
+    texthelper::aligning::getInstance()->operator()(m_static_pass.get(),
+                                                    sf::FloatRect{{100, 315}, {200, 50}},
+                                                    texthelper::aligning::ML);
 
     m_blink_run = true;
     m_blink_fut = std::async(std::launch::async, &LoginWindow::blinkAnimation, this);
@@ -103,7 +105,7 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
 
 std::pair<bool, std::string> LoginWindow::run()
 {
-    while(m_window.isOpen())
+    while (m_window.isOpen())
     {
         listening();
         update();
@@ -115,17 +117,17 @@ std::pair<bool, std::string> LoginWindow::run()
 void LoginWindow::listening()
 {
     sf::Event event{};
-    while(m_window.pollEvent(event))
+    while (m_window.pollEvent(event))
     {
-        if(event.type == sf::Event::TextEntered)
+        if (event.type == sf::Event::TextEntered)
         {
             auto code = event.text.unicode;
-            if(code < 128 && code != 0x09)
+            if (code < 128 && code != 0x09)
             {
                 updateText(code);
             }
         }
-        if(event.type == sf::Event::KeyPressed)
+        if (event.type == sf::Event::KeyPressed)
         {
             handleKeyPress(event);
         }
@@ -134,15 +136,19 @@ void LoginWindow::listening()
 
 void LoginWindow::update()
 {
-    texthelper::aligning::getInstance()->operator()(m_textname.get(), sf::FloatRect{{300,235},{400,50}}, texthelper::aligning::MR);
-    texthelper::aligning::getInstance()->operator()(m_textpass.get(), sf::FloatRect{{300,315},{400,50}}, texthelper::aligning::MR);
+    texthelper::aligning::getInstance()->operator()(m_textname.get(),
+                                                    sf::FloatRect{{300, 235}, {400, 50}},
+                                                    texthelper::aligning::MR);
+    texthelper::aligning::getInstance()->operator()(m_textpass.get(),
+                                                    sf::FloatRect{{300, 315}, {400, 50}},
+                                                    texthelper::aligning::MR);
 }
 
 void LoginWindow::render()
 {
-    if(m_window.isOpen())
+    if (m_window.isOpen())
     {
-        m_window.clear(sf::Color{223,228, 210, 255});
+        m_window.clear(sf::Color{223, 228, 210, 255});
         m_window.draw(*m_textname);
         m_window.draw(*m_static_name);
         m_window.draw(*m_textpass);
@@ -151,7 +157,7 @@ void LoginWindow::render()
     }
 }
 
-void LoginWindow::updateText(const sf::Uint32 &code)
+void LoginWindow::updateText(const sf::Uint32& code)
 {
     sf::String str = m_focusedName.load() ? m_textname->getString() : m_textpass->getString();
 
@@ -182,7 +188,7 @@ void LoginWindow::updateText(const sf::Uint32 &code)
     }
 }
 
-void LoginWindow::handleKeyPress(const sf::Event &event)
+void LoginWindow::handleKeyPress(const sf::Event& event)
 {
     switch (event.key.code)
     {
@@ -237,7 +243,8 @@ void LoginWindow::blinkAnimation()
         lock.lock();
         m_focusedName.load() ? m_static_name->setCharacterSize(FONT_SIZE) : m_static_pass->setCharacterSize(FONT_SIZE);
         std::this_thread::sleep_for(500ms);
-        m_focusedName.load() ? m_static_name->setCharacterSize(FONT_SIZE + 5) : m_static_pass->setCharacterSize(FONT_SIZE + 5);
+        m_focusedName.load() ? m_static_name->setCharacterSize(FONT_SIZE + 5)
+                             : m_static_pass->setCharacterSize(FONT_SIZE + 5);
         lock.unlock();
     }
 }

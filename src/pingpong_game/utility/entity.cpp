@@ -1,8 +1,7 @@
 #include "entity.hpp"
 
 entity::entity() : Ientity()
-{
-}
+{}
 
 // Helper function to get the bounding box of a sprite
 sf::FloatRect entity::getGlobalbound() const noexcept
@@ -67,12 +66,12 @@ float entity::bottom() const noexcept
     return m_sprite.getGlobalBounds().top + m_sprite.getGlobalBounds().height;
 }
 
-void entity::set_position(const sf::Vector2f &pos) noexcept
+void entity::set_position(const sf::Vector2f& pos) noexcept
 {
     m_sprite.setPosition(pos);
 }
 
-void moving_entity::set_velocity(const sf::Vector2f &vel) noexcept
+void moving_entity::set_velocity(const sf::Vector2f& vel) noexcept
 {
     m_velocity = vel;
 }

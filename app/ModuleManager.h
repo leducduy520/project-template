@@ -17,8 +17,8 @@ typedef FARPROC FunctionAddress;
 #include <dlfcn.h>
 #include <limits.h>
 #include <unistd.h>
-typedef void *LibraryHandle;
-typedef void *FunctionAddress;
+typedef void* LibraryHandle;
+typedef void* FunctionAddress;
 #define LoadLibraryFunction(path) dlopen(path, RTLD_LAZY)
 #define GetFunctionAddress dlsym
 #define UnloadLibrary dlclose
@@ -28,19 +28,19 @@ class ModuleManager
 {
 public:
     // Register a module with its expected path
-    void registerModule(const std::string &moduleName, const std::string &modulePath);
+    void registerModule(const std::string& moduleName, const std::string& modulePath);
 
     // Load a registered module
-    bool loadModule(const std::string &moduleName);
+    bool loadModule(const std::string& moduleName);
 
     // Get a function pointer from a loaded module
-    FunctionAddress getFunction(const std::string &moduleName, const std::string &functionName);
+    FunctionAddress getFunction(const std::string& moduleName, const std::string& functionName);
 
     // Release a loaded module
-    void releaseModule(const std::string &moduleName);
+    void releaseModule(const std::string& moduleName);
 
     // Get the actual path of a loaded module
-    std::string getModulePath(const std::string &moduleName);
+    std::string getModulePath(const std::string& moduleName);
 
     // Destructor to ensure all modules are released
     ~ModuleManager();

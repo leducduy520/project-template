@@ -1,7 +1,7 @@
 #include "paddle.hpp"
 #include <cmath>
 
-sf::Texture &paddle::getTexture()
+sf::Texture& paddle::getTexture()
 {
     static sf::Texture texture;
     static bool initialized = false;
@@ -56,14 +56,13 @@ void paddle::update()
     m_sprite.move(m_velocity);
 }
 
-void paddle::draw(sf::RenderWindow &window)
+void paddle::draw(sf::RenderWindow& window)
 {
     window.draw(m_sprite);
 }
 
 void paddle::move_up() noexcept
-{
-}
+{}
 
 void paddle::move_left() noexcept
 {
@@ -90,8 +89,7 @@ void paddle::move_right() noexcept
 }
 
 void paddle::move_down() noexcept
-{
-}
+{}
 
 void paddle::print_info() const noexcept
 {

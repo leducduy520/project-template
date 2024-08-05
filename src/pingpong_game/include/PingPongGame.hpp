@@ -5,11 +5,11 @@
 #include "background.hpp"
 #include "ball.hpp"
 #include "brick.hpp"
+#include "bson/bson.h"
 #include "constants.hpp"
 #include "entityManager.hpp"
-#include "paddle.hpp"
-#include "bson/bson.h"
 #include "nlohmann/json.hpp"
+#include "paddle.hpp"
 
 class PingPongGame : public IGame
 {
@@ -53,13 +53,13 @@ class PingPongGame : public IGame
     void updateGameSessionEndTime();
     void updateGameSessionStartTime();
 
-    static void centeredText(sf::Text &text);
+    static void centeredText(sf::Text& text);
 
 public:
     explicit PingPongGame(std::string resourcePath);
     PingPongGame();
 
-    void init(std::string &resourcePath) override;
+    void init(std::string& resourcePath) override;
     // Reinitialize the game
     void reset();
 

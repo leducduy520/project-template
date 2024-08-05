@@ -3,8 +3,9 @@
 
 #include "Frame.hpp"
 
-namespace duyld{
-class Text: public Frame
+namespace duyld
+{
+class Text : public Frame
 {
 public:
     Text(Frame* parent = nullptr, const sf::Vector2f& shape = sf::Vector2f{0, 0});
@@ -14,9 +15,10 @@ public:
     void checkingChildUpdate() override;
     void draw(sf::RenderTarget& target, sf::RenderStates states) override;
     ~Text();
+
 private:
     sf::Text* m_text;
 };
-}
+} // namespace duyld
 
-#endif  // __WIDGET_TEXT__
+#endif // __WIDGET_TEXT__

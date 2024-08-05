@@ -4,7 +4,7 @@
 #include <thread>
 
 
-sf::Texture &ball::getTexture()
+sf::Texture& ball::getTexture()
 {
     static sf::Texture texture;
     static bool initialized = false;
@@ -66,7 +66,7 @@ void ball::update()
     m_sprite.move(m_velocity);
 }
 
-void ball::draw(sf::RenderWindow &window)
+void ball::draw(sf::RenderWindow& window)
 {
     window.draw(m_sprite);
 }
@@ -97,9 +97,9 @@ void ball::print_info() const noexcept
     // std::cout << "ball position: " << x() << " " << y() << '\n';
 }
 
-void ball::scale(const int &n) noexcept
+void ball::scale(const int& n) noexcept
 {
-    if(!m_scaleflag)
+    if (!m_scaleflag)
     {
         m_scaleflag = true;
         m_scale = n;

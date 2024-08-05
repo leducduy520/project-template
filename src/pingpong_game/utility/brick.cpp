@@ -1,6 +1,6 @@
 #include "brick.hpp"
-#include "soundplayer.hpp"
 #include "helper.hpp"
+#include "soundplayer.hpp"
 #include <cstdlib>
 #include <exception>
 
@@ -8,7 +8,7 @@
 
 using namespace std::literals;
 
-sf::Image &getImage(brick::BrickProperty property)
+sf::Image& getImage(brick::BrickProperty property)
 {
     static bool initialized = false;
     static std::vector<sf::Image> list;
@@ -23,7 +23,7 @@ sf::Image &getImage(brick::BrickProperty property)
 
         const auto width = source.getSize().x;
         const auto height = source.getSize().y;
-        const auto *const pixels = source.getPixelsPtr();
+        const auto* const pixels = source.getPixelsPtr();
         std::vector<std::vector<sf::Uint8>> matrix(width / constants::brick_width);
 
         for (unsigned int px_y = 0; px_y < height; ++px_y)
@@ -39,7 +39,7 @@ sf::Image &getImage(brick::BrickProperty property)
             }
         }
 
-        for (const auto &elm : matrix)
+        for (const auto& elm : matrix)
         {
             sf::Image des;
             des.create(constants::brick_width, constants::brick_height, elm.data());
@@ -52,7 +52,7 @@ sf::Image &getImage(brick::BrickProperty property)
     return list.at(static_cast<size_t>(property) - size_t(1));
 }
 
-sf::Texture &brick::getTexture(BrickProperty property)
+sf::Texture& brick::getTexture(BrickProperty property)
 {
     static sf::Texture empty;
     static sf::Texture brick;
@@ -82,7 +82,7 @@ sf::Texture &brick::getTexture(BrickProperty property)
                 throw std::logic_error("Get texture scaleup from image data has failed\n");
             }
         }
-        catch (const std::exception &e)
+        catch (const std::exception& e)
         {
             std::cerr << "Get texture failed: \n" << e.what() << "\n";
             if (retryCount < 2)
@@ -127,10 +127,9 @@ void brick::init(float px_x, float px_y)
 
 // Compute the brick's new position
 void brick::update()
-{
-}
+{}
 
-void brick::draw(sf::RenderWindow &window)
+void brick::draw(sf::RenderWindow& window)
 {
     // Ask the window to draw the sprite for us
     window.draw(m_sprite);
@@ -185,11 +184,11 @@ void brick::hit(const int damage, const bool relate) noexcept
     break;
     case SCALEUP:
     {
-        if(m_hitCount >= constants::cap_scaleup_hit)
+        if (m_hitCount >= constants::cap_scaleup_hit)
         {
             destroyed = true;
         }
-        if(!relate)
+        if (!relate)
         {
             // SoundPlayer::getInstance()->playSound(SoundPlayer::SCALEUP_EFFECT);
         }
@@ -214,7 +213,7 @@ void wall::update()
     }
 }
 
-void wall::draw(sf::RenderWindow &window)
+void wall::draw(sf::RenderWindow& window)
 {
     for (auto it = this->begin(); it != this->end(); ++it)
     {

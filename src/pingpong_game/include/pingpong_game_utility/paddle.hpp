@@ -6,14 +6,14 @@
 
 class paddle : public moving_entity
 {
-    static sf::Texture &getTexture();
+    static sf::Texture& getTexture();
 
 public:
     paddle(float px_x, float px_y);
     paddle() = default;
     void init(float px_x, float px_y) override;
     void update() override;
-    void draw(sf::RenderWindow &window) override;
+    void draw(sf::RenderWindow& window) override;
     void move_up() noexcept override;
     void move_down() noexcept override;
     void move_left() noexcept override;
