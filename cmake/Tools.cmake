@@ -3,8 +3,8 @@ if(${BUILD_CMAKE_FORMAT})
     file(GLOB_RECURSE CMAKE_FILES_TXT "**/CMakeLists.txt")
     file(GLOB_RECURSE CMAKE_FILES_C "cmake/*.cmake")
     list(FILTER CMAKE_FILES_TXT EXCLUDE REGEX
-        "${CMAKE_SOURCE_DIR}/(out/|external/|tools/|.github/)+"
-    )
+         "${CMAKE_SOURCE_DIR}/(out/|external/|tools/|.github/)+"
+         )
     set(CMAKE_FILES ${ROOT_CMAKE_FILES} ${CMAKE_FILES_TXT} ${CMAKE_FILES_C})
     find_program(CMAKE_FORMAT cmake-format)
 
@@ -22,13 +22,12 @@ if(${BUILD_CMAKE_FORMAT})
                 ${CMAKE_SOURCE_DIR}/.cmake-format.yaml
                 -i
                 ${cmake_file}
-            )
+                )
         endforeach()
 
         add_custom_target(
-            run_cmake_format COMMAND ${FORMATTING_COMMANDS}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        )
+            run_cmake_format COMMAND ${FORMATTING_COMMANDS} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            )
         set_target_properties(run_cmake_format PROPERTIES FOLDER "Custom target")
     else(CMAKE_FORMAT)
         message(WARNING "CMAKE_FORMAT NOT FOUND")
@@ -46,9 +45,7 @@ if(${BUILD_CLANG_FORMAT})
     file(GLOB_RECURSE CMAKE_FILES_CPP "*/*.cpp")
     file(GLOB_RECURSE CMAKE_FILES_H "*/*.h")
     file(GLOB_RECURSE CMAKE_FILES_HPP "*/*.hpp")
-    set(CPP_FILES ${CMAKE_FILES_CC} ${CMAKE_FILES_CPP} ${CMAKE_FILES_H}
-        ${CMAKE_FILES_HPP}
-    )
+    set(CPP_FILES ${CMAKE_FILES_CC} ${CMAKE_FILES_CPP} ${CMAKE_FILES_H} ${CMAKE_FILES_HPP})
     list(FILTER CPP_FILES EXCLUDE REGEX "${CMAKE_SOURCE_DIR}/(out|external)/.*")
     find_program(CLANGFORMAT clang-format REQUIRED)
 
@@ -56,13 +53,11 @@ if(${BUILD_CLANG_FORMAT})
         message(STATUS "Added Clang Format")
         add_custom_target(
             run_clang_format
-            COMMAND
-            ${Python3_EXECUTABLE}
-            ${CMAKE_SOURCE_DIR}/tools/run-clang-format.py ${CPP_FILES}
-            --in-place
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/run-clang-format.py ${CPP_FILES}
+                    --in-place
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             USES_TERMINAL
-        )
+            )
         set_target_properties(run_clang_format PROPERTIES FOLDER "Custom target")
     else()
         message(WARNING "CLANGFORMAT NOT FOUND")
