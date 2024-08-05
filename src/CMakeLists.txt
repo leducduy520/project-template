@@ -1,6 +1,5 @@
 project(src)
 
-add_subdirectory(widget)
 add_subdirectory(pingpong_game)
 
 install(

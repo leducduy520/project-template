@@ -1,6 +1,7 @@
 #include "ball.hpp"
 #include "soundplayer.hpp"
 #include <filesystem>
+#include <thread>
 
 
 sf::Texture &ball::getTexture()
