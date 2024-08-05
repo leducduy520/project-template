@@ -2,12 +2,14 @@
 #include "DBClientGame.hpp"
 #include "constants.hpp"
 #include "helper.hpp"
+#include <memory>
 
 #define INPUT_BOUND_WIDTH 200
 #define INPUT_BOUND_HEIGHT 50
-#define FONT_SIZE 32
+#define FONT_SIZE 28
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+#define TEXT_LIMIT 16
 
 using namespace utilities;
 
@@ -75,7 +77,7 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
     m_static_name->setCharacterSize(FONT_SIZE);
     m_static_name->setFont(m_font);
     texthelper::aligning::getInstance()->operator()(m_static_name.get(),
-                                                    sf::FloatRect{{100, 235}, {200, 50}},
+                                                    sf::FloatRect{{200, 235}, {200, 50}},
                                                     texthelper::aligning::ML);
 
     m_static_pass = make_unique<sf::Text>();
@@ -84,7 +86,7 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
     m_static_pass->setCharacterSize(FONT_SIZE);
     m_static_pass->setFont(m_font);
     texthelper::aligning::getInstance()->operator()(m_static_pass.get(),
-                                                    sf::FloatRect{{100, 315}, {200, 50}},
+                                                    sf::FloatRect{{200, 315}, {200, 50}},
                                                     texthelper::aligning::ML);
 
     m_blink_run = true;
@@ -125,10 +127,10 @@ void LoginWindow::listening()
 void LoginWindow::update()
 {
     texthelper::aligning::getInstance()->operator()(m_textname.get(),
-                                                    sf::FloatRect{{300, 235}, {400, 50}},
+                                                    sf::FloatRect{{400, 235}, {200, 50}},
                                                     texthelper::aligning::MR);
     texthelper::aligning::getInstance()->operator()(m_textpass.get(),
-                                                    sf::FloatRect{{300, 315}, {400, 50}},
+                                                    sf::FloatRect{{400, 315}, {200, 50}},
                                                     texthelper::aligning::MR);
 }
 
@@ -149,7 +151,7 @@ void LoginWindow::updateText(const sf::Uint32& code)
 {
     sf::String str = m_focusedName.load() ? m_textname->getString() : m_textpass->getString();
 
-    if (str.getSize() > 0 && (code == 0x7F || code == 0x08))
+    if (str.getSize() > 0 && str.getSize() <= TEXT_LIMIT && (code == 0x7F || code == 0x08))
     {
         str.erase(str.getSize() - 1);
         if (m_focusedName.load())

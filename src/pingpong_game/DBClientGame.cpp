@@ -136,11 +136,17 @@ void DBClient::RunPipeLine(const mongocxx::pipeline& pl,
     if (!collection)
     {
         auto cursor = m_dbcollection.aggregate(pl, opts);
+        auto tmp = std::distance(cursor.begin(), cursor.end());
+        tmp;
+        //std::cout << std::distance(cursor.begin(), cursor.end()) << '\n';
         return;
     }
     if (m_dbdatabase.has_collection(collection->name()))
     {
         auto cursor = collection->aggregate(pl, opts);
+        auto tmp = std::distance(cursor.begin(), cursor.end());
+        tmp;
+        //std::cout << std::distance(cursor.begin(), cursor.end()) << '\n';
     }
 }
 
