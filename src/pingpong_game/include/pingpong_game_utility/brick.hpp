@@ -46,14 +46,14 @@ typedef sf::Vector2f e_location;
 
 namespace std
 {
-template <>
-struct less<e_location>
-{
-    bool operator()(const e_location& lhs, const e_location& rhs) const
+    template <>
+    struct less<e_location>
     {
-        return lhs.x < rhs.x ? true : (lhs.x > rhs.x ? false : (lhs.y < rhs.y));
-    }
-};
+        bool operator()(const e_location& lhs, const e_location& rhs) const
+        {
+            return lhs.x < rhs.x ? true : (lhs.x > rhs.x ? false : (lhs.y < rhs.y));
+        }
+    };
 } // namespace std
 
 //// Custom hash function for e_location
@@ -76,14 +76,17 @@ class wall : public wall_map, public entity
 {
 public:
     wall() = default;
+
     template <class T>
     wall(T&& bricks) noexcept : point(0)
     {
         swap(std::forward<T>(bricks));
     }
+
     void update() override;
     void draw(sf::RenderWindow& window) override;
     void init(float x, float y) override;
+
     inline uint16_t& getPoint()
     {
         return point;

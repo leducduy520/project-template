@@ -53,8 +53,6 @@ class PingPongGame : public IGame
     void updateGameSessionEndTime();
     void updateGameSessionStartTime();
 
-    static void centeredText(sf::Text& text);
-
 public:
     explicit PingPongGame(std::string resourcePath);
     PingPongGame();

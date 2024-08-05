@@ -23,8 +23,6 @@ class LoginWindow
     std::mutex m_blink_mt;
     bool m_blink_run;
 
-
-    static void centeredText(sf::Text& text, const sf::Vector2f& bound_size, const sf::Vector2f& bound_pos);
     void login(const std::string& username, const std::string& password);
     void listening();
     void update();

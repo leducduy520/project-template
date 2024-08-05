@@ -5,20 +5,20 @@
 
 namespace duyld
 {
-class Text : public Frame
-{
-public:
-    Text(Frame* parent = nullptr, const sf::Vector2f& shape = sf::Vector2f{0, 0});
-    void setText(sf::Text& text);
-    void update() override;
-    void updateHorizontalLayout() override;
-    void checkingChildUpdate() override;
-    void draw(sf::RenderTarget& target, sf::RenderStates states) override;
-    ~Text();
+    class Text : public Frame
+    {
+    public:
+        Text(Frame* parent = nullptr, const sf::Vector2f& shape = sf::Vector2f{0, 0});
+        void setText(sf::Text& text);
+        void update() override;
+        void updateHorizontalLayout() override;
+        void checkingChildUpdate() override;
+        void draw(sf::RenderTarget& target, sf::RenderStates states) override;
+        ~Text();
 
-private:
-    sf::Text* m_text;
-};
+    private:
+        sf::Text* m_text;
+    };
 } // namespace duyld
 
 #endif // __WIDGET_TEXT__

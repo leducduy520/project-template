@@ -11,18 +11,6 @@
 
 using namespace utilities;
 
-void LoginWindow::centeredText(sf::Text& text, const sf::Vector2f& bound_size, const sf::Vector2f& bound_pos)
-{
-    if (bound_size.x > constants::window_width || bound_size.y > constants::window_height)
-    {
-        return;
-    }
-
-    auto textRect = text.getLocalBounds();
-    text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
-    text.setPosition(bound_pos.x + bound_size.x / 2.0f, bound_pos.y + bound_size.y / 2.0f);
-}
-
 void LoginWindow::login(const std::string& username, const std::string& password)
 {
     try

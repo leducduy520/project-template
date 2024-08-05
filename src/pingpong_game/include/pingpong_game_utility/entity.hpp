@@ -47,7 +47,6 @@ public:
     void set_position(const sf::Vector2f& pos) noexcept;
 };
 
-
 class moving_entity : public entity
 {
 protected:

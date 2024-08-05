@@ -2,7 +2,6 @@
 #include "DBClientGame.hpp"
 #include "LoginGame.hpp"
 #include "helper.hpp"
-#include "interactions.hpp"
 #include "soundplayer.hpp"
 #include <ctime>
 #include <iomanip>
@@ -11,6 +10,7 @@
 std::string constants::resoucesPath;
 using namespace std;
 using namespace std::literals;
+using namespace utilities::texthelper;
 using json = nlohmann::json;
 
 void PingPongGame::updateGameSessionStartTime()
@@ -237,21 +237,22 @@ void PingPongGame::stateHandler()
         m_textState.setString("Paused");
         m_textLive.setString("Lives: " + std::to_string(m_live));
 
-        centeredText(m_textState);
+        aligning::getInstance()->operator()(&m_textState, sf::FloatRect{ 0,0,constants::window_width, constants::window_height });
+        aligning::getInstance()->operator()(&m_textLive, sf::FloatRect{ 0,100,constants::window_width, constants::window_height - 100 });
     }
     break;
     case game_state::game_over:
     {
         databaseResultUpdate(false);
         m_textState.setString("Game Over");
-        centeredText(m_textState);
+        aligning::getInstance()->operator()(&m_textState, sf::FloatRect{ 0,0,constants::window_width, constants::window_height });
     }
     break;
     case game_state::player_wins:
     {
         databaseResultUpdate(true);
         m_textState.setString("Win");
-        centeredText(m_textState);
+        aligning::getInstance()->operator()(&m_textState, sf::FloatRect{ 0,0,constants::window_width, constants::window_height });
     }
     break;
     case game_state::running:
@@ -359,13 +360,6 @@ void PingPongGame::try_createwall()
     }
 }
 
-void PingPongGame::centeredText(sf::Text& text)
-{
-    auto textRect = text.getLocalBounds();
-    text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
-    text.setPosition(constants::window_width / 2.0f, constants::window_height / 2.0f);
-}
-
 PingPongGame::PingPongGame(std::string resourcePath)
     : m_live(constants::init_live), m_point(0), m_GameSessionID(0), savedData(false)
 {
@@ -466,6 +460,7 @@ extern "C" IGame* createPingPongGame()
 {
     return new PingPongGame();
 }
+
 extern "C" void destroyGame(IGame* game)
 {
     delete game;

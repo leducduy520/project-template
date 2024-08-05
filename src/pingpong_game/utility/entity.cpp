@@ -21,6 +21,7 @@ float entity::x() const noexcept
 {
     return m_sprite.getPosition().x;
 }
+
 float entity::y() const noexcept
 {
     return m_sprite.getPosition().y;

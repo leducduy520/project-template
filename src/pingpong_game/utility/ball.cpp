@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <thread>
 
-
 sf::Texture& ball::getTexture()
 {
     static sf::Texture texture;

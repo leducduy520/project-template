@@ -29,7 +29,6 @@ public:
         BOMB_EXPLOSION
     };
 
-
     SoundPlayer(const SoundPlayer& other) = delete;
     SoundPlayer(SoundPlayer&& other) = delete;
     SoundPlayer& operator=(const SoundPlayer& other) = delete;
