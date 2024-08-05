@@ -1,13 +1,15 @@
 #include "constants.hpp"
 #include "DBClientGame.hpp"
 #include "LoginGame.hpp"
-#include "Text.hpp"
+#include "helper.hpp"
 
 #define INPUT_BOUND_WIDTH 200
 #define INPUT_BOUND_HEIGHT 50
 #define FONT_SIZE 32
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+
+using namespace utilities;
 
 void LoginWindow::centeredText(sf::Text &text, const sf::Vector2f &bound_size, const sf::Vector2f &bound_pos)
 {
@@ -71,96 +73,29 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
 
     m_font.loadFromFile(constants::resoucesPath + "ModesticSans/ModesticSans-BoldItalic.ttf");
 
-    using duyld::Frame;
-
-    m_textname = new sf::Text();
-    m_textname->setFillColor(sf::Color::Black);
+    m_textname = make_unique<sf::Text>();
+    m_textname->setFillColor(sf::Color{128,128,128,128});
     m_textname->setCharacterSize(FONT_SIZE);
     m_textname->setFont(m_font);
 
-    m_textpass = new sf::Text();
-    m_textpass->setFillColor(sf::Color::Black);
+    m_textpass = make_unique<sf::Text>();
+    m_textpass->setFillColor(sf::Color{128,128,128,128});
     m_textpass->setCharacterSize(FONT_SIZE);
     m_textpass->setFont(m_font);
 
-    auto fram_text_name = new duyld::Text();
-    fram_text_name->setFillColor(sf::Color::Blue);
-    fram_text_name->setVerticalAligment(Frame::CENTER);
-    fram_text_name->setHorizontalAligment(Frame::MIDDLE);
-    fram_text_name->setHorizontalResizing(Frame::Hug);
-    fram_text_name->setVerticalResizing(Frame::Fixed);
-    fram_text_name->setSize({0, 50});
-    fram_text_name->setText(*m_textname);
-
-    auto frame_text_pass = new duyld::Text();
-    frame_text_pass->setFillColor(sf::Color::Blue);
-    frame_text_pass->setVerticalAligment(Frame::CENTER);
-    frame_text_pass->setHorizontalAligment(Frame::MIDDLE);
-    frame_text_pass->setHorizontalResizing(Frame::Hug);
-    frame_text_pass->setVerticalResizing(Frame::Fixed);
-    frame_text_pass->setSize({0, 50});
-    frame_text_pass->setText(*m_textpass);
-
-    auto frame_input = new Frame();
-    frame_input->setFillColor(sf::Color::Red);
-    frame_input->setLayout(Frame::Vertical);
-    frame_input->setVerticalAligment(Frame::CENTER);
-    frame_input->setHorizontalResizing(Frame::Fixed);
-    frame_input->setVerticalGap(30);
-    frame_input->setSize({400, 0});
-    frame_input->setPosition(300, 235);
-    frame_input->addChild(unique_ptr<Frame>(fram_text_name));
-    frame_input->addChild(unique_ptr<Frame>(frame_text_pass));
-
-    m_static_name = new sf::Text();
+    m_static_name = make_unique<sf::Text>();
     m_static_name->setString("Name: ");
     m_static_name->setFillColor(sf::Color::Black);
     m_static_name->setCharacterSize(FONT_SIZE);
     m_static_name->setFont(m_font);
+    texthelper::aligning::getInstance()->operator()(m_static_name.get(), sf::FloatRect{{100,235},{200,50}}, texthelper::aligning::ML);
 
-    m_static_pass = new sf::Text();
+    m_static_pass = make_unique<sf::Text>();
     m_static_pass->setString("Password: ");
     m_static_pass->setFillColor(sf::Color::Black);
     m_static_pass->setCharacterSize(FONT_SIZE);
     m_static_pass->setFont(m_font);
-
-    auto frame_title_name = new duyld::Text();
-    frame_title_name->setFillColor(sf::Color::Transparent);
-    frame_title_name->setVerticalAligment(Frame::LEFT);
-    frame_title_name->setHorizontalAligment(Frame::MIDDLE);
-    frame_title_name->setHorizontalResizing(Frame::Fixed);
-    frame_title_name->setVerticalResizing(Frame::Fixed);
-    frame_title_name->setSize({200, 50});
-    frame_title_name->setText(*m_static_name);
-
-    auto frame_title_pass = new duyld::Text();
-    frame_title_pass->setFillColor(sf::Color::Transparent);
-    frame_title_pass->setVerticalAligment(Frame::LEFT);
-    frame_title_pass->setHorizontalAligment(Frame::MIDDLE);
-    frame_title_pass->setHorizontalResizing(Frame::Fixed);
-    frame_title_pass->setVerticalResizing(Frame::Fixed);
-    frame_title_pass->setSize({200, 50});
-    frame_title_pass->setText(*m_static_pass);
-
-    auto frame_title = new Frame();
-    frame_title->setFillColor(sf::Color::Transparent);
-    frame_title->setLayout(Frame::Vertical);
-    frame_title->setVerticalAligment(Frame::LEFT);
-    frame_title->setHorizontalResizing(Frame::Fixed);
-    frame_title->setVerticalGap(30);
-    frame_title->setSize({200, 0});
-    frame_title->setPosition(100, 235);
-    frame_title->addChild(unique_ptr<Frame>(frame_title_name));
-    frame_title->addChild(unique_ptr<Frame>(frame_title_pass));
-
-    m_frame_login.setFillColor(sf::Color::Transparent);
-    m_frame_login.setLayout(Frame::Horizontal);
-    m_frame_login.setHorizontalAligment(Frame::TOP);
-    m_frame_login.setPosition(100, 235);
-    m_frame_login.setHorizontalGap(0);
-    m_frame_login.addChild(unique_ptr<Frame>(frame_title));
-    m_frame_login.addChild(unique_ptr<Frame>(frame_input));
-
+    texthelper::aligning::getInstance()->operator()(m_static_pass.get(), sf::FloatRect{{100,315},{200,50}}, texthelper::aligning::ML);
 
     m_blink_run = true;
     m_blink_fut = std::async(std::launch::async, &LoginWindow::blinkAnimation, this);
@@ -199,7 +134,8 @@ void LoginWindow::listening()
 
 void LoginWindow::update()
 {
-    
+    texthelper::aligning::getInstance()->operator()(m_textname.get(), sf::FloatRect{{300,235},{400,50}}, texthelper::aligning::MR);
+    texthelper::aligning::getInstance()->operator()(m_textpass.get(), sf::FloatRect{{300,315},{400,50}}, texthelper::aligning::MR);
 }
 
 void LoginWindow::render()
@@ -207,7 +143,10 @@ void LoginWindow::render()
     if(m_window.isOpen())
     {
         m_window.clear(sf::Color{223,228, 210, 255});
-        m_frame_login.draw(m_window, {});
+        m_window.draw(*m_textname);
+        m_window.draw(*m_static_name);
+        m_window.draw(*m_textpass);
+        m_window.draw(*m_static_pass);
         m_window.display();
     }
 }
@@ -222,12 +161,10 @@ void LoginWindow::updateText(const sf::Uint32 &code)
         if (m_focusedName.load())
         {
             m_textname->setString(str);
-            m_textname->setFillColor(sf::Color::Red);
         }
         else
         {
             m_textpass->setString(str);
-            m_textpass->setFillColor(sf::Color::Red);
             m_strpass.erase(m_strpass.length() - 1);
         }
     }
@@ -236,14 +173,12 @@ void LoginWindow::updateText(const sf::Uint32 &code)
         str += static_cast<char>(code);
         //m_strname = str;
         m_textname->setString(str);
-        m_textname->setFillColor(sf::Color::Red);
     }
     else if (code > 20)
     {
         str += '*';
         m_strpass += static_cast<char>(code);
         m_textpass->setString(str);
-        m_textpass->setFillColor(sf::Color::Red);
     }
 }
 
@@ -256,19 +191,13 @@ void LoginWindow::handleKeyPress(const sf::Event &event)
         m_focusedName.store(!m_focusedName.load());
         if (m_focusedName.load())
         {
-            m_textname->setFillColor(sf::Color::Red);
-            m_textpass->setFillColor(sf::Color::Black);
-
-            m_static_name->setFillColor(sf::Color::Red);
-            m_static_pass->setFillColor(sf::Color::Black);
+            m_static_name->setCharacterSize(FONT_SIZE + 5);
+            m_static_pass->setCharacterSize(FONT_SIZE);
         }
         else
         {
-            m_textname->setFillColor(sf::Color::Black);
-            m_textpass->setFillColor(sf::Color::Red);
-            
-            m_static_pass->setFillColor(sf::Color::Red);
-            m_static_name->setFillColor(sf::Color::Black);
+            m_static_pass->setCharacterSize(FONT_SIZE + 5);
+            m_static_name->setCharacterSize(FONT_SIZE);
         }
     }
     break;
@@ -300,14 +229,15 @@ void LoginWindow::handleKeyPress(const sf::Event &event)
 
 void LoginWindow::blinkAnimation()
 {
+    std::unique_lock<std::mutex> lock(m_blink_mt, std::defer_lock);
     while (m_blink_run)
     {
-        std::unique_lock<std::mutex> lock(m_blink_mt, std::defer_lock);
         std::this_thread::sleep_for(500ms);
 
         lock.lock();
-        m_focusedName.load() ? m_static_name->setFillColor(sf::Color::Black) : m_static_pass->setFillColor(sf::Color::Black);
+        m_focusedName.load() ? m_static_name->setCharacterSize(FONT_SIZE) : m_static_pass->setCharacterSize(FONT_SIZE);
         std::this_thread::sleep_for(500ms);
-        m_focusedName.load() ? m_static_name->setFillColor(sf::Color::Red) : m_static_pass->setFillColor(sf::Color::Red);
+        m_focusedName.load() ? m_static_name->setCharacterSize(FONT_SIZE + 5) : m_static_pass->setCharacterSize(FONT_SIZE + 5);
+        lock.unlock();
     }
 }

@@ -1,6 +1,6 @@
 #include "brick.hpp"
 #include "soundplayer.hpp"
-#include "wallHelper.hpp"
+#include "helper.hpp"
 #include <cstdlib>
 #include <exception>
 
@@ -224,5 +224,5 @@ void wall::draw(sf::RenderWindow &window)
 
 void wall::init([[maybe_unused]] float px_x, [[maybe_unused]] float px_y)
 {
-    wall_utils::createWall(*this, (constants::resoucesPath + "wall.csv").c_str());
+    utilities::wallhelper::createWall(*this, (constants::resoucesPath + "wall.csv").c_str());
 }

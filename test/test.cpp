@@ -25,7 +25,7 @@
 #include <memory>
 #include <paddle.hpp>
 #include <vector>
-#include <wallHelper.hpp>
+#include <helper.hpp>
 #ifdef _WIN32
 #include <Windows.h>
 #else
@@ -76,7 +76,7 @@ TEST_CASE("Initializing entities", "[init]")
     {
         CHECK_NOTHROW([&]() {
             wall a_wall;
-            wall_utils::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+            utilities::wallhelper::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
         }());
     }
 }
@@ -86,6 +86,6 @@ TEST_CASE("Bechmark", "[!benchmark]")
     BENCHMARK("Bechmark creating a wall with benchmark.csv")
     {
         wall a_wall;
-        return wall_utils::createWall(a_wall, (constants::resoucesPath + "benchmark.csv").c_str());
+        return utilities::wallhelper::createWall(a_wall, (constants::resoucesPath + "benchmark.csv").c_str());
     };
 }

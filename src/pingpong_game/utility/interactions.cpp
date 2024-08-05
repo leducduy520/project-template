@@ -1,6 +1,6 @@
 #include "interactions.hpp"
 #include "soundplayer.hpp"
-#include "wallHelper.hpp"
+#include "helper.hpp"
 #include <future>
 #include <thread>
 #include <mutex>
@@ -61,7 +61,7 @@ void handle_interaction(wall &a_wall, ball &a_ball, brick &a_brick)
         {
         case brick::BRICK:
         {
-            wall_utils::increasePoint(a_wall, 1);
+            utilities::wallhelper::increasePoint(a_wall, 1);
             a_brick.hit(a_ball.getStrength());
             auto [more_at_side, from_left, from_top] = getDirection(a_ball, a_brick);
 
@@ -91,13 +91,13 @@ void handle_interaction(wall &a_wall, ball &a_ball, brick &a_brick)
         break;
         case brick::DIAMOND:
         {
-            wall_utils::increasePoint(a_wall, 5);
+            utilities::wallhelper::increasePoint(a_wall, 5);
             a_brick.hit(a_ball.getStrength());
         }
         break;
         case brick::BOMB:
         {
-            wall_utils::destroyAround(a_wall, a_brick, {3, 3});
+            utilities::wallhelper::destroyAround(a_wall, a_brick, {3, 3});
             a_ball.set_velocity({-a_ball.get_velocity().x, -a_ball.get_velocity().y});
         }
         break;

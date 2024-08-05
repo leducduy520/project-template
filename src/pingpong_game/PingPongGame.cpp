@@ -2,7 +2,7 @@
 #include "DBClientGame.hpp"
 #include "interactions.hpp"
 #include "soundplayer.hpp"
-#include "wallHelper.hpp"
+#include "helper.hpp"
 #include "LoginGame.hpp"
 #include <string>
 #include <iomanip>
@@ -286,8 +286,8 @@ void PingPongGame::update()
 
         m_entity_manager.apply_all<ball>([this](ball &a_ball) {
             m_entity_manager.apply_all<wall>([&a_ball](wall &a_wall) {
-                wall_utils::interactionwith<ball>(a_wall, a_ball);
-                wall_utils::checkAlive(a_wall);
+                utilities::wallhelper::interactionwith<ball>(a_wall, a_ball);
+                utilities::wallhelper::checkAlive(a_wall);
             });
         });
 
@@ -296,7 +296,7 @@ void PingPongGame::update()
         for (auto &a_wall : walls)
         {
             auto *const wptr = dynamic_cast<wall*>(a_wall);
-            m_point += wall_utils::getPoint(*wptr);
+            m_point += utilities::wallhelper::getPoint(*wptr);
         }
         
         
@@ -345,7 +345,7 @@ void PingPongGame::try_createwall()
     try
     {
         wall a_wall;
-        wall_utils::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+        utilities::wallhelper::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
         m_entity_manager.create<wall>(std::move(a_wall));
     }
     catch (const std::ios::failure &e)

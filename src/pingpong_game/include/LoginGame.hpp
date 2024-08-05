@@ -2,19 +2,16 @@
 #define __LOGIN_GAME__
 
 #include "SFML/Graphics.hpp"
-#include "Frame.hpp"
-#include "Text.hpp"
 #include <mutex>
 #include <future>
 #include <thread>
 
 class LoginWindow{
     sf::RenderWindow m_window;
-    sf::Text* m_textname;
-    sf::Text* m_textpass;
-    sf::Text* m_static_name;
-    sf::Text* m_static_pass;
-    duyld::Frame m_frame_login;
+    std::unique_ptr<sf::Text> m_textname;
+    std::unique_ptr<sf::Text> m_textpass;
+    std::unique_ptr<sf::Text> m_static_name;
+    std::unique_ptr<sf::Text> m_static_pass;
     sf::Font m_font;
     /*std::string m_strname;*/
     std::string m_strpass;
