@@ -37,7 +37,11 @@ namespace utilities
                     const float px_x = (padding + j * constants::brick_width) * 1.0F;
                     const float px_y = (i * constants::brick_height) * 1.0F;
                     const auto property = static_cast<brick::BrickProperty>(doc.GetCell<int>(j, i));
-                    a_wall[{px_x, px_y}] = std::make_unique<brick>(&a_wall, px_x, px_y, property);
+                    auto* a_brick =
+                        new brick(std::bind(&wall::updateLive, &a_wall, std::placeholders::_1), px_x, px_y, property);
+                    a_wall.emplace(
+                        std::make_pair<const e_location, std::unique_ptr<brick>>({px_x, px_y},
+                                                                                 std::unique_ptr<brick>(a_brick)));
                 }
             }
         }

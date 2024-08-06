@@ -114,21 +114,25 @@ sf::Texture& brick::getTexture(BrickProperty property)
     }
 }
 
-brick::brick(wall* parent, float px_x, float px_y, BrickProperty property)
-    : m_parent(parent), m_property(property), m_hitCount(0)
+brick::brick(std::function<void(bool)> parent_update, float px_x, float px_y, BrickProperty property)
+    : m_wall_live_change(parent_update), m_property(property), m_hitCount(0)
 {
     m_sprite.setTexture(getTexture(property));
-    switch (property)
-    {
-    case brick::BRICK:
-        [[fallthrough]];
-    case brick::DIAMOND:
-        ++m_parent->live;
-        break;
-    default:
-        break;
-    }
     brick::init(px_x, px_y);
+
+    if (m_wall_live_change)
+    {
+        switch (m_property)
+        {
+        case brick::BRICK:
+            [[fallthrough]];
+        case brick::DIAMOND:
+            m_wall_live_change(true);
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 void brick::init(float px_x, float px_y)
@@ -162,7 +166,7 @@ void brick::hit(const int damage, const bool relate) noexcept
         if (m_hitCount >= constants::cap_brick_hit)
         {
             destroyed = true;
-            --m_parent->live;
+            m_wall_live_change(false);
         }
         if (!relate)
         {
@@ -175,7 +179,7 @@ void brick::hit(const int damage, const bool relate) noexcept
         if (m_hitCount >= constants::cap_diamond_hit)
         {
             destroyed = true;
-            --m_parent->live;
+            m_wall_live_change(false);
         }
         if (!relate)
         {
@@ -215,6 +219,20 @@ void brick::hit(const int damage, const bool relate) noexcept
     if (destroyed)
     {
         destroy();
+    }
+}
+
+void wall::updateLive(bool increase) noexcept
+{
+    if (increase)
+    {
+        ++live;
+        std::cout << "++\n";
+    }
+    else
+    {
+        --live;
+        std::cout << "--\n";
     }
 }
 

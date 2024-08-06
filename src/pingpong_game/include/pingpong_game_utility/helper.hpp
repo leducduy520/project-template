@@ -13,7 +13,6 @@ namespace utilities
     {
         void resetPoint(wall& a_wall);
         void increasePoint(wall& a_wall, uint16_t amount = 1);
-        uint16_t getPoint(wall& a_wall);
         void createWall(wall& a_wall, const char* path);
         void destroyAround(wall& a_wall, brick& a_brick, sf::Vector2i range);
 
