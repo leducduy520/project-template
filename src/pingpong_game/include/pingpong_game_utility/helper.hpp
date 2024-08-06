@@ -2,10 +2,6 @@
 #define __WALL_HELPER__
 
 #include "brick.hpp"
-#include "interactions.hpp"
-#include <SFML/Graphics.hpp>
-#include <algorithm>
-#include <mutex>
 
 namespace utilities
 {

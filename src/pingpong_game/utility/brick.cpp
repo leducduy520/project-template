@@ -227,12 +227,10 @@ void wall::updateLive(bool increase) noexcept
     if (increase)
     {
         ++live;
-        std::cout << "++\n";
     }
     else
     {
         --live;
-        std::cout << "--\n";
     }
 }
 

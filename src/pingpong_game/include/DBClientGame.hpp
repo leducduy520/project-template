@@ -9,7 +9,6 @@
 #include <mongocxx/instance.hpp>
 #include <mutex>
 #include <string>
-#include <vector>
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_array;

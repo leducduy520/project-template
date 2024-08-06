@@ -2,10 +2,8 @@
 #include "DBClientGame.hpp"
 #include "LoginGame.hpp"
 #include "helper.hpp"
+#include "interactions.hpp"
 #include "soundplayer.hpp"
-#include <ctime>
-#include <iomanip>
-#include <string>
 
 std::string constants::resoucesPath;
 using namespace std;
