@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "helper.hpp"
 #include <memory>
+#include <thread>
 
 #define INPUT_BOUND_WIDTH 200
 #define INPUT_BOUND_HEIGHT 50

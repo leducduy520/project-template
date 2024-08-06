@@ -368,6 +368,27 @@ PingPongGame::PingPongGame() : m_live(constants::init_live), m_point(0), m_GameS
 void PingPongGame::init(std::string& resourcePath)
 {
     constants::resoucesPath = resourcePath;
+    
+    try
+    {
+        std::pair<bool, std::string> result;
+        {
+            const auto window = make_unique<LoginWindow>();
+            result = window->run();
+        }
+        if (result.first)
+        {
+            m_username = result.second;
+            updateGameSessionID();
+            updateGameNewHistory();
+        }
+    }
+    catch (const std::exception& e)
+    {
+        cerr << "Connecting PingPong Game to database failed: " << e.what() << '\n';
+        clear();
+    }
+    
     game_window.setFramerateLimit(60);
     game_window.setVerticalSyncEnabled(true);
     game_window.setPosition(sf::Vector2i{(1920 - constants::window_width) / 2, (1080 - constants::window_height) / 2});
@@ -421,34 +442,22 @@ void PingPongGame::run()
 {
     try
     {
-        std::pair<bool, std::string> result;
+        SoundPlayer::getInstance();
+        while (game_window.isOpen())
         {
-            const auto window = make_unique<LoginWindow>();
-            result = window->run();
+            game_window.clear(sf::Color::Black);
+            listening();
+            stateHandler();
+            update();
+            render();
         }
-        if (result.first)
-        {
-            m_username = result.second;
-            updateGameSessionID();
-            updateGameNewHistory();
-
-            SoundPlayer::getInstance();
-            while (game_window.isOpen())
-            {
-                game_window.clear(sf::Color::Black);
-                listening();
-                stateHandler();
-                update();
-                render();
-            }
-            SoundPlayer::destroyInstance();
-            DBClient::DestroyInstance();
-            m_entity_manager.clear();
-        }
+        SoundPlayer::destroyInstance();
+        DBClient::DestroyInstance();
+        m_entity_manager.clear();
     }
     catch (const std::exception& e)
     {
-        cerr << "Playing PingPong Game failed: " << e.what() << '\n';
+        cerr << "Running PingPong Game failed: " << e.what() << '\n';
     }
 }
 
