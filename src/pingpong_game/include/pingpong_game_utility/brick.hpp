@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <utility>
 
+class wall;
+
 class brick : public entity
 {
 public:
@@ -19,7 +21,7 @@ public:
         SCALEUP
     };
 
-    brick(float x, float y, BrickProperty property = BRICK);
+    brick(wall* parent, float x, float y, BrickProperty property = BRICK);
     brick() = default;
 
     void init(float x, float y) override;
@@ -35,6 +37,7 @@ public:
     friend class wall;
 
 private:
+    wall* m_parent;
     BrickProperty m_property;
     int m_hitCount;
     static sf::Texture& getTexture(BrickProperty property = BRICK);
@@ -78,7 +81,7 @@ public:
     wall() = default;
 
     template <class T>
-    wall(T&& bricks) noexcept : point(0)
+    wall(T&& bricks) noexcept : point(0), live(0)
     {
         swap(std::forward<T>(bricks));
     }
@@ -87,13 +90,10 @@ public:
     void draw(sf::RenderWindow& window) override;
     void init(float x, float y) override;
 
-    inline uint16_t& getPoint()
-    {
-        return point;
-    }
+    uint16_t point;
+    unsigned int live;
 
 private:
-    uint16_t point;
 };
 
 #endif // _BRICK_H

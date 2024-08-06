@@ -10,17 +10,12 @@ namespace utilities
     {
         void resetPoint(wall& a_wall)
         {
-            a_wall.getPoint() = 0;
+            a_wall.point = 0;
         }
 
         void increasePoint(wall& a_wall, uint16_t amount)
         {
-            a_wall.getPoint() += amount;
-        }
-
-        uint16_t getPoint(wall& a_wall)
-        {
-            return a_wall.getPoint();
+            a_wall.point += amount;
         }
 
         void createWall(wall& a_wall, const char* path)
@@ -42,7 +37,7 @@ namespace utilities
                     const float px_x = (padding + j * constants::brick_width) * 1.0F;
                     const float px_y = (i * constants::brick_height) * 1.0F;
                     const auto property = static_cast<brick::BrickProperty>(doc.GetCell<int>(j, i));
-                    a_wall[{px_x, px_y}] = std::make_unique<brick>(px_x, px_y, property);
+                    a_wall[{px_x, px_y}] = std::make_unique<brick>(&a_wall, px_x, px_y, property);
                 }
             }
         }
@@ -81,40 +76,11 @@ namespace utilities
                 }
             }
         }
-
-        void checkAlive(wall& w)
-        {
-            bool is_destroyed = true;
-            for (auto it = w.rbegin(); it != w.rend();)
-            {
-                if (it->second->is_destroyed())
-                {
-                    w.erase(it->first);
-                }
-                else
-                {
-                    if (is_destroyed)
-                    {
-                        if (it->second.get()->getProperty() == brick::DIAMOND)
-                            is_destroyed = false;
-                    }
-                    ++it;
-                }
-            }
-
-            if (is_destroyed)
-            {
-                w.destroy();
-            }
-        }
     } // namespace wallhelper
 
     namespace texthelper
     {
-        std::unique_ptr<aligning> aligning::m_instance{};
-        std::once_flag aligning::m_flag{};
-
-        void aligning::operator()(sf::Text* text, const sf::Rect<float>& bound, const Alignment& alignment)
+        void aligning::Aligning(sf::Text* text, const sf::Rect<float>& bound, const aligning::Alignment& alignment)
         {
             text->setOrigin({0, 0});
             const auto text_width = text->getGlobalBounds().width;

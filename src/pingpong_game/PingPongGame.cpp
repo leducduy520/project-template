@@ -237,22 +237,22 @@ void PingPongGame::stateHandler()
         m_textState.setString("Paused");
         m_textLive.setString("Lives: " + std::to_string(m_live));
 
-        aligning::getInstance()->operator()(&m_textState, sf::FloatRect{ 0,0,constants::window_width, constants::window_height });
-        aligning::getInstance()->operator()(&m_textLive, sf::FloatRect{ 0,100,constants::window_width, constants::window_height - 100 });
+        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
+        aligning::Aligning(&m_textLive, sf::FloatRect{0, 100, constants::window_width, constants::window_height - 100});
     }
     break;
     case game_state::game_over:
     {
         databaseResultUpdate(false);
         m_textState.setString("Game Over");
-        aligning::getInstance()->operator()(&m_textState, sf::FloatRect{ 0,0,constants::window_width, constants::window_height });
+        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
     }
     break;
     case game_state::player_wins:
     {
         databaseResultUpdate(true);
         m_textState.setString("Win");
-        aligning::getInstance()->operator()(&m_textState, sf::FloatRect{ 0,0,constants::window_width, constants::window_height });
+        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
     }
     break;
     case game_state::running:
@@ -275,10 +275,8 @@ void PingPongGame::update()
         });
 
         m_entity_manager.apply_all<ball>([this](ball& a_ball) {
-            m_entity_manager.apply_all<wall>([&a_ball](wall& a_wall) {
-                utilities::wallhelper::interactionwith<ball>(a_wall, a_ball);
-                utilities::wallhelper::checkAlive(a_wall);
-            });
+            m_entity_manager.apply_all<wall>(
+                [&a_ball](wall& a_wall) { interactions::handle_interaction(a_wall, a_ball); });
         });
 
         m_point = 0;
@@ -286,7 +284,7 @@ void PingPongGame::update()
         for (auto& a_wall : walls)
         {
             auto* const wptr = dynamic_cast<wall*>(a_wall);
-            m_point += utilities::wallhelper::getPoint(*wptr);
+            m_point += wptr->point;
         }
 
 

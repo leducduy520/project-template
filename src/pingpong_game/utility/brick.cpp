@@ -114,9 +114,20 @@ sf::Texture& brick::getTexture(BrickProperty property)
     }
 }
 
-brick::brick(float px_x, float px_y, BrickProperty property) : m_property(property), m_hitCount(0)
+brick::brick(wall* parent, float px_x, float px_y, BrickProperty property)
+    : m_parent(parent), m_property(property), m_hitCount(0)
 {
     m_sprite.setTexture(getTexture(property));
+    switch (property)
+    {
+    case brick::BRICK:
+        [[fallthrough]];
+    case brick::DIAMOND:
+        ++m_parent->live;
+        break;
+    default:
+        break;
+    }
     brick::init(px_x, px_y);
 }
 
@@ -151,6 +162,7 @@ void brick::hit(const int damage, const bool relate) noexcept
         if (m_hitCount >= constants::cap_brick_hit)
         {
             destroyed = true;
+            --m_parent->live;
         }
         if (!relate)
         {
@@ -163,6 +175,7 @@ void brick::hit(const int damage, const bool relate) noexcept
         if (m_hitCount >= constants::cap_diamond_hit)
         {
             destroyed = true;
+            --m_parent->live;
         }
         if (!relate)
         {
