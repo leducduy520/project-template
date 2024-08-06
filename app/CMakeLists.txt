@@ -1,39 +1,42 @@
-project(app)
+# Add source files for the executable
+add_executable(MySFMLApp main.cpp ModuleManager.cpp)
 
-add_library(base SHARED base.cpp)
+# Include directories
 target_include_directories(
-    base PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    MySFMLApp
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/pingpong_game>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>
     )
 
-build_external_project(
-    LABEL
-    "yaml"
-    "wise_enum"
-    REPO
-    "https://github.com/jbeder/yaml-cpp.git"
-    "https://github.com/quicknir/wise_enum.git"
-    TAG
-    "0.8.0"
-    "3.1.0"
-    SHALLOW
-    "ON"
-    "ON"
-    CMAKE_ARGS_MORE
-    "\"-DYAML_BUILD_SHARED_LIBS=ON\""
-    "OFF"
+# Link the GameManager library and SFML libraries
+# target_link_libraries(MySFMLApp PRIVATE sfml-graphics sfml-window sfml-system)
+target_set_warnings(
+    TARGET MySFMLApp ENABLE ${ENABLE_WARNINGS} AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS}
     )
 
-find_package(yaml-cpp REQUIRED)
-target_link_libraries(base PUBLIC yaml-cpp::yaml-cpp)
+if(WIN32)
+    install(
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/mysfmlapp.ico DESTINATION resources
+        COMPONENT Resources
+        )
 
-find_package(WiseEnum REQUIRED)
-target_link_libraries(base PUBLIC WiseEnum::wise_enum)
+    install(
+        CODE "
+        execute_process(
+            COMMAND powershell.exe -File ${CMAKE_CURRENT_SOURCE_DIR}/resources/create_shortcuts.ps1 -InstallDir \${CMAKE_INSTALL_PREFIX} -AppName MySFMLApp -ExePath \${CMAKE_INSTALL_PREFIX}/bin/MySFMLApp.exe -IconPath \${CMAKE_INSTALL_PREFIX}/resources/mysfmlapp.ico
+            )
+            "
+        )
+endif(WIN32)
 
-target_link_libraries(base PRIVATE pprint)
+install(
+    TARGETS MySFMLApp
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
+    )
 
-add_executable(app main.cpp)
-target_link_libraries(app PRIVATE base)
-
-install(TARGETS app base)
-
-install(IMPORTED_RUNTIME_ARTIFACTS yaml-cpp::yaml-cpp)
+set_directory_properties(PROPERTIES VS_STARTUP_PROJECT MySFMLApp)

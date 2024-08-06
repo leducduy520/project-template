@@ -6,7 +6,7 @@ on:
         description: "Target to be built"
         required: false
         type: "string"
-        default: "complete"
+        default: "all"
   push:
     branches:
       - main
@@ -23,13 +23,15 @@ on:
       - ".github/workflows/main.yml"
 jobs:
   build-ubuntu:
-    uses: ./.github/workflows/build-ubuntu.yml
+    strategy:
+      matrix:
+        os: [ubuntu, windows]
+        build_type: [release, debug]
+    uses: ./.github/workflows/build.yml
     with:
       target: ${{inputs.target}}
-  build-windows:
-    uses: ./.github/workflows/build-windows.yml
-    with:
-      target: ${{inputs.target}}
+      build_type: ${{matrix.build_type}}
+      os: ${{matrix.os}}
     # runs-on: ubuntu-22.04
     # permissions:
     #   contents: write

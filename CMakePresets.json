@@ -5,13 +5,10 @@
             "name": "environment",
             "hidden": true,
             "environment": {
-                "BUILD_TYPE": "Release",
-                "EXTERNAL_NAME": "external",
                 "OUR_DIR_NAME": "out",
                 "INSTALL_DIR_NAME": "install",
                 "BUILD_DIR_NAME": "build",
-                "DOC_DIR_NAME": "docs",
-                "TOOL_DIR_NAME": "tools"
+                "DOC_DIR_NAME": "docs"
             }
         },
         {
@@ -21,59 +18,15 @@
             "installDir": "${sourceDir}/$env{OUR_DIR_NAME}/$env{INSTALL_DIR_NAME}/${presetName}",
             "inherits": "environment",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": {
-                    "type": "STRING",
-                    "value": "$env{BUILD_TYPE}"
-                },
-                "PRESET": {
-                    "type": "STRING",
-                    "value": "${presetName}"
-                },
-                "EXTERNAL_DIR": {
-                    "type": "PATH",
-                    "value": "${sourceDir}/$env{EXTERNAL_NAME}"
-                },
-                "EXTERNAL_BINARY_DIR": {
-                    "type": "PATH",
-                    "value": "${sourceDir}/$env{EXTERNAL_NAME}/$env{BUILD_DIR_NAME}/${presetName}"
-                },
-                "EXTERNAL_INSTALL_PREFIX": {
-                    "type": "PATH",
-                    "value": "${sourceDir}/$env{EXTERNAL_NAME}/$env{INSTALL_DIR_NAME}/${presetName}"
-                },
                 "DOCS_DIR": {
                     "type": "PATH",
                     "value": "${sourceDir}/$env{DOC_DIR_NAME}"
-                },
-                "TOOLS_DIR": {
-                    "type": "PATH",
-                    "value": "${sourceDir}/$env{TOOL_DIR_NAME}"
                 }
-            }
-        },
-        {
-            "name": "windows",
-            "inherits": "base",
-            "generator": "Ninja",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": {
-                    "type": "FILEPATH",
-                    "value": "gcc.exe"
-                },
-                "CMAKE_CXX_COMPILER": {
-                    "type": "FILEPATH",
-                    "value": "g++.exe"
-                }
-            },
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
             }
         },
         {
             "name": "ubuntu",
-            "inherits": "windows",
+            "inherits": "base",
             "generator": "Unix Makefiles",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
@@ -87,8 +40,18 @@
         },
         {
             "name": "msvc",
-            "inherits": "windows",
-            "generator": "Visual Studio 17 2022"
+            "displayName": "MSVC configuration",
+            "inherits": "base",
+            "generator": "Visual Studio 17 2022",
+            "architecture":{
+                "strategy": "set",
+                "value": "x64"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
         }
     ],
     "buildPresets": [
@@ -97,7 +60,7 @@
             "configurePreset": "base",
             "hidden": true,
             "inheritConfigureEnvironment": true,
-            "configuration": "Release",
+            "configuration": "Debug",
             "jobs": 6,
             "targets": "all"
         },
@@ -137,59 +100,7 @@
             "targets": [
                 "all",
                 "run_cmake_format",
-                "gen_graph",
-                "gen_doc",
                 "install"
-            ]
-        },
-        {
-            "name": "windows",
-            "configurePreset": "windows",
-            "inherits": "base",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
-        },
-        {
-            "name": "windows-graphviz",
-            "configurePreset": "windows",
-            "inherits": [
-                "base-graphviz",
-                "windows"
-            ]
-        },
-        {
-            "name": "windows-document",
-            "configurePreset": "windows",
-            "inherits": [
-                "base-document",
-                "windows"
-            ]
-        },
-        {
-            "name": "windows-format",
-            "configurePreset": "windows",
-            "inherits": [
-                "base-format",
-                "windows"
-            ]
-        },
-        {
-            "name": "windows-install",
-            "configurePreset": "windows",
-            "inherits": [
-                "base-install",
-                "windows"
-            ]
-        },
-        {
-            "name": "windows-complete",
-            "configurePreset": "windows",
-            "inherits": [
-                "base-complete",
-                "windows"
             ]
         },
         {
@@ -241,6 +152,30 @@
                 "base-complete",
                 "ubuntu"
             ]
+        },
+        {
+            "name": "msvc-reldebinfo",
+            "configurePreset": "msvc",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "targets": "ALL_BUILD",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "msvc-release",
+            "configurePreset": "msvc",
+            "inherits": "msvc-reldebinfo",
+            "configuration": "Release"
+        },
+        {
+            "name": "msvc-debug",
+            "configurePreset": "msvc",
+            "inherits": "msvc-reldebinfo",
+            "configuration": "Debug"
         }
     ],
     "testPresets": [
@@ -251,20 +186,10 @@
             "output": {
                 "verbosity": "verbose",
                 "shortProgress": true,
-                "debug": true
+                "labelSummary": true
             },
             "execution": {
                 "jobs": 8
-            }
-        },
-        {
-            "name": "windows",
-            "configurePreset": "windows",
-            "inherits": "base",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
             }
         },
         {
@@ -276,26 +201,26 @@
                 "lhs": "${hostSystemName}",
                 "rhs": "Linux"
             }
+        },
+        {
+            "name": "msvc",
+            "displayName": "Test msvc build",
+            "configurePreset": "msvc",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        }
+    ],
+    "packagePresets": [
+        {
+            "name": "msvc",
+            "configurePreset": "msvc"
         }
     ],
     "workflowPresets": [
-        {
-            "name": "windows",
-            "steps": [
-                {
-                    "type": "configure",
-                    "name": "windows"
-                },
-                {
-                    "type": "build",
-                    "name": "windows-complete"
-                },
-                {
-                    "type": "test",
-                    "name": "windows"
-                }
-            ]
-        },
         {
             "name": "ubuntu",
             "steps": [
