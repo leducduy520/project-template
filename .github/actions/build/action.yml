@@ -11,13 +11,14 @@ runs:
     - name: Check driver
       run: ls -al /usr/src/mongo-cxx-driver/install
       shell: bash
-    - name: Check path
-      run: echo "$THIS_PATH"
+    - name: Save current directory
+      run: echo "CURRENT_DIR=$(pwd)" >> $GITHUB_ENV
       shell: bash
-      env:
-        THIS_PATH: ${{ github.action_path }}
+    - name: Check current directory
+      run: echo "$CURRENT_DIR"
+      shell: bash
     - name: Build mongocxx-driver
-      run: cp -rf /usr/src/mongo-cxx-driver/install/* ${{ github.action_path }}/external/mongo-cxx-driver/
+      run: cp -rf /usr/src/mongo-cxx-driver/install/* ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver/
       shell: bash
     - name: Configure Project
       run: make configure PRESET=${{ inputs.preset }}
