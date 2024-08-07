@@ -8,8 +8,16 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Check driver
+      run: ls -al /usr/src/mongo-cxx-driver/install
+      shell: bash
+    - name: Check path
+      run: echo "$THIS_PATH"
+      shell: bash
+      env:
+        THIS_PATH: ${{ github.action_path }}
     - name: Build mongocxx-driver
-      run: make mongo-${{ inputs.preset }}
+      run: cp -rf /usr/src/mongo-cxx-driver/install/* ${{ github.action_path }}/external/mongo-cxx-driver/
       shell: bash
     - name: Configure Project
       run: make configure PRESET=${{ inputs.preset }}
