@@ -1,0 +1,31 @@
+name: Builder
+author: duyld15
+input:
+  preset:
+    description: 'Cmake preset to be built'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Build mongocxx-driver for linux
+      if: ${{input.preset == 'ubuntu'}}
+      run: make mongo-gcc
+      shell: bash
+    - name: Build mongocxx-driver for windows
+      if: ${{ input.preset == 'msvc' }}
+      run: make mongo-msvc
+      shell: bash
+    - name: Configure Project
+      run: make configure PRESET=${{ input.preset }}
+      shell: bash
+    - name: Build Project for windows
+      if: ${{ input.preset == 'msvc' }}
+      run: cmake --build --preset=${{ input.preset }}-reldebinfo
+      shell: bash
+    - name: Build Project for linux
+      if: ${{input.preset == 'ubuntu'}}
+      run: cmake --build --preset=${{ input.preset }}
+      shell: bash

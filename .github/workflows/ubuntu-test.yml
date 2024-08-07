@@ -7,14 +7,7 @@ jobs:
     container:
       image: duyleduc520/mysfmlapp:latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: './github/actions/build.yml'
         with:
-          submodules: true
-      - name: Build mongocxx-driver
-        run: make mongo-gcc
-      - name: Configure Project
-        run: make configure PRESET=ubuntu
-      - name: Build Project
-        run: cmake --build --preset=ubuntu
-          
+          preset: ubuntu
+        
