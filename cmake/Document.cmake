@@ -1,6 +1,12 @@
 find_package(Doxygen REQUIRED COMPONENTS dot doxygen)
 
 if(Doxygen_FOUND)
+    if(NOT DEFINED DOCS_DIR)
+        set(DOCS_DIR ${CMAKE_SOURCE_DIR}/docs)
+    endif(NOT DEFINED DOCS_DIR)
+
+    message(STATUS "doc dir ${DOCS_DIR}")
+
     set(DOCS_HTML_DIR ${DOCS_DIR}/html CACHE PATH "project html directory")
     set(DOCS_GRAPH_DIR ${DOCS_DIR}/graph CACHE PATH "project graph directory")
 

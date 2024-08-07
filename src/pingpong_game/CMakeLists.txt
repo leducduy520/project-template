@@ -64,7 +64,7 @@ if(THIS_OS_WINDOWS)
         COMMENT "Copy mongocxx driver"
         COMMAND
         ${CMAKE_COMMAND} -E copy_directory_if_different
-        "${CMAKE_SOURCE_DIR}/external/msvc-cl/mongo-cxx-driver/bin"
+        "${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver/bin"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND
         VERBATIM

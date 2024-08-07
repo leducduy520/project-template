@@ -1,6 +1,5 @@
 .vs
 .git
-out/
-docs/html
-docs/graph
-external/mongo-cxx-driver
+/out
+/docs
+/external/mongo-cxx-driver
