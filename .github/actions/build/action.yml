@@ -17,8 +17,11 @@ runs:
     - name: Check current directory
       run: echo "$CURRENT_DIR"
       shell: bash
+    - name: Creating driver directory
+      run: mkdir -p ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver
+      shell: bash
     - name: Build mongocxx-driver
-      run: cp -rf /usr/src/mongo-cxx-driver/install/* ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver/
+      run: cp -rf /usr/src/mongo-cxx-driver/install/* ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver
       shell: bash
     - name: Configure Project
       run: make configure PRESET=${{ inputs.preset }}
