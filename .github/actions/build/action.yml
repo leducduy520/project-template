@@ -9,7 +9,7 @@ runs:
   using: 'composite'
   steps:
     - name: Build mongocxx-driver for linux
-      if: ${{.preset == 'ubuntu'}}
+      if: ${{ inputs.preset == 'ubuntu'}}
       run: make mongo-gcc
       shell: bash
     - name: Build mongocxx-driver for windows
@@ -24,6 +24,6 @@ runs:
       run: cmake --build --preset=${{ inputs.preset }}-reldebinfo
       shell: bash
     - name: Build Project for linux
-      if: ${{inputs.preset == 'ubuntu'}}
+      if: ${{ inputs.preset == 'ubuntu'}}
       run: cmake --build --preset=${{ inputs.preset }}
       shell: bash
