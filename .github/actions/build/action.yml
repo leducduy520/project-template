@@ -1,6 +1,7 @@
 name: Builder
+description: 'For building'
 author: duyld15
-input:
+inputs:
   preset:
     description: 'Cmake preset to be built'
     required: true
