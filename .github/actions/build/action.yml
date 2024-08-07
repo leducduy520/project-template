@@ -20,8 +20,8 @@ runs:
     - name: Creating driver directory
       run: mkdir -p ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver
       shell: bash
-    - name: Build mongocxx-driver
-      run: cp -rf /usr/src/mongo-cxx-driver/install/* ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver
+    - name: Moving mongocxx-driver to right folder
+      run: mv /usr/src/mongo-cxx-driver/install/* ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver
       shell: bash
     - name: Configure Project
       run: make configure PRESET=${{ inputs.preset }}
