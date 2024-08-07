@@ -12,7 +12,7 @@ jobs:
         with:
           submodules: true
       - name: Build project
-        uses: ./.github/actions/build/action.yml
+        uses: ./.github/actions/build
         with:
           preset: ubuntu
         
