@@ -8,22 +8,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Build mongocxx-driver for linux
-      if: ${{ inputs.preset == 'ubuntu'}}
-      run: make mongo-gcc
-      shell: bash
-    - name: Build mongocxx-driver for windows
-      if: ${{ inputs.preset == 'msvc' }}
-      run: make mongo-msvc
+    - name: Build mongocxx-driver
+      run: make mongo-${{ inputs.preset }}
       shell: bash
     - name: Configure Project
       run: make configure PRESET=${{ inputs.preset }}
       shell: bash
-    - name: Build Project for windows
-      if: ${{ inputs.preset == 'msvc' }}
-      run: cmake --build --preset=${{ inputs.preset }}-reldebinfo
-      shell: bash
-    - name: Build Project for linux
-      if: ${{ inputs.preset == 'ubuntu'}}
+    - name: Build Project
       run: cmake --build --preset=${{ inputs.preset }}
       shell: bash

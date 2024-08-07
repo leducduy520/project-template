@@ -154,7 +154,7 @@
             ]
         },
         {
-            "name": "msvc-reldebinfo",
+            "name": "msvc",
             "configurePreset": "msvc",
             "inherits": "base",
             "condition": {
@@ -168,13 +168,13 @@
         {
             "name": "msvc-release",
             "configurePreset": "msvc",
-            "inherits": "msvc-reldebinfo",
+            "inherits": "msvc",
             "configuration": "Release"
         },
         {
             "name": "msvc-debug",
             "configurePreset": "msvc",
-            "inherits": "msvc-reldebinfo",
+            "inherits": "msvc",
             "configuration": "Debug"
         }
     ],
