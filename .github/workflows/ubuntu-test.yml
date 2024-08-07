@@ -7,7 +7,7 @@ jobs:
     container:
       image: duyleduc520/mysfmlapp:latest
     steps:
-      - uses: './.github/actions/build.yml'
+      - uses: ./.github/actions/build/action.yml
         with:
           preset: ubuntu
         
