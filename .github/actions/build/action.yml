@@ -9,21 +9,21 @@ runs:
   using: 'composite'
   steps:
     - name: Build mongocxx-driver for linux
-      if: ${{input.preset == 'ubuntu'}}
+      if: ${{.preset == 'ubuntu'}}
       run: make mongo-gcc
       shell: bash
     - name: Build mongocxx-driver for windows
-      if: ${{ input.preset == 'msvc' }}
+      if: ${{ inputs.preset == 'msvc' }}
       run: make mongo-msvc
       shell: bash
     - name: Configure Project
-      run: make configure PRESET=${{ input.preset }}
+      run: make configure PRESET=${{ inputs.preset }}
       shell: bash
     - name: Build Project for windows
-      if: ${{ input.preset == 'msvc' }}
-      run: cmake --build --preset=${{ input.preset }}-reldebinfo
+      if: ${{ inputs.preset == 'msvc' }}
+      run: cmake --build --preset=${{ inputs.preset }}-reldebinfo
       shell: bash
     - name: Build Project for linux
-      if: ${{input.preset == 'ubuntu'}}
-      run: cmake --build --preset=${{ input.preset }}
+      if: ${{inputs.preset == 'ubuntu'}}
+      run: cmake --build --preset=${{ inputs.preset }}
       shell: bash
