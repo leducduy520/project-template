@@ -368,7 +368,7 @@ PingPongGame::PingPongGame() : m_live(constants::init_live), m_point(0), m_GameS
 void PingPongGame::init(std::string& resourcePath)
 {
     constants::resoucesPath = resourcePath;
-    
+
     try
     {
         std::pair<bool, std::string> result;
@@ -382,13 +382,17 @@ void PingPongGame::init(std::string& resourcePath)
             updateGameSessionID();
             updateGameNewHistory();
         }
+        else
+        {
+            throw std::logic_error("User does not continue to login");
+        }
     }
     catch (const std::exception& e)
     {
         cerr << "Connecting PingPong Game to database failed: " << e.what() << '\n';
         clear();
     }
-    
+
     game_window.setFramerateLimit(60);
     game_window.setVerticalSyncEnabled(true);
     game_window.setPosition(sf::Vector2i{(1920 - constants::window_width) / 2, (1080 - constants::window_height) / 2});

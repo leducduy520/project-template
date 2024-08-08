@@ -3,8 +3,8 @@ if(${BUILD_CMAKE_FORMAT})
     file(GLOB_RECURSE CMAKE_FILES_TXT "**/CMakeLists.txt")
     file(GLOB_RECURSE CMAKE_FILES_C "cmake/*.cmake")
     list(FILTER CMAKE_FILES_TXT EXCLUDE REGEX
-        "${CMAKE_SOURCE_DIR}/(out|external|tools|.github|mongo-cxx-driver)/+"
-    )
+         "${CMAKE_SOURCE_DIR}/(out|external|tools|.github|mongo-cxx-driver)/+"
+         )
     set(CMAKE_FILES ${ROOT_CMAKE_FILES} ${CMAKE_FILES_TXT} ${CMAKE_FILES_C})
     find_program(CMAKE_FORMAT cmake-format)
 
@@ -22,12 +22,12 @@ if(${BUILD_CMAKE_FORMAT})
                 ${CMAKE_SOURCE_DIR}/.cmake-format.yaml
                 -i
                 ${cmake_file}
-            )
+                )
         endforeach()
 
         add_custom_target(
             run_cmake_format COMMAND ${FORMATTING_COMMANDS} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        )
+            )
         set_target_properties(run_cmake_format PROPERTIES FOLDER "Custom target")
     else(CMAKE_FORMAT)
         message(WARNING "CMAKE_FORMAT NOT FOUND")
@@ -54,10 +54,10 @@ if(${BUILD_CLANG_FORMAT})
         add_custom_target(
             run_clang_format
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/run-clang-format.py --in-place
-            -j 8 ${CPP_FILES}
+                    -j 8 ${CPP_FILES}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             USES_TERMINAL
-        )
+            )
         set_target_properties(run_clang_format PROPERTIES FOLDER "Custom target")
     else()
         message(WARNING "CLANGFORMAT NOT FOUND")

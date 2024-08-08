@@ -8,6 +8,13 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Check environment variable
+      run: |
+        echo "${{ env.GITHUB_WORKSPACE }}"
+        echo "${{ env.MONGODB_URI }}"
+        echo "${{ env.MONGODB_NAME }}"
+        echo "${{ env.MONGODB_COLL }}"
+      shell: bash
     - name: Check driver
       run: ls -al /usr/src/mongo-cxx-driver/install
       shell: bash

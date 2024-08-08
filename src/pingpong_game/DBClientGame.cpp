@@ -1,13 +1,14 @@
 #include "DBClientGame.hpp"
+#include <cstdlib>
 
 DBClient* DBClient::m_instance;
 std::once_flag DBClient::m_flag;
 
 DBClient::DBClient()
 {
-    // Connect to the MongoDB server
-    const auto uri = mongocxx::uri{
-        "mongodb+srv://duyleduc123:vfmFqkgYRXOzKaDI@cluster0.24ewqox.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"};
+    std::cout << "Connect to the MongoDB server\n";
+    const char* env_mongo_uri = std::getenv("MONGODB_URI");
+    const auto uri = mongocxx::uri{env_mongo_uri};
     mongocxx::options::client client_options;
     const auto api = mongocxx::options::server_api{mongocxx::options::server_api::version::k_version_1};
     client_options.server_api_opts(api);
