@@ -2,26 +2,12 @@
     "version": 6,
     "configurePresets": [
         {
-            "name": "environment",
-            "hidden": true,
-            "environment": {
-                "OUR_DIR_NAME": "out",
-                "INSTALL_DIR_NAME": "install",
-                "BUILD_DIR_NAME": "build",
-                "DOC_DIR_NAME": "docs"
-            }
-        },
-        {
             "name": "base",
             "hidden": true,
-            "binaryDir": "${sourceDir}/$env{OUR_DIR_NAME}/$env{BUILD_DIR_NAME}/${presetName}",
-            "installDir": "${sourceDir}/$env{OUR_DIR_NAME}/$env{INSTALL_DIR_NAME}/${presetName}",
-            "inherits": "environment",
+            "binaryDir": "${sourceDir}/out/${presetName}/build",
+            "installDir": "${sourceDir}/out/${presetName}/install",
             "cacheVariables": {
-                "DOCS_DIR": {
-                    "type": "PATH",
-                    "value": "${sourceDir}/$env{DOC_DIR_NAME}"
-                }
+                
             }
         },
         {
@@ -65,45 +51,6 @@
             "targets": "all"
         },
         {
-            "name": "base-graphviz",
-            "configurePreset": "base",
-            "hidden": true,
-            "inherits": "base",
-            "targets": "gen_graph"
-        },
-        {
-            "name": "base-document",
-            "configurePreset": "base",
-            "hidden": true,
-            "inherits": "base",
-            "targets": "gen_doc"
-        },
-        {
-            "name": "base-format",
-            "configurePreset": "base",
-            "hidden": true,
-            "inherits": "base",
-            "targets": "run_cmake_format"
-        },
-        {
-            "name": "base-install",
-            "configurePreset": "base",
-            "hidden": true,
-            "inherits": "base",
-            "targets": "install"
-        },
-        {
-            "name": "base-complete",
-            "configurePreset": "base",
-            "hidden": true,
-            "inherits": "base",
-            "targets": [
-                "all",
-                "run_cmake_format",
-                "install"
-            ]
-        },
-        {
             "name": "ubuntu",
             "configurePreset": "ubuntu",
             "inherits": "base",
@@ -111,50 +58,11 @@
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Linux"
-            }
+            },
+            "targets": "all"
         },
         {
-            "name": "ubuntu-graphviz",
-            "configurePreset": "ubuntu",
-            "inherits": [
-                "base-graphviz",
-                "ubuntu"
-            ]
-        },
-        {
-            "name": "ubuntu-document",
-            "configurePreset": "ubuntu",
-            "inherits": [
-                "base-document",
-                "ubuntu"
-            ]
-        },
-        {
-            "name": "ubuntu-format",
-            "configurePreset": "ubuntu",
-            "inherits": [
-                "base-format",
-                "ubuntu"
-            ]
-        },
-        {
-            "name": "ubuntu-install",
-            "configurePreset": "ubuntu",
-            "inherits": [
-                "base-install",
-                "ubuntu"
-            ]
-        },
-        {
-            "name": "ubuntu-complete",
-            "configurePreset": "ubuntu",
-            "inherits": [
-                "base-complete",
-                "ubuntu"
-            ]
-        },
-        {
-            "name": "msvc-reldebinfo",
+            "name": "msvc",
             "configurePreset": "msvc",
             "inherits": "base",
             "condition": {
@@ -164,18 +72,6 @@
             },
             "targets": "ALL_BUILD",
             "configuration": "RelWithDebInfo"
-        },
-        {
-            "name": "msvc-release",
-            "configurePreset": "msvc",
-            "inherits": "msvc-reldebinfo",
-            "configuration": "Release"
-        },
-        {
-            "name": "msvc-debug",
-            "configurePreset": "msvc",
-            "inherits": "msvc-reldebinfo",
-            "configuration": "Debug"
         }
     ],
     "testPresets": [
@@ -230,11 +126,28 @@
                 },
                 {
                     "type": "build",
-                    "name": "ubuntu-complete"
+                    "name": "ubuntu"
                 },
                 {
                     "type": "test",
                     "name": "ubuntu"
+                }
+            ]
+        },
+        {
+            "name": "msvc",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "msvc"
+                },
+                {
+                    "type": "build",
+                    "name": "msvc"
+                },
+                {
+                    "type": "test",
+                    "name": "msvc"
                 }
             ]
         }

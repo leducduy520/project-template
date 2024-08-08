@@ -3,7 +3,7 @@ project(pingpong_game)
 include(${CMAKE_CURRENT_LIST_DIR}/FetchLib.cmake)
 fetchlib()
 
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/msvc-cl/mongo-cxx-driver")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver")
 find_package(mongocxx REQUIRED)
 
 # include("E:/VSC/a1_C_plus_plus/project-template/external/msvc-cl/mongo-cxx-driver/lib/cmake/mongocxx-3.10.2/mongocxx-config.cmake")
@@ -64,8 +64,7 @@ if(THIS_OS_WINDOWS)
         COMMENT "Copy mongocxx driver"
         COMMAND
             ${CMAKE_COMMAND} -E copy_directory_if_different
-            "${CMAKE_SOURCE_DIR}/external/msvc-cl/mongo-cxx-driver/bin"
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            "${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver/bin" $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND
         VERBATIM
         )

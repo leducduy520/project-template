@@ -3,9 +3,12 @@
 
 #include "constants.hpp"
 #include "entity.hpp"
+#include <functional>
 #include <memory>
 #include <unordered_map>
 #include <utility>
+
+class wall;
 
 class brick : public entity
 {
@@ -19,22 +22,18 @@ public:
         SCALEUP
     };
 
-    brick(float x, float y, BrickProperty property = BRICK);
     brick() = default;
-
-    void init(float x, float y) override;
-
-    // Implement the pure virtual functions
-    void update() override;
-    void draw(sf::RenderWindow& window) override;
-
+    brick(std::function<void(bool)> parent_update, float x, float y, BrickProperty property = BRICK);
     BrickProperty getProperty() const noexcept;
-
+    std::function<void(bool)> m_wall_live_change;
+    void draw(sf::RenderWindow& window) override;
     void hit(const int damage = 1, const bool relate = false) noexcept;
-
+    void init(float x, float y) override;
+    void update() override;
     friend class wall;
 
 private:
+    //wall* m_parent;
     BrickProperty m_property;
     int m_hitCount;
     static sf::Texture& getTexture(BrickProperty property = BRICK);
@@ -78,22 +77,20 @@ public:
     wall() = default;
 
     template <class T>
-    wall(T&& bricks) noexcept : point(0)
+    wall(T&& bricks) noexcept : point(0), live(0)
     {
         swap(std::forward<T>(bricks));
     }
 
+    void updateLive(bool increase) noexcept;
     void update() override;
     void draw(sf::RenderWindow& window) override;
     void init(float x, float y) override;
 
-    inline uint16_t& getPoint()
-    {
-        return point;
-    }
+    uint16_t point;
+    unsigned int live;
 
 private:
-    uint16_t point;
 };
 
 #endif // _BRICK_H

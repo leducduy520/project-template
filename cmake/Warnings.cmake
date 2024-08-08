@@ -70,6 +70,9 @@ function(target_set_warnings)
         -Wno-missing-prototypes
         -Wno-covered-switch-default
         -Wno-unsafe-buffer-usage
+        -Wno-reorder
+        -Wno-effc++
+        -Wno-missing-field-initializers
         )
 
     set(GCC_WARNINGS

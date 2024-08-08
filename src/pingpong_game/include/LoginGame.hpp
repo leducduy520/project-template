@@ -4,7 +4,6 @@
 #include "SFML/Graphics.hpp"
 #include <future>
 #include <mutex>
-#include <thread>
 
 class LoginWindow
 {

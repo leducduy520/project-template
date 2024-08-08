@@ -16,7 +16,7 @@ namespace interactions
 
     void handle_interaction(ball& a_ball, const paddle& a_paddle);
 
-    void handle_interaction(wall& a_wall, ball& a_ball, brick& a_brick);
+    void handle_interaction(wall& a_wall, ball& a_ball);
 } // namespace interactions
 
 

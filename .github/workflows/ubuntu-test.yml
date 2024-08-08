@@ -11,10 +11,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Build mongocxx-driver
-        run: make mongo-gcc
-      - name: Configure Project
-        run: make configure PRESET=ubuntu
-      - name: Build Project
-        run: cmake --build --preset=ubuntu
-          
+      - name: Build project
+        env:
+          MONGODB_NAME: ${{ vars.MONGODB_NAME}}
+          MONGODB_COLL: ${{ vars.MONGODB_COLL }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        uses: ./.github/actions/build
+        with:
+          preset: ubuntu
+        

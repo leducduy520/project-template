@@ -2,7 +2,6 @@
 #define __ENTITY_MANAGER_H__
 
 #include "entity.hpp"
-#include <SFML/Graphics.hpp>
 #include <map>
 #include <memory>
 

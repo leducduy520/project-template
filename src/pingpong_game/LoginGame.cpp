@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "helper.hpp"
 #include <memory>
+#include <thread>
 
 #define INPUT_BOUND_WIDTH 200
 #define INPUT_BOUND_HEIGHT 50
@@ -76,18 +77,14 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
     m_static_name->setFillColor(sf::Color::Black);
     m_static_name->setCharacterSize(FONT_SIZE);
     m_static_name->setFont(m_font);
-    texthelper::aligning::getInstance()->operator()(m_static_name.get(),
-                                                    sf::FloatRect{{200, 235}, {200, 50}},
-                                                    texthelper::aligning::ML);
+    texthelper::aligning::Aligning(m_static_name.get(), sf::FloatRect{{200, 235}, {200, 50}}, texthelper::aligning::ML);
 
     m_static_pass = make_unique<sf::Text>();
     m_static_pass->setString("Password: ");
     m_static_pass->setFillColor(sf::Color::Black);
     m_static_pass->setCharacterSize(FONT_SIZE);
     m_static_pass->setFont(m_font);
-    texthelper::aligning::getInstance()->operator()(m_static_pass.get(),
-                                                    sf::FloatRect{{200, 315}, {200, 50}},
-                                                    texthelper::aligning::ML);
+    texthelper::aligning::Aligning(m_static_pass.get(), sf::FloatRect{{200, 315}, {200, 50}}, texthelper::aligning::ML);
 
     m_blink_run = true;
     m_blink_fut = std::async(std::launch::async, &LoginWindow::blinkAnimation, this);
@@ -126,12 +123,8 @@ void LoginWindow::listening()
 
 void LoginWindow::update()
 {
-    texthelper::aligning::getInstance()->operator()(m_textname.get(),
-                                                    sf::FloatRect{{400, 235}, {200, 50}},
-                                                    texthelper::aligning::MR);
-    texthelper::aligning::getInstance()->operator()(m_textpass.get(),
-                                                    sf::FloatRect{{400, 315}, {200, 50}},
-                                                    texthelper::aligning::MR);
+    texthelper::aligning::Aligning(m_textname.get(), sf::FloatRect{{400, 235}, {200, 50}}, texthelper::aligning::MR);
+    texthelper::aligning::Aligning(m_textpass.get(), sf::FloatRect{{400, 315}, {200, 50}}, texthelper::aligning::MR);
 }
 
 void LoginWindow::render()

@@ -23,15 +23,10 @@ on:
       - ".github/workflows/main.yml"
 jobs:
   build-ubuntu:
-    strategy:
-      matrix:
-        os: [ubuntu, windows]
-        build_type: [release, debug]
-    uses: ./.github/workflows/build.yml
-    with:
-      target: ${{inputs.target}}
-      build_type: ${{matrix.build_type}}
-      os: ${{matrix.os}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
     # runs-on: ubuntu-22.04
     # permissions:
     #   contents: write

@@ -1,0 +1,44 @@
+name: Builder
+description: 'For building'
+author: duyld15
+inputs:
+  preset:
+    description: 'Cmake preset to be built'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Check environment variable
+      run: |
+        echo "${{ env.GITHUB_WORKSPACE }}"
+        echo "${{ env.MONGODB_URI }}"
+        echo "${{ env.MONGODB_NAME }}"
+        echo "${{ env.MONGODB_COLL }}"
+      shell: bash
+    - name: Check driver
+      run: ls -al /usr/src/mongo-cxx-driver/install
+      shell: bash
+    - name: Save current directory
+      run: echo "CURRENT_DIR=$(pwd)" >> $GITHUB_ENV
+      shell: bash
+    - name: Check current directory
+      run: echo "$CURRENT_DIR"
+      shell: bash
+    - name: Creating driver directory
+      run: mkdir -p ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver
+      shell: bash
+    - name: Moving mongocxx-driver to right folder
+      run: mv /usr/src/mongo-cxx-driver/install/* ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver
+      shell: bash
+    - name: Configure Project
+      run: make configure PRESET=${{ inputs.preset }}
+      shell: bash
+    - name: Build Project
+      run: cmake --build --preset=${{ inputs.preset }}
+      shell: bash
+    - name: Install Project
+      run: cmake --build --preset=${{ inputs.preset }} -t install
+      shell: bash
+    - name: Test Project
+      run: ./out/${{ inputs.preset }}/install/bin/Catch-test
+      shell: bash

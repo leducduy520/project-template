@@ -15,6 +15,7 @@
 // main() provided by linkage to Catch2WithMain
 
 #include <PingPongGame.hpp>
+#include <DBClientGame.hpp>
 #include <background.hpp>
 #include <ball.hpp>
 #include <brick.hpp>
@@ -50,9 +51,44 @@
 
 // std::string constants::resoucesPath = (EXECUTABLE_PATH / ".." / "resources" / "").string();
 
-TEST_CASE("Test", "[test]")
+static bsoncxx::stdx::optional<string> get_database_name()
 {
-    CHECK(true);
+    const char* database_name = std::getenv("MONGODB_NAME");
+    if(database_name != NULL)
+        return database_name;
+    return {};
+}
+
+static bsoncxx::stdx::optional<string> get_coll_name()
+{
+    const char* coll_name = std::getenv("MONGODB_COLL");
+    if(coll_name != NULL)
+        return coll_name;
+    return {};
+}
+
+TEST_CASE("Test mongo db connection", "[mongo-connnection]")
+{
+    SECTION("s1")
+    {
+        REQUIRE(get_database_name());
+    }
+    SECTION("s2")
+    {
+        REQUIRE(get_coll_name());
+    }
+    SECTION("s3")
+    {
+        CHECK_NOTHROW(DBClient::GetInstance());
+    }
+    SECTION("s4")
+    {
+        CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase(get_database_name().value().c_str()));
+    }
+    SECTION("s5")
+    {
+        CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase(get_coll_name().value().c_str()));
+    }
 }
 
 // TEST_CASE("Initializing entities", "[init]")

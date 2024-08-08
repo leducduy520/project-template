@@ -1,6 +1,7 @@
 #include "interactions.hpp"
 #include "helper.hpp"
 #include "soundplayer.hpp"
+#include <algorithm>
 #include <future>
 #include <mutex>
 #include <thread>
@@ -52,72 +53,85 @@ namespace interactions
         }
     }
 
-    void handle_interaction(wall& a_wall, ball& a_ball, brick& a_brick)
+    void handle_interaction(wall& a_wall, ball& a_ball)
     {
-        if (is_interacting(&a_ball, &a_brick))
+        for (auto it = a_wall.begin(); it != a_wall.end(); ++it)
         {
-
-            switch (a_brick.getProperty())
+            auto* a_brick = it->second.get();
+            if (is_interacting(&a_ball, a_brick))
             {
-            case brick::BRICK:
-            {
-                utilities::wallhelper::increasePoint(a_wall, 1);
-                a_brick.hit(a_ball.getStrength());
-                auto [more_at_side, from_left, from_top] = getDirection(a_ball, a_brick);
 
-                if (more_at_side)
+                switch (a_brick->getProperty())
                 {
-                    if (from_left)
+                case brick::BRICK:
+                {
+                    utilities::wallhelper::increasePoint(a_wall, 1);
+                    a_brick->hit(a_ball.getStrength());
+                    auto [more_at_side, from_left, from_top] = getDirection(a_ball, *a_brick);
+
+                    if (more_at_side)
                     {
-                        a_ball.set_velocity({-std::abs(a_ball.get_velocity().x), a_ball.get_velocity().y});
+                        if (from_left)
+                        {
+                            a_ball.set_velocity({-std::abs(a_ball.get_velocity().x), a_ball.get_velocity().y});
+                        }
+                        else
+                        {
+                            a_ball.set_velocity({std::abs(a_ball.get_velocity().x), a_ball.get_velocity().y});
+                        }
                     }
                     else
                     {
-                        a_ball.set_velocity({std::abs(a_ball.get_velocity().x), a_ball.get_velocity().y});
+                        if (from_top)
+                        {
+                            a_ball.set_velocity({a_ball.get_velocity().x, -std::abs(a_ball.get_velocity().y)});
+                        }
+                        else
+                        {
+                            a_ball.set_velocity({a_ball.get_velocity().x, std::abs(a_ball.get_velocity().y)});
+                        }
                     }
                 }
-                else
-                {
-                    if (from_top)
-                    {
-                        a_ball.set_velocity({a_ball.get_velocity().x, -std::abs(a_ball.get_velocity().y)});
-                    }
-                    else
-                    {
-                        a_ball.set_velocity({a_ball.get_velocity().x, std::abs(a_ball.get_velocity().y)});
-                    }
-                }
-            }
-            break;
-            case brick::DIAMOND:
-            {
-                utilities::wallhelper::increasePoint(a_wall, 5);
-                a_brick.hit(a_ball.getStrength());
-            }
-            break;
-            case brick::BOMB:
-            {
-                utilities::wallhelper::destroyAround(a_wall, a_brick, {3, 3});
-                a_ball.set_velocity({-a_ball.get_velocity().x, -a_ball.get_velocity().y});
-            }
-            break;
-            case brick::SCALEUP:
-            {
-                a_brick.hit(a_ball.getStrength());
-                a_ball.scale(2);
-                t = std::thread(&ball::resetsize, &a_ball);
-                t.detach();
-            }
-            break;
-            case brick::NONE:
-            {
-                [[fallthrough]];
-            }
-            default:
-
                 break;
+                case brick::DIAMOND:
+                {
+                    utilities::wallhelper::increasePoint(a_wall, 5);
+                    a_brick->hit(a_ball.getStrength());
+                }
+                break;
+                case brick::BOMB:
+                {
+                    utilities::wallhelper::destroyAround(a_wall, *a_brick, {3, 3});
+                    a_ball.set_velocity({-a_ball.get_velocity().x, -a_ball.get_velocity().y});
+                }
+                break;
+                case brick::SCALEUP:
+                {
+                    a_brick->hit(a_ball.getStrength());
+                    a_ball.scale(2);
+                    t = std::thread(&ball::resetsize, &a_ball);
+                    t.detach();
+                }
+                break;
+                case brick::NONE:
+                {
+                    [[fallthrough]];
+                }
+                default:
+
+                    break;
+                }
+
+                if (a_brick->is_destroyed())
+                {
+                    a_wall.erase(it);
+                    --it;
+                }
             }
         }
+
+        if (a_wall.live <= 0)
+            a_wall.destroy();
     }
 
 } // namespace interactions

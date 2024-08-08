@@ -2,10 +2,8 @@
 #include "DBClientGame.hpp"
 #include "LoginGame.hpp"
 #include "helper.hpp"
+#include "interactions.hpp"
 #include "soundplayer.hpp"
-#include <ctime>
-#include <iomanip>
-#include <string>
 
 std::string constants::resoucesPath;
 using namespace std;
@@ -237,22 +235,22 @@ void PingPongGame::stateHandler()
         m_textState.setString("Paused");
         m_textLive.setString("Lives: " + std::to_string(m_live));
 
-        aligning::getInstance()->operator()(&m_textState, sf::FloatRect{ 0,0,constants::window_width, constants::window_height });
-        aligning::getInstance()->operator()(&m_textLive, sf::FloatRect{ 0,100,constants::window_width, constants::window_height - 100 });
+        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
+        aligning::Aligning(&m_textLive, sf::FloatRect{0, 100, constants::window_width, constants::window_height - 100});
     }
     break;
     case game_state::game_over:
     {
         databaseResultUpdate(false);
         m_textState.setString("Game Over");
-        aligning::getInstance()->operator()(&m_textState, sf::FloatRect{ 0,0,constants::window_width, constants::window_height });
+        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
     }
     break;
     case game_state::player_wins:
     {
         databaseResultUpdate(true);
         m_textState.setString("Win");
-        aligning::getInstance()->operator()(&m_textState, sf::FloatRect{ 0,0,constants::window_width, constants::window_height });
+        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
     }
     break;
     case game_state::running:
@@ -275,10 +273,8 @@ void PingPongGame::update()
         });
 
         m_entity_manager.apply_all<ball>([this](ball& a_ball) {
-            m_entity_manager.apply_all<wall>([&a_ball](wall& a_wall) {
-                utilities::wallhelper::interactionwith<ball>(a_wall, a_ball);
-                utilities::wallhelper::checkAlive(a_wall);
-            });
+            m_entity_manager.apply_all<wall>(
+                [&a_ball](wall& a_wall) { interactions::handle_interaction(a_wall, a_ball); });
         });
 
         m_point = 0;
@@ -286,7 +282,7 @@ void PingPongGame::update()
         for (auto& a_wall : walls)
         {
             auto* const wptr = dynamic_cast<wall*>(a_wall);
-            m_point += utilities::wallhelper::getPoint(*wptr);
+            m_point += wptr->point;
         }
 
 
@@ -372,6 +368,31 @@ PingPongGame::PingPongGame() : m_live(constants::init_live), m_point(0), m_GameS
 void PingPongGame::init(std::string& resourcePath)
 {
     constants::resoucesPath = resourcePath;
+
+    try
+    {
+        std::pair<bool, std::string> result;
+        {
+            const auto window = make_unique<LoginWindow>();
+            result = window->run();
+        }
+        if (result.first)
+        {
+            m_username = result.second;
+            updateGameSessionID();
+            updateGameNewHistory();
+        }
+        else
+        {
+            throw std::logic_error("User does not continue to login");
+        }
+    }
+    catch (const std::exception& e)
+    {
+        cerr << "Connecting PingPong Game to database failed: " << e.what() << '\n';
+        clear();
+    }
+
     game_window.setFramerateLimit(60);
     game_window.setVerticalSyncEnabled(true);
     game_window.setPosition(sf::Vector2i{(1920 - constants::window_width) / 2, (1080 - constants::window_height) / 2});
@@ -425,34 +446,22 @@ void PingPongGame::run()
 {
     try
     {
-        std::pair<bool, std::string> result;
+        SoundPlayer::getInstance();
+        while (game_window.isOpen())
         {
-            const auto window = make_unique<LoginWindow>();
-            result = window->run();
+            game_window.clear(sf::Color::Black);
+            listening();
+            stateHandler();
+            update();
+            render();
         }
-        if (result.first)
-        {
-            m_username = result.second;
-            updateGameSessionID();
-            updateGameNewHistory();
-
-            SoundPlayer::getInstance();
-            while (game_window.isOpen())
-            {
-                game_window.clear(sf::Color::Black);
-                listening();
-                stateHandler();
-                update();
-                render();
-            }
-            SoundPlayer::destroyInstance();
-            DBClient::DestroyInstance();
-            m_entity_manager.clear();
-        }
+        SoundPlayer::destroyInstance();
+        DBClient::DestroyInstance();
+        m_entity_manager.clear();
     }
     catch (const std::exception& e)
     {
-        cerr << "Playing PingPong Game failed: " << e.what() << '\n';
+        cerr << "Running PingPong Game failed: " << e.what() << '\n';
     }
 }
 
