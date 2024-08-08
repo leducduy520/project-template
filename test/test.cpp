@@ -71,11 +71,11 @@ TEST_CASE("Test mongo db connection", "[mongo-connnection]")
 {
     SECTION("s1")
     {
-        CHECK(get_database_name());
+        REQUIRE(get_database_name());
     }
     SECTION("s2")
     {
-        CHECK(get_coll_name());
+        REQUIRE(get_coll_name());
     }
     SECTION("s3")
     {
@@ -83,11 +83,11 @@ TEST_CASE("Test mongo db connection", "[mongo-connnection]")
     }
     SECTION("s4")
     {
-        CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase("duyld"));
+        CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase(get_database_name().value().c_str()));
     }
     SECTION("s5")
     {
-        CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase("pingpong_game"));
+        CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase(get_coll_name().value().c_str()));
     }
 }
 

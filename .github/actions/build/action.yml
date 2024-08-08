@@ -36,3 +36,9 @@ runs:
     - name: Build Project
       run: cmake --build --preset=${{ inputs.preset }}
       shell: bash
+    - name: Install Project
+      run: cmake --build --preset=${{ inputs.preset }} -t Install
+      shell: bash
+    - name: Test Project
+      run: ./out/${{ inputs.preset }}/install/bin/Catch-test
+      shell: bash
