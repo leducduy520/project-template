@@ -37,5 +37,13 @@ runs:
       run: cmake --build --preset=${{ inputs.preset }} -t install
       shell: bash
     - name: Test Project
-      run: ./out/${{ inputs.preset }}/install/bin/Catch-test
+      env:
+        MONGODB_URI: ${{ env.MONGODB_TEST_URI }}
+        MONGODB_NAME: test
+        MONGODB_COLL: game
+      run: |
+        echo "$MONGODB_URI"
+        echo "$MONGODB_NAME"
+        echo "$MONGODB_COLL"
+        ./out/${{ inputs.preset }}/install/bin/Catch-test
       shell: bash
