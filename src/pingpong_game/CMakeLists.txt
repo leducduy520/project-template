@@ -6,10 +6,8 @@ fetchlib()
 set(EXTERNAL_PROJECT_DIR)
 
 if(NOT DEFINED ENV{EXTERNAL_PROJECT_DIR})
-    message("A")
     set(EXTERNAL_PROJECT_DIR "${CMAKE_SOURCE_DIR}/external")
 else()
-    message("B")
     set(EXTERNAL_PROJECT_DIR "$ENV{EXTERNAL_PROJECT_DIR}")
 endif()
 
