@@ -24,9 +24,6 @@ runs:
     - name: Check current directory
       run: echo "$CURRENT_DIR"
       shell: bash
-    - name: Creating driver directory
-      run: mkdir -p ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver
-      shell: bash
     - name: Moving mongocxx-driver to right folder
       run: mv /usr/src/external ${{ env.CURRENT_DIR }}
       shell: bash
