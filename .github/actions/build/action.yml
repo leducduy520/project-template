@@ -10,27 +10,15 @@ runs:
   steps:
     - name: Check environment variable
       run: |
-        echo "${{ env.GITHUB_WORKSPACE }}"
         echo "${{ env.MONGODB_URI }}"
         echo "${{ env.MONGODB_NAME }}"
         echo "${{ env.MONGODB_COLL }}"
       shell: bash
-    - name: Check driver
-      run: ls -al /usr/src/external
-      shell: bash
     - name: Save current directory
       run: echo "CURRENT_DIR=$(pwd)" >> $GITHUB_ENV
       shell: bash
-    - name: Check current directory
-      run: echo "$CURRENT_DIR"
-      shell: bash
-
-      #external/SFML/lib/cmake/SFML/SFMLStaticTargets-relwithdebinfo.cmake
     - name: Moving external build to project's root directory
       run: mv /usr/src/external ${{ env.CURRENT_DIR }}
-      shell: bash
-    - name: checking sfml targets
-      run: cat ${{ env.CURRENT_DIR }}/external/SFML/lib/cmake/SFML/SFMLStaticTargets.cmake
       shell: bash
     - name: Configure Project
       run: make configure PRESET=${{ inputs.preset }}
