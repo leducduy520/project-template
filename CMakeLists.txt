@@ -41,36 +41,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # Set custom variables
 set(INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
-if(THIS_COMPILER_GCC OR THIS_COMPILER_CLANG)
-    message("CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}")
-    set(CMAKE_COLOR_DIAGNOSTICS ON)
-
-    # Set common flags for each build type
-    set(CMAKE_C_FLAGS_DEBUG_INIT "-g -O0")
-    set(CMAKE_CXX_FLAGS_DEBUG_INIT "-g -O0")
-
-    set(CMAKE_C_FLAGS_RELEASE_INIT "-O3 -DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3 -DNDEBUG")
-
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
-
-    set(CMAKE_C_FLAGS_MINSIZEREL_INIT "-Os -DNDEBUG")
-    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT "-Os -DNDEBUG")
-elseif(THIS_COMPILER_MSVC OR THIS_COMPILER_CLANG_CL)
-    # Set common flags for each build type
-    set(CMAKE_C_FLAGS_DEBUG_INIT "/Zi /Od /Ob0 /RTC1")
-    set(CMAKE_CXX_FLAGS_DEBUG_INIT "/Zi /Od /Ob0 /RTC1")
-
-    set(CMAKE_C_FLAGS_RELEASE_INIT "/O2 /Ob2 /DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE_INIT "/O2 /Ob2 /DNDEBUG")
-
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "/Zi /O2 /Ob2 /DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "/Zi /O2 /Ob2 /DNDEBUG")
-
-    set(CMAKE_C_FLAGS_MINSIZEREL_INIT "/O1 /Ob1 /DNDEBUG")
-    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT "/O1 /Ob1 /DNDEBUG")
+if(NOT DEFINED ENV{EXTERNAL_PROJECT_DIR} AND NOT DEFINED EXTERNAL_PROJECT_DIR)
+    set(EXTERNAL_PROJECT_DIR "${CMAKE_SOURCE_DIR}/external" CACHE PATH "Where to file external projects" FORCE)
+elseif(DEFINED ENV{EXTERNAL_PROJECT_DIR} AND NOT DEFINED EXTERNAL_PROJECT_DIR)
+    set(EXTERNAL_PROJECT_DIR "$ENV{EXTERNAL_PROJECT_DIR}" CACHE PATH "Where to file external projects" FORCE)
 endif()
+
+message(STATUS "EXTERNAL_PROJECT_DIR: ${EXTERNAL_PROJECT_DIR}")
 
 # Set output directory for each configuration
 get_property(THIS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
@@ -80,13 +57,13 @@ if(THIS_MULTI_CONFIG)
         string(TOUPPER ${build_type} build_type_upper)
         set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper}
             ${CMAKE_BINARY_DIR}/${build_type}/lib
-            )
+        )
         set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${build_type_upper}
             ${CMAKE_BINARY_DIR}/${build_type}/lib
-            )
+        )
         set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper}
             ${CMAKE_BINARY_DIR}/${build_type}/bin
-            )
+        )
     endforeach()
 endif()
 

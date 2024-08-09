@@ -5,14 +5,6 @@ fetchlib()
 
 set(EXTERNAL_PROJECT_DIR)
 
-if(NOT DEFINED ENV{EXTERNAL_PROJECT_DIR})
-    set(EXTERNAL_PROJECT_DIR "${CMAKE_SOURCE_DIR}/external")
-else()
-    set(EXTERNAL_PROJECT_DIR "$ENV{EXTERNAL_PROJECT_DIR}")
-endif()
-
-message(STATUS "EXTERNAL_PROJECT_DIR: ${EXTERNAL_PROJECT_DIR}")
-
 list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_PROJECT_DIR}/mongo-cxx-driver" "${EXTERNAL_PROJECT_DIR}/SFML")
 find_package(mongocxx REQUIRED)
 find_package(SFML REQUIRED COMPONENTS graphics audio)
@@ -68,18 +60,9 @@ if(THIS_OS_WINDOWS)
     )
 
     install(FILES "${EXTERNAL_PROJECT_DIR}/SFML/bin/openal32.dll" DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-    # add_custom_command(
-    # TARGET ${PROJECT_NAME}
-    # POST_BUILD
-    # COMMENT "Copy mongocxx driver"
-    # COMMAND
-    # ${CMAKE_COMMAND} -E copy_directory_if_different
-    # "${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver/bin" $<TARGET_FILE_DIR:${PROJECT_NAME}>
-    # COMMAND
-    # VERBATIM
-    # )
 endif()
+
+set_directory_properties(PROPERTIES VS_STARTUP_PROJECT ${PROJECT_NAME})
 
 install(
     TARGETS ${PROJECT_NAME}

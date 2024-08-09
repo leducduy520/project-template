@@ -37,28 +37,28 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     execute_process(
         COMMAND "${CMAKE_CXX_COMPILER}" "--version" OUTPUT_VARIABLE CLANG_VERSION_OUTPUT
-        )
+    )
     string(
         REGEX REPLACE ".*clang version ([0-9]+\\.[0-9]+).*" "\\1" THIS_CLANG_VERSION
-                      "${CLANG_VERSION_OUTPUT}"
-        )
+        "${CLANG_VERSION_OUTPUT}"
+    )
 
     execute_process(
         COMMAND "${CMAKE_CXX_COMPILER}" "-v" OUTPUT_VARIABLE CLANG_COMPILER_VERSION
         ERROR_VARIABLE CLANG_COMPILER_VERSION
-        )
+    )
 elseif(CMAKE_COMPILER_IS_GNUCXX)
     set(THIS_COMPILER_GCC 1)
 
     execute_process(
         COMMAND "${CMAKE_CXX_COMPILER}" "-dumpversion" OUTPUT_VARIABLE GCC_VERSION_OUTPUT
-        )
+    )
     string(REGEX REPLACE "([0-9]+\\.[0-9]+).*" "\\1" THIS_GCC_VERSION "${GCC_VERSION_OUTPUT}")
 
     execute_process(
         COMMAND "${CMAKE_CXX_COMPILER}" "-v" OUTPUT_VARIABLE GCC_COMPILER_VERSION
         ERROR_VARIABLE GCC_COMPILER_VERSION
-        )
+    )
     string(REGEX MATCHALL ".*(tdm[64]*-[1-9]).*" THIS_COMPILER_GCC_TDM "${GCC_COMPILER_VERSION}")
 
     if("${GCC_COMPILER_VERSION}" MATCHES "ucrt")
@@ -71,4 +71,35 @@ elseif(CMAKE_COMPILER_IS_GNUCXX)
     if(GCC_MACHINE MATCHES ".*w64.*")
         set(THIS_COMPILER_GCC_W64 1)
     endif()
+endif()
+
+if(THIS_COMPILER_GCC OR THIS_COMPILER_CLANG)
+    message("CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}")
+    set(CMAKE_COLOR_DIAGNOSTICS ON)
+
+    # Set common flags for each build type
+    set(CMAKE_C_FLAGS_DEBUG_INIT "-g -O0")
+    set(CMAKE_CXX_FLAGS_DEBUG_INIT "-g -O0")
+
+    set(CMAKE_C_FLAGS_RELEASE_INIT "-O3 -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3 -DNDEBUG")
+
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
+
+    set(CMAKE_C_FLAGS_MINSIZEREL_INIT "-Os -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT "-Os -DNDEBUG")
+elseif(THIS_COMPILER_MSVC OR THIS_COMPILER_CLANG_CL)
+    # Set common flags for each build type
+    set(CMAKE_C_FLAGS_DEBUG_INIT "/Zi /Od /Ob0 /RTC1")
+    set(CMAKE_CXX_FLAGS_DEBUG_INIT "/Zi /Od /Ob0 /RTC1")
+
+    set(CMAKE_C_FLAGS_RELEASE_INIT "/O2 /Ob2 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE_INIT "/O2 /Ob2 /DNDEBUG")
+
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "/Zi /O2 /Ob2 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "/Zi /O2 /Ob2 /DNDEBUG")
+
+    set(CMAKE_C_FLAGS_MINSIZEREL_INIT "/O1 /Ob1 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT "/O1 /Ob1 /DNDEBUG")
 endif()
