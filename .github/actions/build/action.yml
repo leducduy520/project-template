@@ -23,10 +23,9 @@ runs:
     - name: Save current directory
       run: echo "CURRENT_DIR=$(pwd)" >> $GITHUB_ENV
       shell: bash
-    - name: Exporting external project directory
-      run: export EXTERNAL_PROJECT_DIR=/usr/src/external
-      shell: bash
     - name: Configure Project
+      env:
+        EXTERNAL_PROJECT_DIR: '/usr/src/external'
       run: make configure PRESET=${{ inputs.preset }}
       shell: bash
     - name: Build Project
