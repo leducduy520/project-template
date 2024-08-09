@@ -4,17 +4,43 @@
 DBClient* DBClient::m_instance;
 std::once_flag DBClient::m_flag;
 
+bsoncxx::stdx::optional<string> get_database_uri()
+{
+    const char* database_uri = std::getenv("MONGODB_URI");
+    if (database_uri != NULL)
+        return database_uri;
+    return {};
+}
+
+bsoncxx::stdx::optional<string> get_database_name()
+{
+    const char* database_name = std::getenv("MONGODB_NAME");
+    if (database_name != NULL)
+        return database_name;
+    return {};
+}
+
+bsoncxx::stdx::optional<string> get_coll_name()
+{
+    const char* coll_name = std::getenv("MONGODB_COLL");
+    if (coll_name != NULL)
+        return coll_name;
+    return {};
+}
+
 DBClient::DBClient()
 {
-    std::cout << "Connect to the MongoDB server\n";
-    const char* env_mongo_uri = std::getenv("MONGODB_URI");
-    const auto uri = mongocxx::uri{env_mongo_uri};
-    mongocxx::options::client client_options;
-    const auto api = mongocxx::options::server_api{mongocxx::options::server_api::version::k_version_1};
-    client_options.server_api_opts(api);
-    m_dbclient = std::move(mongocxx::client{uri, client_options});
-    /*m_dbdatabase = m_dbclient[m_dbclient.list_database_names().front()];
-    m_dbcollection = m_dbdatabase[m_dbdatabase.list_collection_names().front()];*/
+    auto str_uri = get_database_uri();
+    if (str_uri)
+    {
+        const auto uri = mongocxx::uri{str_uri.value().c_str()};
+        mongocxx::options::client client_options;
+        const auto api = mongocxx::options::server_api{mongocxx::options::server_api::version::k_version_1};
+        client_options.server_api_opts(api);
+        m_dbclient = std::move(mongocxx::client{uri, client_options});
+        return;
+    }
+    throw std::runtime_error("Environment variable MONGODB_URI not set");
 }
 
 DBClient* DBClient::GetInstance()

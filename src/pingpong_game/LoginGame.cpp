@@ -14,14 +14,20 @@
 
 using namespace utilities;
 
+extern bsoncxx::stdx::optional<string> get_database_name();
+extern bsoncxx::stdx::optional<string> get_coll_name();
+
 void LoginWindow::login(const std::string& username, const std::string& password)
 {
     try
     {
-        DBINSTANCE->GetDatabase("duyld");
-        if (!DBINSTANCE->GetCollection("pingpong_game"))
+        auto db_name = get_database_name();
+        auto coll_name = get_coll_name();
+
+        DBINSTANCE->GetDatabase(db_name.value_or("duyld").c_str());
+        if (!DBINSTANCE->GetCollection(coll_name.value_or("pingpong_game").c_str()))
         {
-            DBINSTANCE->CreateCollection("pingpong_game");
+            DBINSTANCE->CreateCollection(coll_name.value_or("pingpong_game").c_str());
             if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
             {
                 cout << "successfully insert initial data for " << username << '\n';

@@ -26,10 +26,10 @@ configure:
 	$(TIDY_VAR) -DENABLE_WARNINGS=$(WARNING)
 
 mongo-ubuntu:
-	cmake -S mongo-cxx-driver -B mongo-cxx-driver/build --fresh -DCMAKE_INSTALL_PREFIX="external/msvc-cl/mongo-cxx-driver" -DBUILD_SHARED_LIBS=OFF -DENABLE_BSONCXX_POLY_USE_IMPLS=ON -DBUILD_VERSION="3.10.2" -DCMAKE_BUILD_TYPE=$(CONFIG) -DCMAKE_CXX_FLAGS_INIT="-fPIC"
+	cmake -S mongo-cxx-driver -B mongo-cxx-driver/build --fresh -DCMAKE_INSTALL_PREFIX="external/mongo-cxx-driver" -DBUILD_SHARED_LIBS=OFF -DENABLE_BSONCXX_POLY_USE_IMPLS=ON -DBUILD_VERSION="3.10.2" -DCMAKE_BUILD_TYPE=$(CONFIG) -DCMAKE_CXX_FLAGS_INIT="-fPIC"
 	cmake --build mongo-cxx-driver/build -t install --config $(CONFIG) -j8
 
 .PHONY:mongo-msvc
 mongo-msvc:
-	cmake -S mongo-cxx-driver -B mongo-cxx-driver/build --fresh -DCMAKE_INSTALL_PREFIX="external/msvc-cl/mongo-cxx-driver" -DBUILD_SHARED_LIBS=OFF -DENABLE_BSONCXX_POLY_USE_IMPLS=ON -DBUILD_VERSION="3.10.2" -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=$(CONFIG)
+	cmake -S mongo-cxx-driver -B mongo-cxx-driver/build --fresh -DCMAKE_INSTALL_PREFIX="external/mongo-cxx-driver" -DBUILD_SHARED_LIBS=OFF -DENABLE_BSONCXX_POLY_USE_IMPLS=ON -DBUILD_VERSION="3.10.2" -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=$(CONFIG)
 	cmake --build mongo-cxx-driver/build -t install --config $(CONFIG) -j8

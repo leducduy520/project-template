@@ -51,21 +51,9 @@
 
 // std::string constants::resoucesPath = (EXECUTABLE_PATH / ".." / "resources" / "").string();
 
-static bsoncxx::stdx::optional<string> get_database_name()
-{
-    const char* database_name = std::getenv("MONGODB_NAME");
-    if(database_name != NULL)
-        return database_name;
-    return {};
-}
-
-static bsoncxx::stdx::optional<string> get_coll_name()
-{
-    const char* coll_name = std::getenv("MONGODB_COLL");
-    if(coll_name != NULL)
-        return coll_name;
-    return {};
-}
+extern bsoncxx::stdx::optional<string> get_database_uri();
+extern bsoncxx::stdx::optional<string> get_database_name();
+extern bsoncxx::stdx::optional<string> get_coll_name();
 
 TEST_CASE("Test mongo db connection", "[mongo-connnection]")
 {

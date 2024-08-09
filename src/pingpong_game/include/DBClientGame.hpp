@@ -18,6 +18,11 @@ using bsoncxx::builder::stream::finalize;
 using bsoncxx::stdx::optional;
 using namespace std;
 
+
+bsoncxx::stdx::optional<string> get_database_uri();
+bsoncxx::stdx::optional<string> get_database_name();
+bsoncxx::stdx::optional<string> get_coll_name();
+
 class DBClient
 {
     mongocxx::client m_dbclient;
