@@ -24,8 +24,13 @@ runs:
     - name: Check current directory
       run: echo "$CURRENT_DIR"
       shell: bash
+
+      #external/SFML/lib/cmake/SFML/SFMLStaticTargets-relwithdebinfo.cmake
     - name: Moving external build to project's root directory
       run: mv /usr/src/external ${{ env.CURRENT_DIR }}
+      shell: bash
+    - name: checking sfml targets
+      run: cat ${{ env.CURRENT_DIR }}/external/SFML/lib/cmake/SFML/SFMLStaticTargets-relwithdebinfo.cmake
       shell: bash
     - name: Configure Project
       run: make configure PRESET=${{ inputs.preset }}
