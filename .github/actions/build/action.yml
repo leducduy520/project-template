@@ -30,7 +30,7 @@ runs:
       run: mv /usr/src/external ${{ env.CURRENT_DIR }}
       shell: bash
     - name: checking sfml targets
-      run: cat ${{ env.CURRENT_DIR }}/external/SFML/lib/cmake/SFML/SFMLStaticTargets-relwithdebinfo.cmake
+      run: cat ${{ env.CURRENT_DIR }}/external/SFML/lib/cmake/SFML/SFMLStaticTargets.cmake
       shell: bash
     - name: Configure Project
       run: make configure PRESET=${{ inputs.preset }}
