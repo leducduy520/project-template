@@ -19,6 +19,9 @@ libgbm-dev \
 libfreetype6-dev \
 libssl-dev \
 clang-tidy clang-format
+RUN  apt-get install -y wget
 ADD https://github.com/mongodb/mongo-cxx-driver.git#r3.10.2 /usr/src/mongo-cxx-driver
-RUN cmake -S /usr/src/mongo-cxx-driver -B /usr/src/mongo-cxx-driver/build --fresh -DCMAKE_INSTALL_PREFIX="/usr/src/mongo-cxx-driver/install" -DBUILD_SHARED_LIBS=OFF -DENABLE_BSONCXX_POLY_USE_IMPLS=ON -DBUILD_VERSION="3.10.2" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS_INIT="-fPIC" 
+RUN cmake -S /usr/src/mongo-cxx-driver -B /usr/src/mongo-cxx-driver/build --fresh -DCMAKE_INSTALL_PREFIX="/usr/src/external/mongo-cxx-driver" -DBUILD_SHARED_LIBS=OFF -DENABLE_BSONCXX_POLY_USE_IMPLS=ON -DBUILD_VERSION="3.10.2" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS_INIT="-fPIC" 
 RUN cmake --build /usr/src/mongo-cxx-driver/build -t install --config RelWithDebInfo -j8
+ADD mongosh-2.2.15-linux-x64.tgz /usr/src
+ADD container_build.sh /usr/src

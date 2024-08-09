@@ -28,7 +28,7 @@ runs:
       run: mkdir -p ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver
       shell: bash
     - name: Moving mongocxx-driver to right folder
-      run: mv /usr/src/mongo-cxx-driver/install/* ${{ env.CURRENT_DIR }}/external/mongo-cxx-driver
+      run: mv /usr/src/external ${{ env.CURRENT_DIR }}
       shell: bash
     - name: Configure Project
       run: make configure PRESET=${{ inputs.preset }}
