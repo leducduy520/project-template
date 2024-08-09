@@ -1,9 +1,8 @@
 macro(FetchLib)
-    FetchContent_Declare(
-        SFML GIT_REPOSITORY https://github.com/SFML/SFML.git GIT_TAG 2.6.x
-    )
-    FetchContent_MakeAvailable(SFML)
-
+    # FetchContent_Declare(
+    # SFML GIT_REPOSITORY https://github.com/SFML/SFML.git GIT_TAG 2.6.x
+    # )
+    # FetchContent_MakeAvailable(SFML)
     FetchContent_Declare(
         rapidcsv GIT_REPOSITORY https://github.com/d99kris/rapidcsv.git
         GIT_TAG v8.82

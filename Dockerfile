@@ -25,3 +25,7 @@ RUN cmake -S /usr/src/mongo-cxx-driver -B /usr/src/mongo-cxx-driver/build --fres
 RUN cmake --build /usr/src/mongo-cxx-driver/build -t install --config RelWithDebInfo -j8
 ADD mongosh-2.2.15-linux-x64.tgz /usr/src
 ADD container_build.sh /usr/src
+RUN apt-get install -y libx11-dev libxi-dev libxrandr-dev libgl1-mesa-dev libxrandr-dev libudev-dev
+ADD https://github.com/SFML/SFML.git /usr/src/SFML
+RUN cmake -S /usr/src/SFML -B /usr/src/SFML/build --fresh -DCMAKE_INSTALL_PREFIX="/usr/src/external/SFML" -DBUILD_SHARED_LIBS=OFF -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS_INIT="-fPIC"
+RUN cmake --build /usr/src/SFML/build -t install --config RelWithDebInfo -j8

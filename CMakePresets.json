@@ -7,7 +7,10 @@
             "binaryDir": "${sourceDir}/out/${presetName}/build",
             "installDir": "${sourceDir}/out/${presetName}/install",
             "cacheVariables": {
-                
+                "SFML_STATIC_LIBRARIES":{
+                    "type": "BOOL",
+                    "value": true
+                }
             }
         },
         {
