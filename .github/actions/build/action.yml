@@ -16,7 +16,7 @@ runs:
         echo "${{ env.MONGODB_COLL }}"
       shell: bash
     - name: Check driver
-      run: ls -al /usr/src/mongo-cxx-driver/install
+      run: ls -al /usr/src/external
       shell: bash
     - name: Save current directory
       run: echo "CURRENT_DIR=$(pwd)" >> $GITHUB_ENV
