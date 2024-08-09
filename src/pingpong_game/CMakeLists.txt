@@ -3,7 +3,19 @@ project(pingpong_game)
 include(${CMAKE_CURRENT_LIST_DIR}/FetchLib.cmake)
 fetchlib()
 
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mongo-cxx-driver" "${CMAKE_SOURCE_DIR}/external/SFML")
+set(EXTERNAL_PROJECT_DIR)
+
+if(NOT DEFINED ENV{EXTERNAL_PROJECT_DIR})
+    message("A")
+    set(EXTERNAL_PROJECT_DIR "${CMAKE_SOURCE_DIR}/external")
+else()
+    message("B")
+    set(EXTERNAL_PROJECT_DIR "$ENV{EXTERNAL_PROJECT_DIR}")
+endif()
+
+message(STATUS "EXTERNAL_PROJECT_DIR: ${EXTERNAL_PROJECT_DIR}")
+
+list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_PROJECT_DIR}/mongo-cxx-driver" "${EXTERNAL_PROJECT_DIR}/SFML")
 find_package(mongocxx REQUIRED)
 find_package(SFML REQUIRED COMPONENTS graphics audio)
 
@@ -53,11 +65,11 @@ if(THIS_OS_WINDOWS)
         PRE_BUILD
         COMMAND
         ${CMAKE_COMMAND} -E copy
-        "${CMAKE_SOURCE_DIR}/external/SFML/bin/openal32.dll" $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        "${EXTERNAL_PROJECT_DIR}/SFML/bin/openal32.dll" $<TARGET_FILE_DIR:${PROJECT_NAME}>
         VERBATIM
     )
 
-    install(FILES "${CMAKE_SOURCE_DIR}/external/SFML/bin/openal32.dll" DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES "${EXTERNAL_PROJECT_DIR}/SFML/bin/openal32.dll" DESTINATION ${CMAKE_INSTALL_BINDIR})
 
     # add_custom_command(
     # TARGET ${PROJECT_NAME}
