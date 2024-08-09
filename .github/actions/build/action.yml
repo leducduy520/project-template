@@ -5,6 +5,12 @@ inputs:
   preset:
     description: 'Cmake preset to be built'
     required: true
+  build:
+    description: 'Build project with Ubuntu'
+    required: true
+  test:
+    description: 'Run tests with Ubuntu'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -24,9 +30,13 @@ runs:
       run: make configure PRESET=${{ inputs.preset }}
       shell: bash
     - name: Build Project
+      id: build
+      if: ${{ inputs.build == true }}
       run: cmake --build --preset=${{ inputs.preset }}
       shell: bash
     - name: Install Project
+      id: install
+      if: ${{ inputs.install == true && steps.build.conclusion == 'success' }}
       run: cmake --build --preset=${{ inputs.preset }} -t install
       shell: bash
     - name: Test Project
