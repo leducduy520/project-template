@@ -37,28 +37,28 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     execute_process(
         COMMAND "${CMAKE_CXX_COMPILER}" "--version" OUTPUT_VARIABLE CLANG_VERSION_OUTPUT
-    )
+        )
     string(
         REGEX REPLACE ".*clang version ([0-9]+\\.[0-9]+).*" "\\1" THIS_CLANG_VERSION
-        "${CLANG_VERSION_OUTPUT}"
-    )
+                      "${CLANG_VERSION_OUTPUT}"
+        )
 
     execute_process(
         COMMAND "${CMAKE_CXX_COMPILER}" "-v" OUTPUT_VARIABLE CLANG_COMPILER_VERSION
         ERROR_VARIABLE CLANG_COMPILER_VERSION
-    )
+        )
 elseif(CMAKE_COMPILER_IS_GNUCXX)
     set(THIS_COMPILER_GCC 1)
 
     execute_process(
         COMMAND "${CMAKE_CXX_COMPILER}" "-dumpversion" OUTPUT_VARIABLE GCC_VERSION_OUTPUT
-    )
+        )
     string(REGEX REPLACE "([0-9]+\\.[0-9]+).*" "\\1" THIS_GCC_VERSION "${GCC_VERSION_OUTPUT}")
 
     execute_process(
         COMMAND "${CMAKE_CXX_COMPILER}" "-v" OUTPUT_VARIABLE GCC_COMPILER_VERSION
         ERROR_VARIABLE GCC_COMPILER_VERSION
-    )
+        )
     string(REGEX MATCHALL ".*(tdm[64]*-[1-9]).*" THIS_COMPILER_GCC_TDM "${GCC_COMPILER_VERSION}")
 
     if("${GCC_COMPILER_VERSION}" MATCHES "ucrt")
