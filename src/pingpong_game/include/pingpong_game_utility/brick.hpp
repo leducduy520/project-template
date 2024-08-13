@@ -23,19 +23,19 @@ public:
     };
 
     brick() = default;
-    brick(std::function<void(bool)> parent_update, float x, float y, BrickProperty property = BRICK);
+    brick(float x, float y, BrickProperty property = BRICK);
     BrickProperty getProperty() const noexcept;
-    std::function<void(bool)> m_wall_live_change;
     void draw(sf::RenderWindow& window) override;
     void hit(const int damage = 1, const bool relate = false) noexcept;
     void init(float x, float y) override;
     void update() override;
+    void registerLiveUpdate(const std::function<void(bool)>& fnc);
     friend class wall;
 
 private:
-    //wall* m_parent;
     BrickProperty m_property;
     int m_hitCount;
+    std::function<void(bool)> m_live_update_fnc;
     static sf::Texture& getTexture(BrickProperty property = BRICK);
 };
 
@@ -86,6 +86,7 @@ public:
     void update() override;
     void draw(sf::RenderWindow& window) override;
     void init(float x, float y) override;
+    void refresh();
 
     uint16_t point;
     unsigned int live;

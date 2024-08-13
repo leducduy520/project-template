@@ -331,8 +331,10 @@ void PingPongGame::try_createwall()
     try
     {
         wall a_wall;
-        utilities::wallhelper::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
-        m_entity_manager.create<wall>(std::move(a_wall));
+        m_entity_manager.create<wall>();
+        m_entity_manager.apply_all<wall>([](wall& a_wall) {
+            utilities::wallhelper::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+        });
     }
     catch (const std::ios::failure& e)
     {
@@ -431,6 +433,8 @@ void PingPongGame::reset()
         [](ball& a_ball) { a_ball.init(constants::window_width / 2.0f, constants::window_height / 2.0f); });
     m_entity_manager.apply_all<paddle>(
         [](paddle& a_paddle) { a_paddle.init(constants::window_width / 2.0f, constants::window_height * 1.0f); });
+    m_entity_manager.apply_all<wall>([](wall& w) { w.destroy(); });
+    m_entity_manager.refresh();
     try_createwall();
 }
 

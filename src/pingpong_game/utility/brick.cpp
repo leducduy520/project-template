@@ -114,25 +114,11 @@ sf::Texture& brick::getTexture(BrickProperty property)
     }
 }
 
-brick::brick(std::function<void(bool)> parent_update, float px_x, float px_y, BrickProperty property)
-    : m_wall_live_change(parent_update), m_property(property), m_hitCount(0)
+brick::brick(float px_x, float px_y, BrickProperty property)
+    : m_property(property), m_hitCount(0)
 {
     m_sprite.setTexture(getTexture(property));
     brick::init(px_x, px_y);
-
-    if (m_wall_live_change)
-    {
-        switch (m_property)
-        {
-        case brick::BRICK:
-            [[fallthrough]];
-        case brick::DIAMOND:
-            m_wall_live_change(true);
-            break;
-        default:
-            break;
-        }
-    }
 }
 
 void brick::init(float px_x, float px_y)
@@ -143,6 +129,15 @@ void brick::init(float px_x, float px_y)
 // Compute the brick's new position
 void brick::update()
 {}
+
+void brick::registerLiveUpdate(const std::function<void(bool)>& fnc)
+{
+    if (m_property == brick::DIAMOND)
+    {
+        m_live_update_fnc = fnc;
+        m_live_update_fnc(true);
+    }
+}
 
 void brick::draw(sf::RenderWindow& window)
 {
@@ -166,7 +161,6 @@ void brick::hit(const int damage, const bool relate) noexcept
         if (m_hitCount >= constants::cap_brick_hit)
         {
             destroyed = true;
-            m_wall_live_change(false);
         }
         if (!relate)
         {
@@ -179,7 +173,7 @@ void brick::hit(const int damage, const bool relate) noexcept
         if (m_hitCount >= constants::cap_diamond_hit)
         {
             destroyed = true;
-            m_wall_live_change(false);
+            m_live_update_fnc(false);
         }
         if (!relate)
         {
@@ -253,4 +247,15 @@ void wall::draw(sf::RenderWindow& window)
 void wall::init([[maybe_unused]] float px_x, [[maybe_unused]] float px_y)
 {
     utilities::wallhelper::createWall(*this, (constants::resoucesPath + "wall.csv").c_str());
+}
+
+void wall::refresh()
+{
+    for (auto it = this->begin(); it != this->end(); ++it)
+    {
+        if (it->second->is_destroyed())
+        {
+            this->erase(it);
+        }
+    }
 }

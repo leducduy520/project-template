@@ -121,15 +121,10 @@ namespace interactions
 
                     break;
                 }
-
-                if (a_brick->is_destroyed())
-                {
-                    a_wall.erase(it);
-                    --it;
-                }
             }
         }
 
+        a_wall.refresh();
         if (a_wall.live <= 0)
             a_wall.destroy();
     }
