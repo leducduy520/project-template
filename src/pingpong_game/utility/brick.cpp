@@ -251,11 +251,15 @@ void wall::init([[maybe_unused]] float px_x, [[maybe_unused]] float px_y)
 
 void wall::refresh()
 {
-    for (auto it = this->begin(); it != this->end(); ++it)
+    for (auto it = this->rbegin(); it != this->rend();)
     {
         if (it->second->is_destroyed())
         {
-            this->erase(it);
+            this->erase(it->first);
+        }
+        else
+        {
+            ++it;
         }
     }
 }
