@@ -1,4 +1,5 @@
 #include "interactions.hpp"
+#include "ThreadPoolGame.hpp"
 #include "helper.hpp"
 #include "soundplayer.hpp"
 #include <algorithm>
@@ -9,7 +10,7 @@
 namespace interactions
 {
 
-    static std::thread t;
+    //static std::thread t;
 
     bool is_interacting(const entity* element1, const entity* element2) noexcept
     {
@@ -109,8 +110,9 @@ namespace interactions
                 {
                     a_brick->hit(a_ball.getStrength());
                     a_ball.scale(2);
-                    t = std::thread(&ball::resetsize, &a_ball);
-                    t.detach();
+                    ThreadPool::getInstance()->submit(0, &ball::resetsize, &a_ball);
+                    // t = std::thread(&ball::resetsize, &a_ball);
+                    // t.detach();
                 }
                 break;
                 case brick::NONE:

@@ -4,6 +4,7 @@
 #include "helper.hpp"
 #include "interactions.hpp"
 #include "soundplayer.hpp"
+#include "ThreadPoolGame.hpp"
 
 std::string constants::resoucesPath;
 using namespace std;
@@ -451,6 +452,7 @@ void PingPongGame::run()
     try
     {
         SoundPlayer::getInstance();
+        ThreadPool::getInstance();
         while (game_window.isOpen())
         {
             game_window.clear(sf::Color::Black);
@@ -459,6 +461,7 @@ void PingPongGame::run()
             update();
             render();
         }
+        ThreadPool::destroyInstance();
         SoundPlayer::destroyInstance();
         DBClient::DestroyInstance();
         m_entity_manager.clear();
