@@ -1,5 +1,4 @@
 #include "interactions.hpp"
-#include "ThreadPoolGame.hpp"
 #include "helper.hpp"
 #include "soundplayer.hpp"
 #include <algorithm>
@@ -9,9 +8,6 @@
 
 namespace interactions
 {
-
-    //static std::thread t;
-
     bool is_interacting(const entity* element1, const entity* element2) noexcept
     {
         auto box1 = element1->getGlobalbound();
@@ -67,7 +63,7 @@ namespace interactions
                 case brick::BRICK:
                 {
                     utilities::wallhelper::increasePoint(a_wall, 1);
-                    a_brick->hit(a_ball.getStrength());
+                    a_brick->hit(a_ball.get_strength());
                     auto [more_at_side, from_left, from_top] = getDirection(a_ball, *a_brick);
 
                     if (more_at_side)
@@ -97,7 +93,7 @@ namespace interactions
                 case brick::DIAMOND:
                 {
                     utilities::wallhelper::increasePoint(a_wall, 5);
-                    a_brick->hit(a_ball.getStrength());
+                    a_brick->hit(a_ball.get_strength());
                 }
                 break;
                 case brick::BOMB:
@@ -108,11 +104,8 @@ namespace interactions
                 break;
                 case brick::SCALEUP:
                 {
-                    a_brick->hit(a_ball.getStrength());
+                    a_brick->hit(a_ball.get_strength());
                     a_ball.scale(2);
-                    ThreadPool::getInstance()->submit(0, &ball::resetsize, &a_ball);
-                    // t = std::thread(&ball::resetsize, &a_ball);
-                    // t.detach();
                 }
                 break;
                 case brick::NONE:

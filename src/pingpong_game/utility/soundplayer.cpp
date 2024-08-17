@@ -9,8 +9,11 @@ std::once_flag SoundPlayer::m_callflag;
 SoundPlayer::SoundPlayer()
 {
     m_music.openFromFile(constants::resoucesPath + "game_background.wav");
+    m_music.setVolume(50.0F);
     m_music.setLoop(true);
     m_music.play();
+
+    m_player.setVolume(50.0F);
 
     magic_enum::enum_for_each<SoundMode>([this](auto val) {
         constexpr SoundMode mode = val;

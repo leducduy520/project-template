@@ -12,6 +12,8 @@ struct constants
     static constexpr int window_width{800};
     static constexpr int window_height{600};
     static constexpr float ball_speed{8.0f};
+    static constexpr int ball_strength_lv1{1};
+    static constexpr int ball_strength_lv2{3};
     static constexpr int paddlle_width{120};
     static constexpr int paddlle_height{40};
     static constexpr float paddle_speed{10.0f};

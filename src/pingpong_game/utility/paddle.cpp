@@ -20,13 +20,13 @@ paddle::paddle(float px_x, float px_y) : moving_entity()
 {
     m_sprite.setTexture(getTexture());
     m_sprite.setOrigin(get_centre());
+    m_sprite.setScale(constants::paddlle_width / m_sprite.getLocalBounds().width,
+                      constants::paddlle_height / m_sprite.getLocalBounds().height);
     paddle::init(px_x, px_y);
 }
 
 void paddle::init(float px_x, float px_y)
 {
-    m_sprite.setScale(constants::paddlle_width / m_sprite.getLocalBounds().width,
-                      constants::paddlle_height / m_sprite.getLocalBounds().height);
     m_sprite.setPosition(px_x, px_y);
     m_velocity = {0, 0};
 }

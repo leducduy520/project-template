@@ -1,10 +1,10 @@
 #include "PingPongGame.hpp"
 #include "DBClientGame.hpp"
 #include "LoginGame.hpp"
+#include "ThreadPoolGame.hpp"
 #include "helper.hpp"
 #include "interactions.hpp"
 #include "soundplayer.hpp"
-#include "ThreadPoolGame.hpp"
 
 std::string constants::resoucesPath;
 using namespace std;
@@ -199,6 +199,7 @@ void PingPongGame::listening()
         if (!pause_key_active)
         {
             (m_state == game_state::paused) ? (m_state = game_state::running) : (m_state = game_state::paused);
+            m_entity_manager.apply_all<ball>([this](ball& a_ball) { a_ball.set_pause(m_state == game_state::paused); });
         }
         pause_key_active = true;
     }
@@ -309,6 +310,7 @@ void PingPongGame::update()
         if (m_entity_manager.get_all<wall>().empty())
         {
             m_state = game_state::player_wins;
+            m_entity_manager.apply_all<ball>([](ball& a_ball) { a_ball.stop(); });
         }
     }
 }
@@ -430,10 +432,14 @@ void PingPongGame::reset()
     m_live = constants::init_live;
     m_point = 0;
     m_state = game_state::running;
-    m_entity_manager.apply_all<ball>(
-        [](ball& a_ball) { a_ball.init(constants::window_width / 2.0f, constants::window_height / 2.0f); });
+    
     m_entity_manager.apply_all<paddle>(
-        [](paddle& a_paddle) { a_paddle.init(constants::window_width / 2.0f, constants::window_height * 1.0f); });
+        [](paddle& a_paddle) { a_paddle.init(constants::window_width / 2.0f, constants::window_height * 1.0F); });
+    m_entity_manager.apply_all<ball>([](ball& a_ball) {
+        a_ball.stop();
+        a_ball.init(constants::window_width / 2.0F, constants::window_height / 2.0F);
+    });
+
     m_entity_manager.apply_all<wall>([](wall& w) { w.destroy(); });
     m_entity_manager.refresh();
     try_createwall();
@@ -461,10 +467,10 @@ void PingPongGame::run()
             update();
             render();
         }
+        m_entity_manager.clear();
         ThreadPool::destroyInstance();
         SoundPlayer::destroyInstance();
         DBClient::DestroyInstance();
-        m_entity_manager.clear();
     }
     catch (const std::exception& e)
     {

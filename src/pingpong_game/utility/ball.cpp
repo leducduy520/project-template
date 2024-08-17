@@ -2,6 +2,9 @@
 #include "soundplayer.hpp"
 #include <filesystem>
 #include <thread>
+#include "ThreadPoolGame.hpp"
+
+using namespace std::literals;
 
 sf::Texture& ball::getTexture()
 {
@@ -18,21 +21,28 @@ sf::Texture& ball::getTexture()
     return texture;
 }
 
-ball::ball(float px_x, float px_y) : moving_entity(), m_scaleflag(false), m_strength(1)
+ball::ball(float px_x, float px_y) : moving_entity(), m_scaleflag(false), m_pauseflag(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
 {
     m_sprite.setTexture(getTexture());
     m_sprite.setOrigin(get_centre());
     ball::init(px_x, px_y);
 }
 
-ball::ball() : m_scaleflag(false), m_strength(1)
+ball::ball() : m_scaleflag(false), m_pauseflag(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
 {
     m_sprite.setTexture(getTexture());
     m_sprite.setOrigin(get_centre());
 }
 
+ball::~ball()
+{
+    m_scaleflag.store(false);
+    m_pauseflag.store(false);
+}
+
 void ball::init(float px_x, float px_y)
 {
+    m_sprite.setScale(1.0F, 1.0F);
     m_sprite.setPosition(px_x, px_y);
     m_velocity = {0.0F, constants::ball_speed};
 }
@@ -98,24 +108,58 @@ void ball::print_info() const noexcept
 
 void ball::scale(const int& n) noexcept
 {
-    if (!m_scaleflag)
+    m_scale_time += 10000;
+    if (!m_scaleflag.load())
     {
-        m_scaleflag = true;
-        m_scale = n;
-        m_strength = 3;
+        m_scaleflag.store(true);
+        m_strength.store(constants::ball_strength_lv2);
+        std::unique_lock<std::mutex>(m_mt);
         m_sprite.setScale(n * 1.0F, n * 1.0F);
+        ThreadPool::getInstance()->submit(0, &ball::reset_size, this);
     }
 }
 
-void ball::resetsize() noexcept
+void ball::reset_size() noexcept
 {
-    std::this_thread::sleep_for(std::chrono::seconds(10));
-    m_sprite.setScale(1.0F, 1.0F);
-    m_scaleflag = false;
-    m_strength = 1;
+    auto start_time = std::chrono::steady_clock::now();
+    auto current_time = start_time;
+
+    while(std::chrono::duration_cast<std::chrono::milliseconds>((current_time - start_time)).count() <= m_scale_time.load() && m_scaleflag.load())
+    {
+        while(m_pauseflag.load()){
+            std::this_thread::sleep_for(100ms);
+            start_time += 100ms;
+        }
+        std::this_thread::sleep_for(100ms);
+        current_time = std::chrono::steady_clock::now();
+        //std::cout << "current_time: " << std::chrono::duration_cast<std::chrono::milliseconds>((current_time - start_time)).count() << "; duration: " << m_scale_time.load() << '\n';
+    }
+
+    if(!m_scaleflag.load())
+    {
+        return;
+    }
+
+    m_scaleflag.store(false);
+    m_strength.store(constants::ball_strength_lv1);
+    m_scale_time.store(0);
+    {
+        std::unique_lock<std::mutex>lock(m_mt);
+        m_sprite.setScale(1.0F, 1.0F);
+    }
 }
 
-int ball::getStrength() noexcept
+void ball::set_pause(const bool& pause)
+{
+    m_pauseflag.store(pause);
+}
+
+void ball::stop()
+{
+    m_scaleflag.store(false);
+}
+
+int ball::get_strength() noexcept
 {
     return m_strength;
 }
