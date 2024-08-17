@@ -42,6 +42,10 @@ ball::~ball()
 
 void ball::init(float px_x, float px_y)
 {
+    m_scaleflag.store(false);
+    m_pauseflag.store(false);
+    m_strength.store(constants::ball_strength_lv1);
+    m_scale_time.store(0);
     m_sprite.setScale(1.0F, 1.0F);
     m_sprite.setPosition(px_x, px_y);
     m_velocity = {0.0F, constants::ball_speed};
