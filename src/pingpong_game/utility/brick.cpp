@@ -262,4 +262,7 @@ void wall::refresh()
             ++it;
         }
     }
+    
+    if (this->live <= 0)
+        this->destroy();
 }

@@ -5,6 +5,11 @@
 #include <future>
 #include <mutex>
 #include <thread>
+#include <random>
+
+std::random_device rd;
+std::mt19937 gen(rd());
+std::bernoulli_distribution dist(0.25F);
 
 namespace interactions
 {
@@ -99,7 +104,7 @@ namespace interactions
                 case brick::BOMB:
                 {
                     utilities::wallhelper::destroyAround(a_wall, *a_brick, {3, 3});
-                    a_ball.set_velocity({-a_ball.get_velocity().x, -a_ball.get_velocity().y});
+                    a_ball.set_velocity({(dist(gen) ? 1 : -1) * a_ball.get_velocity().x, (dist(gen) ? 1 : -1) * a_ball.get_velocity().y});
                 }
                 break;
                 case brick::SCALEUP:
@@ -120,8 +125,6 @@ namespace interactions
         }
 
         a_wall.refresh();
-        if (a_wall.live <= 0)
-            a_wall.destroy();
     }
 
 } // namespace interactions

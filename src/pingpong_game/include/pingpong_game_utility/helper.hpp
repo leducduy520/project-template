@@ -7,8 +7,6 @@ namespace utilities
 {
     namespace wallhelper
     {
-        void resetPoint(wall& a_wall);
-        void increasePoint(wall& a_wall, uint16_t amount = 1);
         void createWall(wall& a_wall, const char* path);
         void destroyAround(wall& a_wall, brick& a_brick, sf::Vector2i range);
 

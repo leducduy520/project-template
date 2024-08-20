@@ -284,7 +284,7 @@ void PingPongGame::update()
         for (auto& a_wall : walls)
         {
             auto* const wptr = dynamic_cast<wall*>(a_wall);
-            m_point += wptr->point;
+            m_point += utilities::wallhelper::getPoint(*wptr);
         }
 
 

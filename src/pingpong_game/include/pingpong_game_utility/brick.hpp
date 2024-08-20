@@ -69,6 +69,16 @@ namespace std
 //    }
 //};
 
+namespace utilities
+{
+    namespace wallhelper
+    {
+        void increasePoint(wall& a_wall, uint16_t amount = 1);
+        void resetPoint(wall& a_wall);
+        uint16_t getPoint(wall& a_wall);
+    }
+}
+
 typedef std::map<e_location, std::unique_ptr<brick>> wall_map;
 
 class wall : public wall_map, public entity
@@ -88,10 +98,13 @@ public:
     void init(float x, float y) override;
     void refresh();
 
-    uint16_t point;
-    unsigned int live;
+    friend void utilities::wallhelper::increasePoint(wall& a_wall, uint16_t amount);
+    friend void utilities::wallhelper::resetPoint(wall& a_wall);
+    friend uint16_t utilities::wallhelper::getPoint(wall& a_wall);
 
 private:
+    uint16_t point;
+    unsigned int live;
 };
 
 #endif // _BRICK_H

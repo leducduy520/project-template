@@ -3,6 +3,7 @@
 #include "rapidcsv.h"
 #include <exception>
 #include <ios>
+#include "brick.hpp"
 
 namespace utilities
 {
@@ -11,6 +12,11 @@ namespace utilities
         void resetPoint(wall& a_wall)
         {
             a_wall.point = 0;
+        }
+
+        uint16_t getPoint(wall& a_wall)
+        {
+            return a_wall.point;
         }
 
         void increasePoint(wall& a_wall, uint16_t amount)
