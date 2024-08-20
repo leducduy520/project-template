@@ -82,3 +82,5 @@ void SoundPlayer::playSound(const SoundMode& mode)
         m_player.play();
     }
 }
+
+//Some text in detached head
