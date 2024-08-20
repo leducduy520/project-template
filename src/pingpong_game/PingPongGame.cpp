@@ -12,6 +12,8 @@ using namespace std::literals;
 using namespace utilities::texthelper;
 using json = nlohmann::json;
 
+extern void CountingTextUpdate(CountingText* text);
+
 void PingPongGame::updateGameSessionStartTime()
 {
     std::array<char, constants::fmtnow> buffer{};
@@ -326,6 +328,7 @@ void PingPongGame::render()
     {
         game_window.draw(m_textLive);
     }
+    game_window.draw(m_countingText);
     game_window.display();
 }
 
@@ -422,6 +425,13 @@ void PingPongGame::init(std::string& resourcePath)
     textLife.setOrigin(bound.width / 2.0f, bound.height / 2.0f);
     textLife.setPosition(constants::window_width / 2.0F, constants::window_height / 2.0F - 50.f);
 
+    m_countingText.setString("ABC");
+    m_countingText.setFillColor(sf::Color::Blue);
+    m_countingText.setPosition(0, 400);
+    m_countingText.setFont(m_font);
+    m_countingText.setCharacterSize(24);
+    m_countingText.start();
+
     m_textState = std::move(textState);
     m_textLive = std::move(textLife);
 }
@@ -458,7 +468,7 @@ void PingPongGame::run()
     try
     {
         SoundPlayer::getInstance();
-        ThreadPool::getInstance();
+        m_countingText_return = ThreadPool::getInstance()->submit(1, CountingTextUpdate, &m_countingText);
         while (game_window.isOpen())
         {
             game_window.clear(sf::Color::Black);
@@ -467,6 +477,8 @@ void PingPongGame::run()
             update();
             render();
         }
+        m_countingText.stop();
+        m_countingText_return.get();
         m_entity_manager.clear();
         ThreadPool::destroyInstance();
         SoundPlayer::destroyInstance();

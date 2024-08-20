@@ -10,6 +10,7 @@
 #include "entityManager.hpp"
 #include "nlohmann/json.hpp"
 #include "paddle.hpp"
+#include "countingtext.hpp"
 
 class PingPongGame : public IGame
 {
@@ -28,6 +29,8 @@ class PingPongGame : public IGame
     sf::Font m_font;
     sf::Text m_textState;
     sf::Text m_textLive;
+    CountingText m_countingText;
+    std::future<void> m_countingText_return;
 
     bool savedData;
     int64_t m_GameSessionID;
