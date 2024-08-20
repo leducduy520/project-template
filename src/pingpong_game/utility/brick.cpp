@@ -114,8 +114,7 @@ sf::Texture& brick::getTexture(BrickProperty property)
     }
 }
 
-brick::brick(float px_x, float px_y, BrickProperty property)
-    : m_property(property), m_hitCount(0)
+brick::brick(float px_x, float px_y, BrickProperty property) : m_property(property), m_hitCount(0)
 {
     m_sprite.setTexture(getTexture(property));
     brick::init(px_x, px_y);
@@ -262,7 +261,7 @@ void wall::refresh()
             ++it;
         }
     }
-    
+
     if (this->live <= 0)
         this->destroy();
 }

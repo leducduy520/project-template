@@ -7,10 +7,10 @@
 #include "brick.hpp"
 #include "bson/bson.h"
 #include "constants.hpp"
+#include "countingtext.hpp"
 #include "entityManager.hpp"
 #include "nlohmann/json.hpp"
 #include "paddle.hpp"
-#include "countingtext.hpp"
 
 class PingPongGame : public IGame
 {

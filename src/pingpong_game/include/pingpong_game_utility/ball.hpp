@@ -5,8 +5,8 @@
 #include "SFML/Audio.hpp"
 #include "constants.hpp"
 #include "entity.hpp"
-#include <mutex>
 #include <future>
+#include <mutex>
 
 class ball : public moving_entity
 {
@@ -23,22 +23,22 @@ public:
     ball();
     ~ball();
 
-    void    init(float px_x, float px_y) override;
+    void init(float px_x, float px_y) override;
 
-    void    update() override;
-    void    draw(sf::RenderWindow& window) override;
+    void update() override;
+    void draw(sf::RenderWindow& window) override;
 
-    void    move_up() noexcept override;
-    void    move_down() noexcept override;
-    void    move_left() noexcept override;
-    void    move_right() noexcept override;
-    void    print_info() const noexcept override;
+    void move_up() noexcept override;
+    void move_down() noexcept override;
+    void move_left() noexcept override;
+    void move_right() noexcept override;
+    void print_info() const noexcept override;
 
-    void    scale(const int& n) noexcept;
-    void    reset_size() noexcept;
-    void    set_pause(const bool &pause);
-    void    stop();
-    int     get_strength() noexcept;
+    void scale(const int& n) noexcept;
+    void reset_size() noexcept;
+    void set_pause(const bool& pause);
+    void stop();
+    int get_strength() noexcept;
 
 private:
 };

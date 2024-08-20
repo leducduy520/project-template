@@ -14,8 +14,8 @@
 
 // main() provided by linkage to Catch2WithMain
 
-#include <PingPongGame.hpp>
 #include <DBClientGame.hpp>
+#include <PingPongGame.hpp>
 #include <background.hpp>
 #include <ball.hpp>
 #include <brick.hpp>

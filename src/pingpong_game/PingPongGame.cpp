@@ -200,8 +200,18 @@ void PingPongGame::listening()
         // If it was not pressed on the last iteration, toggle the status
         if (!pause_key_active)
         {
-            (m_state == game_state::paused) ? (m_state = game_state::running) : (m_state = game_state::paused);
-            m_entity_manager.apply_all<ball>([this](ball& a_ball) { a_ball.set_pause(m_state == game_state::paused); });
+            if (m_state == game_state::paused)
+            {
+                m_state = game_state::running;
+                m_countingText.stop_pause();
+                m_entity_manager.apply_all<ball>([this](ball& a_ball) { a_ball.set_pause(false); });
+            }
+            else if (m_state == game_state::running)
+            {
+                m_state = game_state::paused;
+                m_countingText.pause();
+                m_entity_manager.apply_all<ball>([this](ball& a_ball) { a_ball.set_pause(true); });
+            }
         }
         pause_key_active = true;
     }
@@ -289,8 +299,19 @@ void PingPongGame::update()
             m_point += utilities::wallhelper::getPoint(*wptr);
         }
 
+        if (m_countingText.is_timeout())
+        {
+            m_entity_manager.apply_all<ball>([this](ball& a_ball) { a_ball.destroy(); });
+            m_state = game_state::game_over;
+            m_countingText.pause();
+        }
 
         m_entity_manager.refresh();
+
+        if (m_state == game_state::game_over)
+        {
+            return;
+        }
 
         if (m_entity_manager.get_all<ball>().empty())
         {
@@ -306,6 +327,7 @@ void PingPongGame::update()
             else
             {
                 m_state = game_state::game_over;
+                m_countingText.pause();
             }
         }
 
@@ -313,6 +335,7 @@ void PingPongGame::update()
         {
             m_state = game_state::player_wins;
             m_entity_manager.apply_all<ball>([](ball& a_ball) { a_ball.stop(); });
+            m_countingText.pause();
         }
     }
 }
@@ -430,6 +453,7 @@ void PingPongGame::init(std::string& resourcePath)
     m_countingText.setPosition(0, 400);
     m_countingText.setFont(m_font);
     m_countingText.setCharacterSize(24);
+    m_countingText.setLimit(CountingText::duration{5min});
     m_countingText.start();
 
     m_textState = std::move(textState);
@@ -442,7 +466,7 @@ void PingPongGame::reset()
     m_live = constants::init_live;
     m_point = 0;
     m_state = game_state::running;
-    
+
     m_entity_manager.apply_all<paddle>(
         [](paddle& a_paddle) { a_paddle.init(constants::window_width / 2.0f, constants::window_height * 1.0F); });
     m_entity_manager.apply_all<ball>([](ball& a_ball) {
@@ -453,6 +477,8 @@ void PingPongGame::reset()
     m_entity_manager.apply_all<wall>([](wall& w) { w.destroy(); });
     m_entity_manager.refresh();
     try_createwall();
+    m_countingText.restart();
+    m_countingText.stop_pause();
 }
 
 void PingPongGame::clear()
