@@ -30,7 +30,6 @@ class PingPongGame : public IGame
     sf::Text m_textState;
     sf::Text m_textLive;
     CountingText m_countingText;
-    std::future<void> m_countingText_return;
 
     bool savedData;
     int64_t m_GameSessionID;
@@ -40,34 +39,35 @@ class PingPongGame : public IGame
 
     static std::string toJsonString(const uint8_t* data, size_t length);
     static nlohmann::json toJson(const uint8_t* data, size_t length);
-    int64_t updateGameSessionID();
-
-    void databaseResultUpdate(const bool& isWin);
-    void databaseRetryUpdate();
-    void listening();
-    void removeCurrentData();
-    void render();
-    void stateHandler();
-    void try_createwall();
-    void try_database();
-    void update();
-    void updateGameNewHistory();
-    static void updateGameRecord();
-    void updateGameSessionEndTime();
-    void updateGameSessionStartTime();
 
 public:
     explicit PingPongGame(std::string resourcePath);
     PingPongGame();
 
+    //! Database implementation
+    static void updateGameRecord();
+    int64_t updateGameSessionID();
+    void databaseResultUpdate(const bool& isWin);
+    void databaseRetryUpdate();
+    void removeCurrentData();
+    void updateGameNewHistory();
+    void updateGameSessionEndTime();
+    void updateGameSessionStartTime();
+
+    //! Game implementation
     void init(std::string& resourcePath) override;
-    // Reinitialize the game
     void reset();
-
     void clear();
-
-    // Game loop
     void run() override;
+    void listening();
+    void stateHandler();
+    void update();
+    void render();
+
+    //! Support function
+    void try_createwall();
+    void try_login();
+    void initialize_text();
 };
 
 #endif // GAME_H

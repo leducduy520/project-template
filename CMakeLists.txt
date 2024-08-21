@@ -44,11 +44,11 @@ set(INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 if(NOT DEFINED ENV{EXTERNAL_PROJECT_DIR} AND NOT DEFINED EXTERNAL_PROJECT_DIR)
     set(EXTERNAL_PROJECT_DIR "${CMAKE_SOURCE_DIR}/external"
         CACHE PATH "Where to file external projects" FORCE
-        )
+    )
 elseif(DEFINED ENV{EXTERNAL_PROJECT_DIR} AND NOT DEFINED EXTERNAL_PROJECT_DIR)
     set(EXTERNAL_PROJECT_DIR "$ENV{EXTERNAL_PROJECT_DIR}"
         CACHE PATH "Where to file external projects" FORCE
-        )
+    )
 endif()
 
 message(STATUS "EXTERNAL_PROJECT_DIR: ${EXTERNAL_PROJECT_DIR}")
@@ -61,15 +61,17 @@ if(THIS_MULTI_CONFIG)
         string(TOUPPER ${build_type} build_type_upper)
         set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper}
             ${CMAKE_BINARY_DIR}/${build_type}/lib
-            )
+        )
         set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${build_type_upper}
             ${CMAKE_BINARY_DIR}/${build_type}/lib
-            )
+        )
         set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper}
             ${CMAKE_BINARY_DIR}/${build_type}/bin
-            )
+        )
     endforeach()
 endif()
+
+add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 
 include(Config)
 include(Tools)

@@ -169,9 +169,6 @@ void PingPongGame::removeCurrentData()
                                make_document(kvp("$pop", make_document(kvp("history", 1)))));
 }
 
-void PingPongGame::try_database()
-{}
-
 void PingPongGame::listening()
 {
     static bool pause_key_active = false;
@@ -387,19 +384,8 @@ void PingPongGame::try_createwall()
     }
 }
 
-PingPongGame::PingPongGame(std::string resourcePath)
-    : m_live(constants::init_live), m_point(0), m_GameSessionID(0), savedData(false)
+void PingPongGame::try_login()
 {
-    PingPongGame::init(resourcePath);
-}
-
-PingPongGame::PingPongGame() : m_live(constants::init_live), m_point(0), m_GameSessionID(0), savedData(false)
-{}
-
-void PingPongGame::init(std::string& resourcePath)
-{
-    constants::resoucesPath = resourcePath;
-
     try
     {
         std::pair<bool, std::string> result;
@@ -423,6 +409,48 @@ void PingPongGame::init(std::string& resourcePath)
         cerr << "Connecting PingPong Game to database failed: " << e.what() << '\n';
         clear();
     }
+}
+
+void PingPongGame::initialize_text()
+{
+    m_font.loadFromFile(constants::resoucesPath + "Cross Boxed.ttf");
+
+    sf::Text textState("Paused", m_font, 32);
+    textState.setFillColor(sf::Color(255, 26, 26));
+    auto bound = textState.getLocalBounds();
+    textState.setOrigin(bound.width / 2.0f, bound.height / 2.0f);
+    textState.setPosition(constants::window_width / 2.0F, constants::window_height / 2.0F);
+    m_textState = std::move(textState);
+
+    sf::Text textLife("Lives: " + to_string(m_live), m_font, 26);
+    textLife.setFillColor(sf::Color(255, 26, 26));
+    bound = textLife.getLocalBounds();
+    textLife.setOrigin(bound.width / 2.0f, bound.height / 2.0f);
+    textLife.setPosition(constants::window_width / 2.0F, constants::window_height / 2.0F - 50.f);
+    m_textLive = std::move(textLife);
+
+    m_countingText.setString("ABC");
+    m_countingText.setFillColor(sf::Color::Blue);
+    m_countingText.setPosition(0, 400);
+    m_countingText.setFont(m_font);
+    m_countingText.setCharacterSize(24);
+    m_countingText.setLimit(CountingText::duration{5min});
+}
+
+PingPongGame::PingPongGame(std::string resourcePath)
+    : m_live(constants::init_live), m_point(0), m_GameSessionID(0), savedData(false)
+{
+    PingPongGame::init(resourcePath);
+}
+
+PingPongGame::PingPongGame() : m_live(constants::init_live), m_point(0), m_GameSessionID(0), savedData(false)
+{}
+
+void PingPongGame::init(std::string& resourcePath)
+{
+    constants::resoucesPath = resourcePath;
+
+    try_login();
 
     game_window.setFramerateLimit(60);
     game_window.setVerticalSyncEnabled(true);
@@ -434,39 +462,18 @@ void PingPongGame::init(std::string& resourcePath)
 
     try_createwall();
 
-    m_font.loadFromFile(constants::resoucesPath + "Cross Boxed.ttf");
-
-    sf::Text textState("Paused", m_font, 32);
-    textState.setFillColor(sf::Color(255, 26, 26));
-    auto bound = textState.getLocalBounds();
-    textState.setOrigin(bound.width / 2.0f, bound.height / 2.0f);
-    textState.setPosition(constants::window_width / 2.0F, constants::window_height / 2.0F);
-
-    sf::Text textLife("Lives: " + to_string(m_live), m_font, 26);
-    textLife.setFillColor(sf::Color(255, 26, 26));
-    bound = textLife.getLocalBounds();
-    textLife.setOrigin(bound.width / 2.0f, bound.height / 2.0f);
-    textLife.setPosition(constants::window_width / 2.0F, constants::window_height / 2.0F - 50.f);
-
-    m_countingText.setString("ABC");
-    m_countingText.setFillColor(sf::Color::Blue);
-    m_countingText.setPosition(0, 400);
-    m_countingText.setFont(m_font);
-    m_countingText.setCharacterSize(24);
-    m_countingText.setLimit(CountingText::duration{5min});
-    m_countingText.start();
-
-    m_textState = std::move(textState);
-    m_textLive = std::move(textLife);
+    initialize_text();
 }
 
 // Reinitialize the PingPongGame
 void PingPongGame::reset()
 {
+    //! Reset the parameters
+    m_state = game_state::running;
     m_live = constants::init_live;
     m_point = 0;
-    m_state = game_state::running;
 
+    //! Reset entities initial position
     m_entity_manager.apply_all<paddle>(
         [](paddle& a_paddle) { a_paddle.init(constants::window_width / 2.0f, constants::window_height * 1.0F); });
     m_entity_manager.apply_all<ball>([](ball& a_ball) {
@@ -474,9 +481,12 @@ void PingPongGame::reset()
         a_ball.init(constants::window_width / 2.0F, constants::window_height / 2.0F);
     });
 
+    //! Regenerate wall
     m_entity_manager.apply_all<wall>([](wall& w) { w.destroy(); });
     m_entity_manager.refresh();
     try_createwall();
+
+    //! Restart the counting text
     m_countingText.restart();
     m_countingText.stop_pause();
 }
@@ -493,8 +503,7 @@ void PingPongGame::run()
 {
     try
     {
-        SoundPlayer::getInstance();
-        m_countingText_return = ThreadPool::getInstance()->submit(1, CountingTextUpdate, &m_countingText);
+        m_countingText.start();
         while (game_window.isOpen())
         {
             game_window.clear(sf::Color::Black);
@@ -504,7 +513,6 @@ void PingPongGame::run()
             render();
         }
         m_countingText.stop();
-        m_countingText_return.get();
         m_entity_manager.clear();
         ThreadPool::destroyInstance();
         SoundPlayer::destroyInstance();
@@ -526,56 +534,3 @@ extern "C" void destroyGame(IGame* game)
     delete game;
     game = nullptr;
 }
-
-/*
-[
-  {
-    $group: {
-      _id: null,
-      password: {
-        $first: "$password"
-      },
-      name: {
-        $first: "$name"
-      },
-      worldrecord: {
-        $push: "$history"
-      }
-    }
-  },
-  {
-    $project: {
-      _id: 0,
-      password: 1,
-      name: 1,
-      worldrecord: {
-        $slice: [
-          {
-            $sortArray: {
-              input: {
-                $reduce: {
-                  input: "$worldrecord",
-                  initialValue: [],
-                  in: {
-                    $concatArrays: [
-                      "$$value",
-                      "$$this"
-                    ]
-                  }
-                }
-              },
-              sortBy: {
-                score: -1,
-                live: -1,
-                duration: 1,
-                id: 1
-              }
-            }
-          },
-          20
-        ]
-      }
-    }
-  }
-]
-*/

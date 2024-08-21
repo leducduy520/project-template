@@ -49,7 +49,6 @@ public:
     void RunPipeLine(const mongocxx::pipeline& pl,
                      const mongocxx::options::aggregate& opts,
                      mongocxx::collection* collection = nullptr);
-    void testFunc();
 };
 
 #endif /*  __DBCLIENT_GAME__ */

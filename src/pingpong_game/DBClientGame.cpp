@@ -177,10 +177,10 @@ void DBClient::RunPipeLine(const mongocxx::pipeline& pl,
     }
 }
 
-void DBClient::testFunc()
-{
-    using bsoncxx::builder::stream::close_array;
-    using bsoncxx::builder::stream::close_document;
-    using bsoncxx::builder::stream::open_array;
-    using bsoncxx::builder::stream::open_document;
-}
+// void DBClient::testFunc()
+// {
+//     using bsoncxx::builder::stream::close_array;
+//     using bsoncxx::builder::stream::close_document;
+//     using bsoncxx::builder::stream::open_array;
+//     using bsoncxx::builder::stream::open_document;
+// }
