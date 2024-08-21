@@ -106,7 +106,7 @@ PointerAlignment: Left
 ReferenceAlignment: Left
 ReflowComments:  false
 SeparateDefinitionBlocks: Always
-SortIncludes:    true
+SortIncludes:    false
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false

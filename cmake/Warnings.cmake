@@ -55,24 +55,12 @@ function(target_set_warnings)
         -Woverloaded-virtual # if you overload (not override) a virtual function
         -Weffc++ # violations from Scott Meyers’ Effective C++
         # Disable warnings
-        -Wno-c++98-compat
-        -Wno-c++98-compat-pedantic
         -Wno-suggest-override
         -Wno-zero-as-null-pointer-constant
-        -Wno-suggest-destructor-override
-        -Wno-reserved-macro-identifier
-        -Wno-language-extension-token
-        -Wno-documentation-deprecated-sync
-        -Wno-reserved-identifier
-        -Wno-documentation
-        -Wno-newline-eof
-        -Wno-exit-time-destructors
-        -Wno-missing-prototypes
-        -Wno-covered-switch-default
-        -Wno-unsafe-buffer-usage
         -Wno-reorder
         -Wno-effc++
         -Wno-missing-field-initializers
+        # -Wno-missing-prototypes
         )
 
     set(GCC_WARNINGS
@@ -80,6 +68,25 @@ function(target_set_warnings)
         -Wduplicated-branches # warn if if / else branches have duplicated code
         -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
         )
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        list(
+            APPEND
+            CLANG_WARNINGS
+            -Wno-c++98-compat # not gcc flag
+            -Wno-c++98-compat-pedantic # not gcc flag
+            -Wno-suggest-destructor-override # not gcc flag
+            -Wno-reserved-macro-identifier # not gcc flag
+            -Wno-language-extension-token # not gcc flag
+            -Wno-documentation-deprecated-sync # not gcc flag
+            -Wno-unsafe-buffer-usage # not gcc flag
+            -Wno-reserved-identifier # not gcc flag
+            -Wno-documentation # not gcc flag
+            -Wno-newline-eof # not gcc flag
+            -Wno-exit-time-destructors # not gcc flag
+            -Wno-covered-switch-default # not gcc flag
+            )
+    endif()
 
     if(${TARGET_SET_WARNINGS_AS_ERRORS})
         set(CLANG_WARNINGS ${CLANG_WARNINGS} -Werror)

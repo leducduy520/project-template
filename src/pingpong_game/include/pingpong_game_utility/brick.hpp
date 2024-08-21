@@ -76,8 +76,8 @@ namespace utilities
         void increasePoint(wall& a_wall, uint16_t amount = 1);
         void resetPoint(wall& a_wall);
         uint16_t getPoint(wall& a_wall);
-    }
-}
+    } // namespace wallhelper
+} // namespace utilities
 
 typedef std::map<e_location, std::unique_ptr<brick>> wall_map;
 

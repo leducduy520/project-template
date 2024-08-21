@@ -3,7 +3,7 @@ if(${BUILD_CMAKE_FORMAT})
     file(GLOB_RECURSE CMAKE_FILES_TXT "**/CMakeLists.txt")
     file(GLOB_RECURSE CMAKE_FILES_C "cmake/*.cmake")
     list(FILTER CMAKE_FILES_TXT EXCLUDE REGEX
-         "${CMAKE_SOURCE_DIR}/(out|external|tools|.github|mongo-cxx-driver)/+"
+         "${CMAKE_SOURCE_DIR}/(out|external|tools|.github|mongo-cxx-driver|SFML)/+"
          )
     set(CMAKE_FILES ${ROOT_CMAKE_FILES} ${CMAKE_FILES_TXT} ${CMAKE_FILES_C})
     find_program(CMAKE_FORMAT cmake-format)
@@ -46,7 +46,9 @@ if(${BUILD_CLANG_FORMAT})
     file(GLOB_RECURSE CMAKE_FILES_H "*/*.h")
     file(GLOB_RECURSE CMAKE_FILES_HPP "*/*.hpp")
     set(CPP_FILES ${CMAKE_FILES_CC} ${CMAKE_FILES_CPP} ${CMAKE_FILES_H} ${CMAKE_FILES_HPP})
-    list(FILTER CPP_FILES EXCLUDE REGEX "${CMAKE_SOURCE_DIR}/(out|external|mongo-cxx-driver)/+")
+    list(FILTER CPP_FILES EXCLUDE REGEX
+         "${CMAKE_SOURCE_DIR}/(out|external|mongo-cxx-driver|SFML)/+"
+         )
     find_program(CLANGFORMAT clang-format REQUIRED)
 
     if(CLANGFORMAT)

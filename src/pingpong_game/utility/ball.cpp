@@ -21,7 +21,8 @@ sf::Texture& ball::getTexture()
     return texture;
 }
 
-ball::ball(float px_x, float px_y) : moving_entity(), m_scaleflag(false), m_pauseflag(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
+ball::ball(float px_x, float px_y)
+    : moving_entity(), m_scaleflag(false), m_pauseflag(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
 {
     m_sprite.setTexture(getTexture());
     m_sprite.setOrigin(get_centre());
@@ -128,9 +129,12 @@ void ball::reset_size() noexcept
     auto start_time = std::chrono::steady_clock::now();
     auto current_time = start_time;
 
-    while(std::chrono::duration_cast<std::chrono::milliseconds>((current_time - start_time)).count() <= m_scale_time.load() && m_scaleflag.load())
+    while (std::chrono::duration_cast<std::chrono::milliseconds>((current_time - start_time)).count() <=
+               m_scale_time.load() &&
+           m_scaleflag.load())
     {
-        while(m_pauseflag.load()){
+        while (m_pauseflag.load())
+        {
             std::this_thread::sleep_for(100ms);
             start_time += 100ms;
         }
@@ -139,7 +143,7 @@ void ball::reset_size() noexcept
         //std::cout << "current_time: " << std::chrono::duration_cast<std::chrono::milliseconds>((current_time - start_time)).count() << "; duration: " << m_scale_time.load() << '\n';
     }
 
-    if(!m_scaleflag.load())
+    if (!m_scaleflag.load())
     {
         return;
     }
@@ -148,7 +152,7 @@ void ball::reset_size() noexcept
     m_strength.store(constants::ball_strength_lv1);
     m_scale_time.store(0);
     {
-        std::unique_lock<std::mutex>lock(m_mt);
+        std::unique_lock<std::mutex> lock(m_mt);
         m_sprite.setScale(1.0F, 1.0F);
     }
 }

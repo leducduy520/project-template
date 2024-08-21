@@ -104,7 +104,8 @@ namespace interactions
                 case brick::BOMB:
                 {
                     utilities::wallhelper::destroyAround(a_wall, *a_brick, {3, 3});
-                    a_ball.set_velocity({(dist(gen) ? 1 : -1) * a_ball.get_velocity().x, (dist(gen) ? 1 : -1) * a_ball.get_velocity().y});
+                    a_ball.set_velocity({(dist(gen) ? 1 : -1) * a_ball.get_velocity().x,
+                                         (dist(gen) ? 1 : -1) * a_ball.get_velocity().y});
                 }
                 break;
                 case brick::SCALEUP:

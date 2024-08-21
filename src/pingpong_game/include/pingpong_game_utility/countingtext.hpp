@@ -16,20 +16,26 @@ void CountingTextUpdate(CountingText* text);
 class CountingText : public sf::Text
 {
 public:
+    using duration = system_clock::duration;
+    using time_point = system_clock::time_point;
+
     CountingText();
     void start();
     void restart();
     void stop();
     void reset();
+    void pause();
+    void stop_pause();
+    void setLimit(duration limit);
+    bool is_timeout();
 
-    using time_point = system_clock::time_point;
-    using duration = system_clock::duration;
 
     friend void CountingTextUpdate(CountingText* text);
+
 private:
     time_point m_start_time;
-    time_point m_end_time;
     duration m_counting_time;
+    duration m_limit;
     bool m_is_running;
     bool m_is_paused;
 };
