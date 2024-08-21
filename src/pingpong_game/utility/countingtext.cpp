@@ -1,9 +1,9 @@
 #include "countingtext.hpp"
-#include <iostream>
-#include <thread>
-#include <limits>
 #include <iomanip>
+#include <iostream>
+#include <limits>
 #include <sstream>
+#include <thread>
 
 static std::string format_duration(time_t duration)
 {

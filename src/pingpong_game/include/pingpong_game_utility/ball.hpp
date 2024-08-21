@@ -5,8 +5,8 @@
 #include "SFML/Audio.hpp"
 #include "constants.hpp"
 #include "entity.hpp"
-#include <mutex>
 #include <future>
+#include <mutex>
 
 class ball : public moving_entity
 {

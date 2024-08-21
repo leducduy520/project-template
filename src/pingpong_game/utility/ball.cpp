@@ -1,8 +1,8 @@
 #include "ball.hpp"
+#include "ThreadPoolGame.hpp"
 #include "soundplayer.hpp"
 #include <filesystem>
 #include <thread>
-#include "ThreadPoolGame.hpp"
 
 using namespace std::literals;
 

@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <future>
 #include <mutex>
-#include <thread>
 #include <random>
+#include <thread>
 
 std::random_device rd;
 std::mt19937 gen(rd());

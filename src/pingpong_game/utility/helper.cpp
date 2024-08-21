@@ -1,9 +1,9 @@
 #include "helper.hpp"
+#include "brick.hpp"
 #include "magic_enum.hpp"
 #include "rapidcsv.h"
 #include <exception>
 #include <ios>
-#include "brick.hpp"
 
 namespace utilities
 {
