@@ -40,14 +40,14 @@ namespace utilities
                 const auto rows = doc.GetRow<int>(i);
                 for (decltype(rows.size()) j = 0; j < rows.size(); j++)
                 {
-                    const float px_x = (padding + j * constants::brick_width) * 1.0F;
-                    const float px_y = (i * constants::brick_height) * 1.0F;
+                    const auto px_x = (padding + j * constants::brick_width) * 1.0F;
+                    const auto px_y = (i * constants::brick_height) * 1.0F;
                     const auto property = static_cast<brick::BrickProperty>(doc.GetCell<int>(j, i));
-                    auto* a_brick = new brick(px_x, px_y, property);
-                    a_brick->registerLiveUpdate(std::bind(&wall::updateLive, &a_wall, std::placeholders::_1));
+                    auto a_brick = std::make_unique<brick>(px_x, px_y, property);
+                    a_brick->registerLiveUpdate(
+                        [&a_wall](bool is_increase) mutable { a_wall.updateLive(is_increase); });
                     a_wall.emplace(
-                        std::make_pair<const e_location, std::unique_ptr<brick>>({px_x, px_y},
-                                                                                 std::unique_ptr<brick>(a_brick)));
+                        std::make_pair<const e_location, std::unique_ptr<brick>>({px_x, px_y}, std::move(a_brick)));
                 }
             }
         }
@@ -66,7 +66,7 @@ namespace utilities
                     const sf::Vector2f hit_point{px_x + i * a_brick.width(), px_y + j * a_brick.height()};
 
                     auto iter = a_wall.find(hit_point);
-                    if (iter != a_wall.end() && !iter->second.get()->is_destroyed())
+                    if (iter != a_wall.end() && !iter->second->is_destroyed())
                     {
                         auto* alias = iter->second.get();
                         if (alias->getProperty() == brick::BOMB)
@@ -77,9 +77,13 @@ namespace utilities
                         else
                         {
                             if (alias->getProperty() == brick::DIAMOND && !alias->is_destroyed())
+                            {
                                 utilities::wallhelper::increasePoint(a_wall, 5);
+                            }
                             else if (alias->getProperty() == brick::BRICK && !alias->is_destroyed())
+                            {
                                 utilities::wallhelper::increasePoint(a_wall, 1);
+                            }
                             alias->hit(constants::cap_brick_hit, true);
                         }
                     }
@@ -109,6 +113,8 @@ namespace utilities
             case 'R':
                 newpos.x = bound.left + bound.width - text_width;
                 break;
+            default:
+                throw std::invalid_argument{"Invalid alignment direction"};
             }
             switch (align_name[0])
             {
@@ -121,8 +127,10 @@ namespace utilities
             case 'T':
                 newpos.y = bound.top;
                 break;
+            default:
+                throw std::invalid_argument{"Invalid alignment direction"};
             }
-            text->setPosition(std::move(newpos));
+            text->setPosition(newpos);
         }
     } // namespace texthelper
 } // namespace utilities

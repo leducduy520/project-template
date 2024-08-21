@@ -27,7 +27,7 @@ void LoginWindow::login(const std::string& username, const std::string& password
         DBINSTANCE->GetDatabase(db_name.value_or("duyld").c_str());
         if (!DBINSTANCE->GetCollection(coll_name.value_or("pingpong_game").c_str()))
         {
-            DBINSTANCE->CreateCollection(coll_name.value_or("pingpong_game").c_str());
+            DBINSTANCE->CreateCollection(coll_name.value_or("pingpong_game"));
             if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
             {
                 cout << "successfully insert initial data for " << username << '\n';
@@ -60,7 +60,7 @@ void LoginWindow::login(const std::string& username, const std::string& password
     }
 }
 
-LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink_run(false)
+LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink_run(true)
 {
     m_window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Login Window");
     m_window.setPosition(sf::Vector2i{(1920 - WINDOW_WIDTH) / 2, (1080 - WINDOW_HEIGHT) / 2});
@@ -92,7 +92,6 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
     m_static_pass->setFont(m_font);
     texthelper::aligning::Aligning(m_static_pass.get(), sf::FloatRect{{200, 315}, {200, 50}}, texthelper::aligning::ML);
 
-    m_blink_run = true;
     m_blink_fut = std::async(std::launch::async, &LoginWindow::blinkAnimation, this);
 }
 

@@ -10,14 +10,14 @@
 static std::string format_duration(time_t duration)
 {
     // Calculate minutes and seconds
-    int minutes = duration / 60;
-    int seconds = duration % 60;
+    const auto minutes = duration / 60;
+    const auto seconds = duration % 60;
 
     // Create a stringstream to format the string
-    std::stringstream ss;
-    ss << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0') << seconds;
+    std::stringstream strstream;
+    strstream << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0') << seconds;
 
-    return ss.str();
+    return strstream.str();
 }
 
 void CountingTextUpdate(CountingText* text)

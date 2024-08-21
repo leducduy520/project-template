@@ -7,24 +7,30 @@ std::once_flag DBClient::m_flag;
 bsoncxx::stdx::optional<string> get_database_uri()
 {
     const char* database_uri = std::getenv("MONGODB_URI");
-    if (database_uri != NULL)
+    if (database_uri != nullptr)
+    {
         return database_uri;
+    }
     return {};
 }
 
 bsoncxx::stdx::optional<string> get_database_name()
 {
     const char* database_name = std::getenv("MONGODB_NAME");
-    if (database_name != NULL)
+    if (database_name != nullptr)
+    {
         return database_name;
+    }
     return {};
 }
 
 bsoncxx::stdx::optional<string> get_coll_name()
 {
     const char* coll_name = std::getenv("MONGODB_COLL");
-    if (coll_name != NULL)
+    if (coll_name != nullptr)
+    {
         return coll_name;
+    }
     return {};
 }
 
@@ -76,7 +82,7 @@ const mongocxx::collection* DBClient::GetCollection(const char* name)
 
 bool DBClient::CreateCollection(const std::string& collectionName, mongocxx::database* db)
 {
-    if (!db)
+    if (db == nullptr)
     {
         m_dbcollection = m_dbdatabase.create_collection(collectionName);
         return true;
@@ -93,7 +99,7 @@ bool DBClient::CreateCollection(const std::string& collectionName, mongocxx::dat
 
 bool DBClient::InsertDocument(const bsoncxx::document::value& document, mongocxx::collection* collection)
 {
-    if (!collection)
+    if (collection == nullptr)
     {
         m_dbcollection.insert_one(document.view());
         return true;
@@ -110,7 +116,7 @@ bool DBClient::UpdateDocument(const bsoncxx::v_noabi::document::value& filter,
                               const bsoncxx::v_noabi::document::value& update,
                               mongocxx::collection* collection)
 {
-    if (!collection)
+    if (collection == nullptr)
     {
 
         m_dbcollection.update_one(filter.view(), update.view());
@@ -127,7 +133,7 @@ bool DBClient::UpdateDocument(const bsoncxx::v_noabi::document::value& filter,
 optional<bsoncxx::v_noabi::document::value> DBClient::GetDocument(const bsoncxx::v_noabi::document::value& filter,
                                                                   mongocxx::collection* collection)
 {
-    if (!collection)
+    if (collection == nullptr)
     {
         return m_dbcollection.find_one(filter.view());
     }
@@ -140,39 +146,36 @@ optional<bsoncxx::v_noabi::document::value> DBClient::GetDocument(const bsoncxx:
 
 bool DBClient::DeleteDocument(const bsoncxx::v_noabi::document::value& filter, mongocxx::collection* collection)
 {
-    if (!collection)
+    if (collection == nullptr)
     {
         auto result = m_dbcollection.delete_one(filter.view());
-        if (result)
-            return true;
-        return false;
+        return result.has_value();
     }
     if (m_dbdatabase.has_collection(collection->name()))
     {
         auto result = collection->delete_one(filter.view());
         if (result)
+        {
             return true;
+        }
     }
     return false;
 }
 
-void DBClient::RunPipeLine(const mongocxx::pipeline& pl,
+void DBClient::RunPipeLine(const mongocxx::pipeline& pipeline,
                            const mongocxx::options::aggregate& opts,
                            mongocxx::collection* collection)
 {
-    if (!collection)
+    if (collection == nullptr)
     {
-        auto cursor = m_dbcollection.aggregate(pl, opts);
-        auto tmp = std::distance(cursor.begin(), cursor.end());
-        tmp;
-        //std::cout << std::distance(cursor.begin(), cursor.end()) << '\n';
+        auto cursor = m_dbcollection.aggregate(pipeline, opts);
+        auto temp = std::distance(cursor.begin(), cursor.end());
         return;
     }
     if (m_dbdatabase.has_collection(collection->name()))
     {
-        auto cursor = collection->aggregate(pl, opts);
-        auto tmp = std::distance(cursor.begin(), cursor.end());
-        tmp;
+        auto cursor = collection->aggregate(pipeline, opts);
+        auto temp = std::distance(cursor.begin(), cursor.end());
         //std::cout << std::distance(cursor.begin(), cursor.end()) << '\n';
     }
 }

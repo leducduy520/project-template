@@ -68,6 +68,10 @@ public:
     void try_createwall();
     void try_login();
     void initialize_text();
+    void check_finish_by_ball();
+    void check_finish_by_wall();
+    void handleKeyPressed_P(bool& pause_key_active);
+    void handleKeyPressed_R(bool& reset_key_active);
 };
 
 #endif // GAME_H

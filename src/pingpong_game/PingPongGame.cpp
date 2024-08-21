@@ -36,10 +36,10 @@ std::string PingPongGame::toJsonString(const uint8_t* data, size_t length)
     bson_t bson;
     bson_init_static(&bson, data, length);
 
-    size_t size;
-    auto result = bson_array_as_json(&bson, &size);
+    size_t size{};
+    auto* result = bson_array_as_json(&bson, &size);
 
-    if (!result)
+    if (result != nullptr)
     {
         return {};
     }
@@ -104,7 +104,7 @@ void PingPongGame::updateGameRecord()
                                                                                                kvp("id", 1)))))),
                                              3))))))
         .merge(make_document(kvp("into", make_document(kvp("db", "duyld"), kvp("coll", "pingpong_game")))));
-    DBINSTANCE->RunPipeLine(std::move(pipeline), std::move(opts));
+    DBINSTANCE->RunPipeLine(pipeline, opts);
 }
 
 void PingPongGame::updateGameNewHistory()
@@ -192,6 +192,34 @@ void PingPongGame::listening()
         game_window.close();
     }
 
+    handleKeyPressed_P(pause_key_active);
+
+    handleKeyPressed_R(reset_key_active);
+}
+
+void PingPongGame::handleKeyPressed_R(bool& reset_key_active)
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
+    {
+        if (!reset_key_active)
+        {
+            if (m_state == game_state::game_over)
+            {
+                m_entity_manager.create<ball>();
+            }
+            databaseRetryUpdate();
+            reset();
+        }
+        reset_key_active = true;
+    }
+    else
+    {
+        reset_key_active = false;
+    }
+}
+
+void PingPongGame::handleKeyPressed_P(bool& pause_key_active)
+{
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P))
     {
         // If it was not pressed on the last iteration, toggle the status
@@ -215,25 +243,6 @@ void PingPongGame::listening()
     else
     {
         pause_key_active = false;
-    }
-
-    // If the user presses "R", we reset the PingPongGame
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
-    {
-        if (!reset_key_active)
-        {
-            if (m_state == game_state::game_over)
-            {
-                m_entity_manager.create<ball>();
-            }
-            databaseRetryUpdate();
-            reset();
-        }
-        reset_key_active = true;
-    }
-    else
-    {
-        reset_key_active = false;
     }
 }
 
@@ -310,30 +319,40 @@ void PingPongGame::update()
             return;
         }
 
-        if (m_entity_manager.get_all<ball>().empty())
-        {
-            --m_live;
-            if (m_live > 0)
-            {
-                m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
-                m_entity_manager.apply_all<paddle>([](paddle& a_paddle) {
-                    a_paddle.init(constants::window_width / 2.0F, constants::window_height * 1.0F);
-                });
-                m_state = game_state::paused;
-            }
-            else
-            {
-                m_state = game_state::game_over;
-                m_countingText.pause();
-            }
-        }
+        check_finish_by_ball();
 
-        if (m_entity_manager.get_all<wall>().empty())
+        check_finish_by_wall();
+    }
+}
+
+void PingPongGame::check_finish_by_ball()
+{
+    if (m_entity_manager.get_all<ball>().empty())
+    {
+        --m_live;
+        if (m_live > 0)
         {
-            m_state = game_state::player_wins;
-            m_entity_manager.apply_all<ball>([](ball& a_ball) { a_ball.stop(); });
+            m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
+            m_entity_manager.apply_all<paddle>([](paddle& a_paddle) {
+                a_paddle.init(constants::window_width / 2.0F, constants::window_height * 1.0F);
+            });
+            m_state = game_state::paused;
+        }
+        else
+        {
+            m_state = game_state::game_over;
             m_countingText.pause();
         }
+    }
+}
+
+void PingPongGame::check_finish_by_wall()
+{
+    if (m_entity_manager.get_all<wall>().empty())
+    {
+        m_state = game_state::player_wins;
+        m_entity_manager.apply_all<ball>([](ball& a_ball) { a_ball.stop(); });
+        m_countingText.pause();
     }
 }
 
@@ -356,7 +375,6 @@ void PingPongGame::try_createwall()
 {
     try
     {
-        wall a_wall;
         m_entity_manager.create<wall>();
         m_entity_manager.apply_all<wall>([](wall& a_wall) {
             utilities::wallhelper::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
@@ -482,7 +500,7 @@ void PingPongGame::reset()
     });
 
     //! Regenerate wall
-    m_entity_manager.apply_all<wall>([](wall& w) { w.destroy(); });
+    m_entity_manager.apply_all<wall>([](wall& a_wall) { a_wall.destroy(); });
     m_entity_manager.refresh();
     try_createwall();
 
