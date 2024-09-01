@@ -8,14 +8,17 @@
 #include "bson/bson.h"
 #include "constants.hpp"
 #include "countingtext.hpp"
-#include "entityManager.hpp"
+#include "entitymanager.hpp"
 #include "nlohmann/json.hpp"
 #include "paddle.hpp"
+#include <vector>
 
 class PingPongGame : public IGame
 {
 
-    sf::RenderWindow game_window{{constants::window_width, constants::window_height}, "Simple Breakout Game Version 9"};
+    sf::RenderWindow game_window{{constants::window_width, constants::window_height},
+                                 "Simple Breakout Game Version 9",
+                                 sf::Style::None};
     entity_manager m_entity_manager;
     enum class game_state
     {
@@ -29,6 +32,8 @@ class PingPongGame : public IGame
     sf::Font m_font;
     sf::Text m_textState;
     sf::Text m_textLive;
+    sf::Text m_textPoint;
+
     CountingText m_countingText;
 
     bool savedData;
@@ -47,7 +52,7 @@ public:
     //! Database implementation
     static void updateGameRecord();
     int64_t updateGameSessionID();
-    void databaseResultUpdate(const bool& isWin);
+    void databaseResultUpdate(const game_state& state);
     void databaseRetryUpdate();
     void removeCurrentData();
     void updateGameNewHistory();

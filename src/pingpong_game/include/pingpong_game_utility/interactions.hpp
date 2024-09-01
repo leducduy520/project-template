@@ -17,6 +17,11 @@ namespace interactions
     void handle_interaction(ball& a_ball, const paddle& a_paddle);
 
     void handle_interaction(wall& a_wall, ball& a_ball);
+    void interation_ball_n_clone(brick* a_brick, ball& a_ball);
+    void interation_ball_n_scaleup(brick* a_brick, ball& a_ball);
+    void interation_ball_n_bomb(brick* a_brick, ball& a_ball);
+    void interation_ball_n_diamond(brick* a_brick, ball& a_ball);
+    void interation_ball_n_brick(brick* a_brick, ball& a_ball);
 } // namespace interactions
 
 

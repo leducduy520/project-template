@@ -134,14 +134,14 @@ void PingPongGame::databaseRetryUpdate()
 {
     if (m_state == game_state::running || m_state == game_state::paused)
     {
-        databaseResultUpdate(false);
+        databaseResultUpdate(game_state::game_over);
     }
     updateGameNewHistory();
 }
 
-void PingPongGame::databaseResultUpdate(const bool& isWin)
+void PingPongGame::databaseResultUpdate(const game_state& state)
 {
-    if (isWin)
+    if (game_state::player_wins == state)
     {
         DBINSTANCE->UpdateDocument(
             make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
@@ -151,7 +151,7 @@ void PingPongGame::databaseResultUpdate(const bool& isWin)
                                             kvp("history.$.score",
                                                 static_cast<int32_t>(m_point) + static_cast<int32_t>(20 * m_live))))));
     }
-    else
+    else if (game_state::game_over == state)
     {
         DBINSTANCE->UpdateDocument(
             make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
@@ -203,10 +203,6 @@ void PingPongGame::handleKeyPressed_R(bool& reset_key_active)
     {
         if (!reset_key_active)
         {
-            if (m_state == game_state::game_over)
-            {
-                m_entity_manager.create<ball>();
-            }
             databaseRetryUpdate();
             reset();
         }
@@ -261,14 +257,14 @@ void PingPongGame::stateHandler()
     break;
     case game_state::game_over:
     {
-        databaseResultUpdate(false);
+        databaseResultUpdate(m_state);
         m_textState.setString("Game Over");
         aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
     }
     break;
     case game_state::player_wins:
     {
-        databaseResultUpdate(true);
+        databaseResultUpdate(m_state);
         m_textState.setString("Win");
         aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
     }
@@ -280,47 +276,75 @@ void PingPongGame::stateHandler()
     }
 }
 
+/// @brief updating graphics
 void PingPongGame::update()
 {
     if (m_state == game_state::running)
     {
-        // Calculate the updated graphics
+        //! Calculate the updated graphics
         m_entity_manager.update();
 
+        //! Calculate interaction between the balls and the paddle
         m_entity_manager.apply_all<ball>([this](ball& a_ball) {
             m_entity_manager.apply_all<paddle>(
                 [&a_ball](const paddle& a_paddle) { interactions::handle_interaction(a_ball, a_paddle); });
         });
 
-        m_entity_manager.apply_all<ball>([this](ball& a_ball) {
-            m_entity_manager.apply_all<wall>(
-                [&a_ball](wall& a_wall) { interactions::handle_interaction(a_wall, a_ball); });
+        //! Calculate interaction between the balls and the wall
+
+        // container for pairs of position and velocity parameters for creating new balls
+        std::forward_list<std::pair<sf::Vector2f, sf::Vector2f>> clone_balls;
+        m_entity_manager.apply_all<ball>([this, &clone_balls](ball& a_ball) mutable {
+            m_entity_manager.apply_all<wall>([this, &a_ball, &clone_balls](wall& a_wall) mutable {
+                decltype(ball().get_scale_status()) prev_scale_state{};
+                auto suff_scale_state = prev_scale_state;
+
+                prev_scale_state = a_ball.get_scale_status();
+                interactions::handle_interaction(a_wall, a_ball);
+                suff_scale_state = a_ball.get_scale_status();
+
+                while (!a_ball.clone_balls.empty())
+                {
+                    clone_balls.push_front(a_ball.clone_balls.front());
+                    a_ball.clone_balls.pop_front();
+                }
+            });
         });
 
+        //! Creating new balls
+        while (!clone_balls.empty())
+        {
+            auto& [pos, vel] = clone_balls.front();
+
+            m_entity_manager.create<ball>(pos.x, pos.y);
+            auto* a_ball = dynamic_cast<ball*>(m_entity_manager.get_all<ball>().back());
+            if (a_ball != nullptr)
+            {
+                a_ball->set_velocity(vel);
+            }
+
+            clone_balls.pop_front();
+        }
+
+        //! Update point
         m_point = 0;
         auto& walls = m_entity_manager.get_all<wall>();
         for (auto& a_wall : walls)
         {
             auto* const wptr = dynamic_cast<wall*>(a_wall);
-            m_point += utilities::wallhelper::getPoint(*wptr);
+            m_point += wptr->getPoint();
         }
 
+        //! Checking if it's time out
         if (m_countingText.is_timeout())
         {
-            m_entity_manager.apply_all<ball>([this](ball& a_ball) { a_ball.destroy(); });
             m_state = game_state::game_over;
             m_countingText.pause();
-        }
-
-        m_entity_manager.refresh();
-
-        if (m_state == game_state::game_over)
-        {
             return;
         }
 
+        m_entity_manager.refresh();
         check_finish_by_ball();
-
         check_finish_by_wall();
     }
 }
@@ -332,10 +356,11 @@ void PingPongGame::check_finish_by_ball()
         --m_live;
         if (m_live > 0)
         {
-            m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
             m_entity_manager.apply_all<paddle>([](paddle& a_paddle) {
                 a_paddle.init(constants::window_width / 2.0F, constants::window_height * 1.0F);
             });
+            m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
+            m_countingText.pause();
             m_state = game_state::paused;
         }
         else
@@ -367,6 +392,8 @@ void PingPongGame::render()
     {
         game_window.draw(m_textLive);
     }
+    m_textPoint.setString(to_string(m_point));
+    game_window.draw(m_textPoint);
     game_window.draw(m_countingText);
     game_window.display();
 }
@@ -377,20 +404,20 @@ void PingPongGame::try_createwall()
     {
         m_entity_manager.create<wall>();
         m_entity_manager.apply_all<wall>([](wall& a_wall) {
-            utilities::wallhelper::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+            utilities::wallhelper::buildWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
         });
     }
     catch (const std::ios::failure& e)
     {
         std::cerr << "terminate by ios::failure\n";
-        std::cerr << e.what() << std::endl;
+        std::cerr << e.what() << '\n';
         clear();
         return;
     }
     catch (const std::exception& e)
     {
         std::cerr << "terminate by exception\n";
-        std::cerr << e.what() << std::endl;
+        std::cerr << e.what() << '\n';
         clear();
         return;
     }
@@ -431,28 +458,35 @@ void PingPongGame::try_login()
 
 void PingPongGame::initialize_text()
 {
-    m_font.loadFromFile(constants::resoucesPath + "Cross Boxed.ttf");
+    using namespace utilities;
 
-    sf::Text textState("Paused", m_font, 32);
-    textState.setFillColor(sf::Color(255, 26, 26));
-    auto bound = textState.getLocalBounds();
-    textState.setOrigin(bound.width / 2.0f, bound.height / 2.0f);
-    textState.setPosition(constants::window_width / 2.0F, constants::window_height / 2.0F);
-    m_textState = std::move(textState);
+    m_textState.setFont(texthelper::getFont(CROSS_BOXED));
+    m_textState.setString("Paused");
+    m_textState.setCharacterSize(32);
+    m_textState.setFillColor(sf::Color::Red);
+    texthelper::aligning::Aligning(&m_textState,
+                                   {0, 0, constants::window_width, constants::window_height},
+                                   texthelper::aligning::MC);
 
-    sf::Text textLife("Lives: " + to_string(m_live), m_font, 26);
-    textLife.setFillColor(sf::Color(255, 26, 26));
-    bound = textLife.getLocalBounds();
-    textLife.setOrigin(bound.width / 2.0f, bound.height / 2.0f);
-    textLife.setPosition(constants::window_width / 2.0F, constants::window_height / 2.0F - 50.f);
-    m_textLive = std::move(textLife);
+    m_textLive.setFont(texthelper::getFont(CROSS_BOXED));
+    m_textLive.setString("Lives: " + to_string(m_live));
+    m_textLive.setCharacterSize(24);
+    m_textLive.setFillColor(sf::Color(255, 26, 26));
+    texthelper::aligning::Aligning(&m_textLive,
+                                   {0, 100.0F, constants::window_width, constants::window_height - 100.0F},
+                                   texthelper::aligning::MC);
 
-    m_countingText.setString("ABC");
+    m_textPoint.setFont(texthelper::getFont(CROSS_BOXED));
+    m_textPoint.setString("0");
+    m_textPoint.setCharacterSize(24);
+    m_textPoint.setFillColor(sf::Color::Magenta);
+    m_textPoint.setPosition(0, 350);
+
     m_countingText.setFillColor(sf::Color::Blue);
     m_countingText.setPosition(0, 400);
-    m_countingText.setFont(m_font);
+    m_countingText.setFont(texthelper::getFont(CROSS_BOXED));
     m_countingText.setCharacterSize(24);
-    m_countingText.setLimit(CountingText::duration{5min});
+    m_countingText.setLimit(CountingText::duration{constants::round_duration});
 }
 
 PingPongGame::PingPongGame(std::string resourcePath)
@@ -491,17 +525,22 @@ void PingPongGame::reset()
     m_live = constants::init_live;
     m_point = 0;
 
-    //! Reset entities initial position
+    //! Move a paddle to initial position
     m_entity_manager.apply_all<paddle>(
         [](paddle& a_paddle) { a_paddle.init(constants::window_width / 2.0f, constants::window_height * 1.0F); });
+
+    //! Destroy the entities
     m_entity_manager.apply_all<ball>([](ball& a_ball) {
         a_ball.stop();
-        a_ball.init(constants::window_width / 2.0F, constants::window_height / 2.0F);
+        a_ball.destroy();
     });
-
-    //! Regenerate wall
     m_entity_manager.apply_all<wall>([](wall& a_wall) { a_wall.destroy(); });
+
+    //! Refresh
     m_entity_manager.refresh();
+
+    //! Recreate
+    m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
     try_createwall();
 
     //! Restart the counting text

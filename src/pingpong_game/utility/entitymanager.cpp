@@ -1,4 +1,4 @@
-#include "entityManager.hpp"
+#include "entitymanager.hpp"
 #include "brick.hpp"
 
 void entity_manager::refresh()

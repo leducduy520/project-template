@@ -6,19 +6,7 @@
 #include <thread>
 #include "countingtext.hpp"
 #include "ThreadPoolGame.hpp"
-
-static std::string format_duration(time_t duration)
-{
-    // Calculate minutes and seconds
-    const auto minutes = duration / 60;
-    const auto seconds = duration % 60;
-
-    // Create a stringstream to format the string
-    std::stringstream strstream;
-    strstream << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0') << seconds;
-
-    return strstream.str();
-}
+#include "helper.hpp"
 
 void CountingTextUpdate(CountingText* text)
 {
@@ -29,9 +17,12 @@ void CountingTextUpdate(CountingText* text)
         {
             auto current_time = system_clock::now();
             text->m_counting_time = current_time - text->m_start_time;
-            //std::cout << "Counting time: " << duration_cast<milliseconds>(text->m_counting_time).count() << " miliseconds" << std::endl;
             auto left_time = duration_cast<seconds>(text->m_limit - text->m_counting_time).count();
-            text->setString(format_duration(left_time));
+            if (left_time < 0)
+            {
+                continue;
+            }
+            text->setString(utilities::texthelper::format_duration(left_time));
         }
         else
         {
@@ -45,13 +36,22 @@ CountingText::CountingText()
     : m_start_time(system_clock::now()), m_counting_time({}), m_limit({}), m_is_running(false), m_is_paused(false)
 {}
 
+CountingText::~CountingText()
+{
+    reset();
+    if (m_result.valid())
+    {
+        m_result.get();
+    }
+}
+
 void CountingText::start()
 {
     m_start_time = system_clock::now();
     m_counting_time = {};
     m_is_paused = false;
     m_is_running = true;
-    ThreadPool::getInstance()->submit(1, CountingTextUpdate, this);
+    m_result = ThreadPool::getInstance()->submit(1, CountingTextUpdate, this);
 }
 
 void CountingText::restart()
@@ -62,8 +62,12 @@ void CountingText::restart()
 
 void CountingText::stop()
 {
-    //std::cout << "Stop" << std::endl;
+    m_is_paused = false;
     m_is_running = false;
+    if (m_result.valid())
+    {
+        m_result.get();
+    }
 }
 
 void CountingText::reset()
@@ -92,5 +96,5 @@ void CountingText::setLimit(duration limit)
 bool CountingText::is_timeout()
 {
     auto left_time = duration_cast<seconds>(m_limit - m_counting_time).count();
-    return left_time <= 0;
+    return (!m_is_running || left_time <= 0);
 }

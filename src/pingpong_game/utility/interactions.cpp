@@ -7,10 +7,6 @@
 #include <random>
 #include <thread>
 
-std::random_device rd;
-std::mt19937 gen(rd());
-std::bernoulli_distribution dist(0.25F);
-
 namespace interactions
 {
     bool is_interacting(const entity* element1, const entity* element2) noexcept
@@ -62,56 +58,31 @@ namespace interactions
             auto* a_brick = it->second.get();
             if (is_interacting(&a_ball, a_brick))
             {
-
                 switch (a_brick->getProperty())
                 {
                 case brick::BRICK:
                 {
-                    utilities::wallhelper::increasePoint(a_wall, 1);
-                    a_brick->hit(a_ball.get_strength());
-                    auto [more_at_side, from_left, from_top] = getDirection(a_ball, *a_brick);
-
-                    if (more_at_side)
-                    {
-                        if (from_left)
-                        {
-                            a_ball.set_velocity({-std::abs(a_ball.get_velocity().x), a_ball.get_velocity().y});
-                        }
-                        else
-                        {
-                            a_ball.set_velocity({std::abs(a_ball.get_velocity().x), a_ball.get_velocity().y});
-                        }
-                    }
-                    else
-                    {
-                        if (from_top)
-                        {
-                            a_ball.set_velocity({a_ball.get_velocity().x, -std::abs(a_ball.get_velocity().y)});
-                        }
-                        else
-                        {
-                            a_ball.set_velocity({a_ball.get_velocity().x, std::abs(a_ball.get_velocity().y)});
-                        }
-                    }
+                    interation_ball_n_brick(a_brick, a_ball);
                 }
                 break;
                 case brick::DIAMOND:
                 {
-                    utilities::wallhelper::increasePoint(a_wall, 5);
-                    a_brick->hit(a_ball.get_strength());
+                    interation_ball_n_diamond(a_brick, a_ball);
                 }
                 break;
                 case brick::BOMB:
                 {
-                    utilities::wallhelper::destroyAround(a_wall, *a_brick, {3, 3});
-                    a_ball.set_velocity({(dist(gen) ? 1 : -1) * a_ball.get_velocity().x,
-                                         (dist(gen) ? 1 : -1) * a_ball.get_velocity().y});
+                    interation_ball_n_bomb(a_brick, a_ball);
                 }
                 break;
                 case brick::SCALEUP:
                 {
-                    a_brick->hit(a_ball.get_strength());
-                    a_ball.scale(2);
+                    interation_ball_n_scaleup(a_brick, a_ball);
+                }
+                break;
+                case brick::CLONE:
+                {
+                    interation_ball_n_clone(a_brick, a_ball);
                 }
                 break;
                 case brick::NONE:
@@ -126,6 +97,47 @@ namespace interactions
         }
 
         a_wall.refresh();
+    }
+
+    void interation_ball_n_clone(brick* a_brick, ball& a_ball)
+    {
+        a_brick->hit(a_ball.get_strength());
+        a_ball.clone();
+    }
+
+    void interation_ball_n_scaleup(brick* a_brick, ball& a_ball)
+    {
+        a_brick->hit(a_ball.get_strength());
+        a_ball.scale(2);
+    }
+
+    void interation_ball_n_bomb(brick* a_brick, ball& a_ball)
+    {
+        const std::unique_lock ulock(utilities::random::rd_mutex);
+        utilities::wallhelper::destroyAround(*a_brick, {3, 3});
+        auto do_random = []() -> bool { return utilities::random::bernoulli_dist(utilities::random::gen); };
+        do_random() ? a_ball.move_right() : a_ball.move_left();
+        do_random() ? a_ball.move_up() : a_ball.move_down();
+    }
+
+    void interation_ball_n_diamond(brick* a_brick, ball& a_ball)
+    {
+        a_brick->hit(a_ball.get_strength());
+    }
+
+    void interation_ball_n_brick(brick* a_brick, ball& a_ball)
+    {
+        a_brick->hit(a_ball.get_strength());
+        auto [more_at_side, from_left, from_top] = getDirection(a_ball, *a_brick);
+
+        if (more_at_side)
+        {
+            from_left ? a_ball.move_left() : a_ball.move_right();
+        }
+        else
+        {
+            from_top ? a_ball.move_up() : a_ball.move_down();
+        }
     }
 
 } // namespace interactions

@@ -40,3 +40,7 @@ mongo-msvc:
 sfml-msvc:
 	cmake -S SFML -B SFML/build --fresh -DCMAKE_INSTALL_PREFIX="external/SFML" -DBUILD_SHARED_LIBS=OFF -DCMAKE_CXX_STANDARD=17 -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=$(CONFIG)
 	cmake --build SFML/build -t install --config $(CONFIG) -j8
+
+git-update:
+	git fetch
+	git pull

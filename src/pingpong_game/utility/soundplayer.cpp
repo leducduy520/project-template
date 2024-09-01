@@ -2,12 +2,26 @@
 #include "constants.hpp"
 #include "magic_enum.hpp"
 #include "magic_enum_all.hpp"
+#include <filesystem>
+#include <regex>
+#include <iostream>
 
 SoundPlayer* SoundPlayer::m_instance = nullptr;
 std::once_flag SoundPlayer::m_callflag;
 
 SoundPlayer::SoundPlayer()
 {
+    // std::cout << "\nAll sounds in resource path:\n";
+    // const std::regex txt_regex("[a-z]+\\.wav");
+    // std::cmatch match;
+    // for (auto const& dir_entry : std::filesystem::recursive_directory_iterator{constants::resoucesPath})
+    // {
+    //     if (std::regex_search(dir_entry.path().string().c_str(), match, txt_regex))
+    //     {
+    //         std::cout << dir_entry << '\n';
+    //     }
+    // }
+
     m_music.openFromFile(constants::resoucesPath + "game_background.wav");
     m_music.setVolume(50.0F);
     m_music.setLoop(true);

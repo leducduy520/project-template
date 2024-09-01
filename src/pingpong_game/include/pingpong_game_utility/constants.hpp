@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #include <string>
+#include <chrono>
 
 // Code for a "breakout" game
 // Based on a talk by Vittorio Romeo and code by "FamTrimli"
@@ -11,7 +12,7 @@ struct constants
 {
     static constexpr int window_width{800};
     static constexpr int window_height{600};
-    static constexpr float ball_speed{8.0f};
+    static constexpr float ball_speed{5.0f};
     static constexpr int ball_strength_lv1{1};
     static constexpr int ball_strength_lv2{3};
     static constexpr int paddlle_width{120};
@@ -28,7 +29,9 @@ struct constants
     static constexpr int cap_diamond_hit{1};
     static constexpr int cap_bomb_hit{1};
     static constexpr int cap_scaleup_hit{1};
+    static constexpr int cap_clone_hit{1};
     static constexpr int init_live{5};
+    static constexpr std::chrono::minutes round_duration{9};
     static constexpr size_t fmtnow{std::size("0000-00-00 00:00:00 GMT")};
     static std::string resoucesPath;
 };

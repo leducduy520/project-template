@@ -7,6 +7,11 @@
 #include <memory>
 #include <unordered_map>
 #include <utility>
+#include <type_traits>
+#include <limits>
+#include <numeric>
+
+#define fnhit(OBJECT) void hit_##OBJECT(bool& destroyed, const bool relate);
 
 class wall;
 
@@ -19,24 +24,31 @@ public:
         BRICK,
         DIAMOND,
         BOMB,
-        SCALEUP
+        SCALEUP,
+        CLONE
     };
 
     brick() = default;
     brick(float x, float y, BrickProperty property = BRICK);
     BrickProperty getProperty() const noexcept;
+    wall* getWall() const noexcept;
     void draw(sf::RenderWindow& window) override;
     void hit(const int damage = 1, const bool relate = false) noexcept;
     void init(float x, float y) override;
     void update() override;
     void registerLiveUpdate(const std::function<void(bool)>& fnc);
+    void registerPontUpdate(const std::function<void(int16_t)>& fnc);
+    void registerParent(wall* parent);
     friend class wall;
 
 private:
+    wall* m_wall;
     BrickProperty m_property;
     int m_hitCount;
     std::function<void(bool)> m_live_update_fnc;
+    std::function<void(int16_t)> m_point_update_fnc;
     static sf::Texture& getTexture(BrickProperty property = BRICK);
+    fnhit(brick) fnhit(diamond) fnhit(bomb) fnhit(scaleup) fnhit(clone)
 };
 
 extern sf::Image& getImage(brick::BrickProperty property);
@@ -69,16 +81,6 @@ namespace std
 //    }
 //};
 
-namespace utilities
-{
-    namespace wallhelper
-    {
-        void increasePoint(wall& a_wall, uint16_t amount = 1);
-        void resetPoint(wall& a_wall);
-        uint16_t getPoint(wall& a_wall);
-    } // namespace wallhelper
-} // namespace utilities
-
 typedef std::map<e_location, std::unique_ptr<brick>> wall_map;
 
 class wall : public wall_map, public entity
@@ -93,18 +95,25 @@ public:
     }
 
     void updateLive(bool increase) noexcept;
+    template <class T>
+    inline void updatePoint(T&& amount) noexcept;
+    void resetPoint() noexcept;
+    uint16_t getPoint() const noexcept;
     void update() override;
     void draw(sf::RenderWindow& window) override;
     void init(float x, float y) override;
     void refresh();
 
-    friend void utilities::wallhelper::increasePoint(wall& a_wall, uint16_t amount);
-    friend void utilities::wallhelper::resetPoint(wall& a_wall);
-    friend uint16_t utilities::wallhelper::getPoint(wall& a_wall);
-
 private:
     uint16_t point;
     unsigned int live;
 };
+
+template <class T>
+inline void wall::updatePoint(T&& amount) noexcept
+{
+    static_assert(std::is_integral<std::remove_reference_t<T>>::value, "Integral required.");
+    point += static_cast<uint16_t>(amount);
+}
 
 #endif // _BRICK_H

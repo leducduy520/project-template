@@ -62,34 +62,34 @@ void LoginWindow::login(const std::string& username, const std::string& password
 
 LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink_run(true)
 {
+    using namespace utilities;
+
     m_window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Login Window");
     m_window.setPosition(sf::Vector2i{(1920 - WINDOW_WIDTH) / 2, (1080 - WINDOW_HEIGHT) / 2});
     m_window.setFramerateLimit(120);
 
-    m_font.loadFromFile(constants::resoucesPath + "ModesticSans/ModesticSans-BoldItalic.ttf");
-
     m_textname = make_unique<sf::Text>();
     m_textname->setFillColor(sf::Color{128, 128, 128, 128});
     m_textname->setCharacterSize(FONT_SIZE);
-    m_textname->setFont(m_font);
+    m_textname->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
 
     m_textpass = make_unique<sf::Text>();
     m_textpass->setFillColor(sf::Color{128, 128, 128, 128});
     m_textpass->setCharacterSize(FONT_SIZE);
-    m_textpass->setFont(m_font);
+    m_textpass->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
 
     m_static_name = make_unique<sf::Text>();
     m_static_name->setString("Name: ");
     m_static_name->setFillColor(sf::Color::Black);
     m_static_name->setCharacterSize(FONT_SIZE);
-    m_static_name->setFont(m_font);
+    m_static_name->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
     texthelper::aligning::Aligning(m_static_name.get(), sf::FloatRect{{200, 235}, {200, 50}}, texthelper::aligning::ML);
 
     m_static_pass = make_unique<sf::Text>();
     m_static_pass->setString("Password: ");
     m_static_pass->setFillColor(sf::Color::Black);
     m_static_pass->setCharacterSize(FONT_SIZE);
-    m_static_pass->setFont(m_font);
+    m_static_pass->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
     texthelper::aligning::Aligning(m_static_pass.get(), sf::FloatRect{{200, 315}, {200, 50}}, texthelper::aligning::ML);
 
     m_blink_fut = std::async(std::launch::async, &LoginWindow::blinkAnimation, this);

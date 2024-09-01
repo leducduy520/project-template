@@ -20,6 +20,7 @@ public:
     using time_point = system_clock::time_point;
 
     CountingText();
+    ~CountingText();
     void start();
     void restart();
     void stop();
@@ -33,6 +34,7 @@ public:
     friend void CountingTextUpdate(CountingText* text);
 
 private:
+    std::future<void> m_result;
     time_point m_start_time;
     duration m_counting_time;
     duration m_limit;

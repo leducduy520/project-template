@@ -62,7 +62,7 @@
                 "lhs": "${hostSystemName}",
                 "rhs": "Linux"
             },
-            "targets": "all"
+            "targets": "install"
         },
         {
             "name": "msvc",

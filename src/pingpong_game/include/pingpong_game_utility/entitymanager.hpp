@@ -66,13 +66,21 @@ public:
     }
 
     // Apply a function to all entities of a given type
-    template <typename T, typename Func>
-    void apply_all(const Func& func)
+    template <typename T, typename... Func>
+    void apply_all(Func&&... func)
     {
-        auto& entity_group{get_all<T>()};
+        auto& entity_group = get_all<T>();
 
         for (auto ptr : entity_group)
-            func(*dynamic_cast<T*>(ptr));
+        {
+            T* entity = dynamic_cast<T*>(ptr);
+
+            // Apply each function in the parameter pack to the entity using an initializer list
+            //(void)std::initializer_list<int>{ (func(*entity), 0)... }; c++11 or higher
+
+            // Apply each function in the parameter pack to the entity using a fold expression
+            (..., func(*entity)); //c++17 or higher
+        }
     }
 
     // Function to update all the entities

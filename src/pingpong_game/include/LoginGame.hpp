@@ -12,7 +12,6 @@ class LoginWindow
     std::unique_ptr<sf::Text> m_textpass;
     std::unique_ptr<sf::Text> m_static_name;
     std::unique_ptr<sf::Text> m_static_pass;
-    sf::Font m_font;
     /*std::string m_strname;*/
     std::string m_strpass;
     std::atomic_bool m_focusedName;

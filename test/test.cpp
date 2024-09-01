@@ -1,21 +1,4 @@
-
-//              Copyright Catch2 Authors
-// Distributed under the Boost Software License, Version 1.0.
-//   (See accompanying file LICENSE.txt or copy at
-//        https://www.boost.org/LICENSE_1_0.txt)
-
-// SPDX-License-Identifier: BSL-1.0
-
-// 100-Fix-Section.cpp
-
-// Catch has two ways to express fixtures:
-// - Sections (this file)
-// - Traditional class-based fixtures
-
-// main() provided by linkage to Catch2WithMain
-
 #include <PingPongGame.hpp>
-#include <DBClientGame.hpp>
 #include <background.hpp>
 #include <ball.hpp>
 #include <brick.hpp>
@@ -27,6 +10,7 @@
 #include <memory>
 #include <paddle.hpp>
 #include <vector>
+#include <DBClientGame.hpp>
 #ifdef _WIN32
 #include <Windows.h>
 #else
@@ -105,7 +89,7 @@ TEST_CASE("Test mongo db connection", "[mongo-connnection]")
 //     {
 //         CHECK_NOTHROW([&]() {
 //             wall a_wall;
-//             utilities::wallhelper::createWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+//             utilities::wallhelper::buildWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
 //         }());
 //     }
 // }
@@ -115,6 +99,6 @@ TEST_CASE("Test mongo db connection", "[mongo-connnection]")
 //     BENCHMARK("Bechmark creating a wall with benchmark.csv")
 //     {
 //         wall a_wall;
-//         return utilities::wallhelper::createWall(a_wall, (constants::resoucesPath + "benchmark.csv").c_str());
+//         return utilities::wallhelper::buildWall(a_wall, (constants::resoucesPath + "benchmark.csv").c_str());
 //     };
 // }
