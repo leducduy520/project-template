@@ -113,11 +113,12 @@ namespace interactions
 
     void interation_ball_n_bomb(brick* a_brick, ball& a_ball)
     {
-        const std::unique_lock ulock(utilities::random::rd_mutex);
         utilities::wallhelper::destroyAround(*a_brick, {3, 3});
-        auto do_random = []() -> bool { return utilities::random::bernoulli_dist(utilities::random::gen); };
-        do_random() ? a_ball.move_right() : a_ball.move_left();
-        do_random() ? a_ball.move_up() : a_ball.move_down();
+        using namespace utilities::random;
+        const std::function<bool(std::bernoulli_distribution&, std::mt19937&)> do_random =
+            [](std::bernoulli_distribution& dist, std::mt19937& gen) { return dist(gen); };
+        generator::getRandomBoolean(do_random) ? a_ball.move_right() : a_ball.move_left();
+        generator::getRandomBoolean(do_random) ? a_ball.move_up() : a_ball.move_down();
     }
 
     void interation_ball_n_diamond(brick* a_brick, ball& a_ball)

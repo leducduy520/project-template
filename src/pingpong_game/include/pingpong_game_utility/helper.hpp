@@ -62,11 +62,31 @@ namespace utilities
 
     namespace random
     {
-        extern std::random_device rd;
-        extern std::mt19937 gen;
-        extern std::bernoulli_distribution bernoulli_dist;
-        extern std::uniform_int_distribution<int> uniform_int_dist;
-        extern std::mutex rd_mutex;
+        class generator
+        {
+            static std::random_device rand_device;
+            static std::mt19937 gen;
+            static std::bernoulli_distribution bernoulli_dist;
+            static std::uniform_int_distribution<int> uniform_int_dist;
+
+        public:
+            static std::mutex rd_mutex;
+
+            template <class T>
+            static T getRandomInt(std::function<T(std::uniform_int_distribution<int>&, std::mt19937&)> fnc)
+            {
+                std::lock_guard<std::mutex> lock(rd_mutex); // Thread-safe access
+                return fnc(uniform_int_dist, gen);          // Use the provided function to generate the random integer
+            }
+
+            template <class T>
+            static T getRandomBoolean(std::function<T(std::bernoulli_distribution&, std::mt19937&)> fnc)
+            {
+                std::lock_guard<std::mutex> lock(rd_mutex); // Thread-safe access
+                return fnc(bernoulli_dist, gen);            // Use the provided function to generate the random boolean
+            }
+        };
+
     } // namespace random
 
 } // namespace utilities

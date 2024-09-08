@@ -171,11 +171,22 @@ namespace utilities
 
     namespace random
     {
-        std::random_device rd{};
-        std::mt19937 gen(rd());
-        std::bernoulli_distribution bernoulli_dist(0.25F);
-        std::uniform_int_distribution<int> uniform_int_dist(-10, 10);
-        std::mutex rd_mutex{};
+        std::random_device generator::rand_device{};
+        std::mt19937 generator::gen(rand_device());
+        std::bernoulli_distribution generator::bernoulli_dist(0.25F);
+        std::uniform_int_distribution<int> generator::uniform_int_dist(-10, 10);
+        std::mutex generator::rd_mutex{};
+
+        // int getRandomInt(
+        //     std::function<int(std::uniform_int_distribution<int>&, std::mt19937&)>& fnc)
+        // {
+        //     return fnc(generator::uniform_int_dist, generator::gen);
+        // }
+
+        // bool getRandomBoolen(std::function<bool(std::bernoulli_distribution&, std::mt19937&)>& fnc)
+        // {
+        //     return fnc(generator::bernoulli_dist, generator::gen);
+        // }
     } // namespace random
 
 } // namespace utilities

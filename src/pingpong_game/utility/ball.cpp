@@ -208,14 +208,19 @@ void ball::clone()
     using namespace utilities::random;
     clone_balls.emplace_front(sf::Vector2f{}, sf::Vector2f{});
     clone_balls.emplace_front(sf::Vector2f{}, sf::Vector2f{});
-    auto rd_pos = []() { return static_cast<float>(uniform_int_dist(gen)); };
-    auto rd_vel = []() { return bernoulli_dist(gen) ? 1.0F : -1.0F; };
+
+    const std::function<float(std::uniform_int_distribution<int>&, std::mt19937&)> rd_pos =
+        [](std::uniform_int_distribution<int>& dist, std::mt19937& gen) { return static_cast<float>(dist(gen)); };
+    const std::function<float(std::bernoulli_distribution&, std::mt19937&)> rd_vel =
+        [](std::bernoulli_distribution& dist, std::mt19937& gen) { return dist(gen) ? 1.0F : -1.0F; };
+
     for (auto& a_ball : clone_balls)
     {
-        const std::unique_lock ulock(rd_mutex);
         const auto& master_pos = this->m_sprite.getPosition();
-        const sf::Vector2f pos = {rd_pos() + master_pos.x, rd_pos() + master_pos.y};
-        const sf::Vector2f vel = {rd_vel() * m_velocity.x, rd_vel() * m_velocity.y};
+        const sf::Vector2f pos = {generator::getRandomInt(rd_pos) + master_pos.x,
+                                  generator::getRandomInt(rd_pos) + master_pos.y};
+        const sf::Vector2f vel = {generator::getRandomBoolean(rd_vel) * m_velocity.x,
+                                  generator::getRandomBoolean(rd_vel) * m_velocity.y};
         a_ball = std::make_pair(pos, vel);
     }
 }
