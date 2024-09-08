@@ -48,8 +48,8 @@ namespace utilities
             const sf::Vector2f explode_point{a_brick.x(), a_brick.y()};
             wall* a_wall = a_brick.getWall();
 
-            auto px_x = explode_point.x - floor((static_cast<float>(range.x) - 1.0F) / 2.0F) * a_brick.width();
-            auto px_y = explode_point.y - floor((static_cast<float>(range.y) - 1.0F) / 2.0F) * a_brick.height();
+            auto px_x = explode_point.x - floorf((static_cast<float>(range.x) - 1.0F) / 2.0F) * a_brick.width();
+            auto px_y = explode_point.y - floorf((static_cast<float>(range.y) - 1.0F) / 2.0F) * a_brick.height();
 
             for (int i = 0; i < range.y; ++i)
             {
