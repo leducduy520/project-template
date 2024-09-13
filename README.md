@@ -21,6 +21,18 @@ The `src` folder contains the source code for the games that can be loaded by th
 ### 5. **🧪 Test Folder**
 The `test` folder is dedicated to unit testing. It contains tests written using **Catch2** and utilizes **CTest** to run these tests as part of the build process. This ensures the reliability of both the game manager and the dynamically loaded games.
 
+### 6. **🛠️ Code Formatting Tools**
+This project includes several configuration files to ensure consistent coding standards and style across the entire codebase:
+
+- **`.clang-format`**: Defines the coding style for formatting C++ code. It ensures a uniform format for things like indentation, spacing, and line breaks.
+  
+- **`.clang-tidy`**: This file configures **Clang-Tidy**, which performs static analysis on C++ code and checks for potential code errors, performance issues, and style violations.
+
+- **`cmake-format.yaml`**: Configures the formatting rules for **CMake** files. It ensures consistency in how CMake scripts are formatted, following best practices for readability and maintainability.
+
+### 7. **🐋 Dockerfile**
+The `Dockerfile` included in this project allows for containerization, enabling a consistent development environment across different systems. It defines the setup process for building and running the project in an isolated Docker container. This ensures that dependencies, libraries, and system configurations remain consistent for all developers and users.
+
 ## 🛠️ Key Technologies
 
 - **C++ (C++11 and later)**: The main language used for the project.
