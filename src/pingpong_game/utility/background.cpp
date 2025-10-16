@@ -1,12 +1,12 @@
 #include "background.hpp"
 
-sf::Texture& background::getTexture()
+sf::Texture& background::get_texture()
 {
     static sf::Texture texture;
     static bool initialized = false;
     if (!initialized)
     {
-        if (!texture.loadFromFile(constants::resoucesPath + "background.jpg"))
+        if (!texture.loadFromFile(constants::resouces_path + "background.jpg"))
         {
             std::cerr << "Get texture failed\n";
         }
@@ -17,7 +17,7 @@ sf::Texture& background::getTexture()
 
 background::background(float px_x, float px_y)
 {
-    m_sprite.setTexture(getTexture());
+    m_sprite.setTexture(get_texture());
     background::init(px_x, px_y);
 }
 

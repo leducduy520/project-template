@@ -33,7 +33,7 @@
 
 // #define EXECUTABLE_PATH getExecutablePath()
 
-// std::string constants::resoucesPath = (EXECUTABLE_PATH / ".." / "resources" / "").string();
+// std::string constants::resouces_path = (EXECUTABLE_PATH / ".." / "resources" / "").string();
 
 extern bsoncxx::stdx::optional<string> get_database_uri();
 extern bsoncxx::stdx::optional<string> get_database_name();
@@ -65,7 +65,7 @@ TEST_CASE("Test mongo db connection", "[mongo-connnection]")
 
 // TEST_CASE("Initializing entities", "[init]")
 // {
-//     UNSCOPED_INFO("resoucesPath: " << constants::resoucesPath + "wall.csv");
+//     UNSCOPED_INFO("resouces_path: " << constants::resouces_path + "wall.csv");
 
 //     SECTION("i1")
 //     {
@@ -89,7 +89,7 @@ TEST_CASE("Test mongo db connection", "[mongo-connnection]")
 //     {
 //         CHECK_NOTHROW([&]() {
 //             wall a_wall;
-//             utilities::wallhelper::buildWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+//             utilities::wallhelper::build_wall(a_wall, (constants::resouces_path + "wall.csv").c_str());
 //         }());
 //     }
 // }
@@ -99,6 +99,6 @@ TEST_CASE("Test mongo db connection", "[mongo-connnection]")
 //     BENCHMARK("Bechmark creating a wall with benchmark.csv")
 //     {
 //         wall a_wall;
-//         return utilities::wallhelper::buildWall(a_wall, (constants::resoucesPath + "benchmark.csv").c_str());
+//         return utilities::wallhelper::build_wall(a_wall, (constants::resouces_path + "benchmark.csv").c_str());
 //     };
 // }

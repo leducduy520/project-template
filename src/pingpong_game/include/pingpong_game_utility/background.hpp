@@ -7,7 +7,7 @@
 class background : public entity
 {
     // Private data members
-    static sf::Texture& getTexture();
+    static sf::Texture& get_texture();
 
 public:
     background(float px_x, float px_y);

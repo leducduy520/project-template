@@ -7,13 +7,13 @@
 
 using namespace std::literals;
 
-sf::Texture& ball::getTexture()
+sf::Texture& ball::get_texture()
 {
     static sf::Texture texture;
     static bool initialized = false;
     if (!initialized)
     {
-        if (!texture.loadFromFile(constants::resoucesPath + "ball.png"))
+        if (!texture.loadFromFile(constants::resouces_path + "ball.png"))
         {
             std::cerr << "Get texture failed\n";
         }
@@ -25,14 +25,14 @@ sf::Texture& ball::getTexture()
 ball::ball(float px_x, float px_y)
     : moving_entity(), m_running(false), m_pause(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
 {
-    m_sprite.setTexture(getTexture());
+    m_sprite.setTexture(get_texture());
     m_sprite.setOrigin(get_centre());
     ball::init(px_x, px_y);
 }
 
 ball::ball() : m_running(false), m_pause(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
 {
-    m_sprite.setTexture(getTexture());
+    m_sprite.setTexture(get_texture());
     m_sprite.setOrigin(get_centre());
 }
 
@@ -66,8 +66,8 @@ void ball::init(float px_x, float px_y)
 void ball::update()
 {
     {
-        const bool touch_left = x() - getGlobalbound().width / 2 <= 0 && m_velocity.x < 0;
-        const bool touch_right = x() + getGlobalbound().width / 2 >= constants::window_width && m_velocity.x > 0;
+        const bool touch_left = x() - get_global_bound().width / 2 <= 0 && m_velocity.x < 0;
+        const bool touch_right = x() + get_global_bound().width / 2 >= constants::window_width && m_velocity.x > 0;
 
         if (touch_left || touch_right)
         {
@@ -77,8 +77,8 @@ void ball::update()
     }
 
     {
-        const bool touch_up = y() - getGlobalbound().height / 2 <= 0 && m_velocity.y < 0;
-        const bool touch_down = y() + getGlobalbound().height / 2 >= constants::window_height;
+        const bool touch_up = y() - get_global_bound().height / 2 <= 0 && m_velocity.y < 0;
+        const bool touch_down = y() + get_global_bound().height / 2 >= constants::window_height;
         if (touch_up)
         {
             m_velocity.y = -m_velocity.y;

@@ -10,18 +10,38 @@
 
 namespace interactions
 {
-    bool is_interacting(const entity* element1, const entity* element12) noexcept;
+    bool are_interacting(const entity* element1, const entity* element12) noexcept;
 
-    std::tuple<bool, bool, bool> getDirection(ball& a_ball, entity& an_entity) noexcept;
+    class BallvsPaddle
+    {
+        ball& m_ball;
+        const paddle& m_paddle;
 
-    void handle_interaction(ball& a_ball, const paddle& a_paddle);
+    public:
+        BallvsPaddle(ball& a_ball, const paddle& a_paddle);
+        void operator()();
+    };
 
-    void handle_interaction(wall& a_wall, ball& a_ball);
-    void interation_ball_n_clone(brick* a_brick, ball& a_ball);
-    void interation_ball_n_scaleup(brick* a_brick, ball& a_ball);
-    void interation_ball_n_bomb(brick* a_brick, ball& a_ball);
-    void interation_ball_n_diamond(brick* a_brick, ball& a_ball);
-    void interation_ball_n_brick(brick* a_brick, ball& a_ball);
+    class BallVsWall
+    {
+        wall& m_wall;
+        ball& m_ball;
+
+    public:
+        BallVsWall(wall& a_wall, ball& a_ball);
+        void operator()();
+
+    private:
+        std::tuple<bool, bool, bool> cal_ball_direction(ball& a_ball, entity& an_entity) noexcept;
+
+        void ball_interact_clone_brick(brick& a_brick);
+        void ball_interact_scaleup_brick(brick& a_brick);
+        void ball_interact_bomb_brick(brick& a_brick);
+        void ball_interact_diamond_brick(brick& a_brick);
+        void ball_interact_normal_brick(brick& a_brick);
+    };
+
+
 } // namespace interactions
 
 

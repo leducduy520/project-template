@@ -27,7 +27,7 @@ class entity : public Ientity
 {
 public:
     entity();
-    sf::FloatRect getGlobalbound() const noexcept;
+    sf::FloatRect get_global_bound() const noexcept;
 
     sf::Vector2f get_centre() const noexcept;
 

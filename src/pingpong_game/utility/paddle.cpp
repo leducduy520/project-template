@@ -1,13 +1,13 @@
 #include "paddle.hpp"
 #include <cmath>
 
-sf::Texture& paddle::getTexture()
+sf::Texture& paddle::get_texture()
 {
     static sf::Texture texture;
     static bool initialized = false;
     if (!initialized)
     {
-        if (!texture.loadFromFile(constants::resoucesPath + "steel.png"))
+        if (!texture.loadFromFile(constants::resouces_path + "steel.png"))
         {
             std::cerr << "Get texture failed\n";
         }
@@ -18,7 +18,7 @@ sf::Texture& paddle::getTexture()
 
 paddle::paddle(float px_x, float px_y) : moving_entity()
 {
-    m_sprite.setTexture(getTexture());
+    m_sprite.setTexture(get_texture());
     m_sprite.setOrigin(get_centre());
     m_sprite.setScale(constants::paddlle_width / m_sprite.getLocalBounds().width,
                       constants::paddlle_height / m_sprite.getLocalBounds().height);
@@ -33,12 +33,12 @@ void paddle::init(float px_x, float px_y)
 
 void paddle::update()
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && x() >= getGlobalbound().width / 2.0f)
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && x() >= get_global_bound().width / 2.0f)
     {
         move_left();
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) &&
-             x() <= constants::window_width - getGlobalbound().width / 2.0f)
+             x() <= constants::window_width - get_global_bound().width / 2.0f)
     {
         move_right();
     }
@@ -95,6 +95,6 @@ void paddle::print_info() const noexcept
 {
     std::cout << "paddle centre: " << get_centre().x << " " << get_centre().y << '\n';
     std::cout << "paddle position: " << x() << " " << y() << '\n';
-    std::cout << "paddle bounding box: " << getGlobalbound().width << " " << getGlobalbound().height << '\n';
+    std::cout << "paddle bounding box: " << get_global_bound().width << " " << get_global_bound().height << '\n';
     std::cout << '\n';
 }

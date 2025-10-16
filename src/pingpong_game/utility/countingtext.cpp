@@ -88,7 +88,7 @@ void CountingText::stop_pause()
     m_is_paused = false;
 }
 
-void CountingText::setLimit(duration limit)
+void CountingText::set_limit(duration limit)
 {
     m_limit = limit;
 }

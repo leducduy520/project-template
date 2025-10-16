@@ -7,19 +7,19 @@
 #include <filesystem>
 #include <regex>
 
-template void wall::updatePoint<short>(short&& amount) noexcept;
+template void wall::update_point<short>(short&& amount) noexcept;
 
 namespace utilities
 {
     namespace wallhelper
     {
-        void buildWall(wall& a_wall, const char* path)
+        void build_wall(wall& a_wall, const char* path)
         {
             if (!a_wall.empty())
             {
                 a_wall.clear();
             }
-            a_wall.resetPoint();
+            a_wall.reset_point();
 
             const rapidcsv::Document doc(path, rapidcsv::LabelParams(-1, -1));
 
@@ -34,16 +34,16 @@ namespace utilities
                     const auto property = static_cast<brick::BrickProperty>(doc.GetCell<int>(j, i));
                     auto a_brick = std::make_unique<brick>(px_x, px_y, property);
                     a_brick->registerLiveUpdate(
-                        [&a_wall](bool is_increase) mutable { a_wall.updateLive(is_increase); });
-                    a_brick->registerPontUpdate([&a_wall](short point) mutable { a_wall.updatePoint(point); });
+                        [&a_wall](bool is_increase) mutable { a_wall.update_health(is_increase); });
+                    a_brick->registerPontUpdate([&a_wall](short point) mutable { a_wall.update_point(point); });
                     a_brick->registerParent(&a_wall);
-                    a_wall.emplace(
+                    a_wall.data().emplace(
                         std::make_pair<const e_location, std::unique_ptr<brick>>({px_x, px_y}, std::move(a_brick)));
                 }
             }
         }
 
-        void destroyAround(brick& a_brick, sf::Vector2i range)
+        void destroy_around(brick& a_brick, sf::Vector2i range)
         {
             const sf::Vector2f explode_point{a_brick.x(), a_brick.y()};
             wall* a_wall = a_brick.getWall();
@@ -58,14 +58,15 @@ namespace utilities
                     const sf::Vector2f hit_point{px_x + static_cast<float>(i) * a_brick.width(),
                                                  px_y + static_cast<float>(j) * a_brick.height()};
 
-                    auto iter = a_wall->find(hit_point);
-                    if (iter != a_wall->end() && !iter->second->is_destroyed())
+                    auto& wall_data = a_wall->data();
+                    auto iter = wall_data.find(hit_point);
+                    if (iter != wall_data.end() && !iter->second->is_destroyed())
                     {
                         auto* alias = iter->second.get();
                         alias->hit(constants::cap_brick_hit, true);
                         if (alias->getProperty() == brick::BOMB)
                         {
-                            destroyAround(*alias, range);
+                            destroy_around(*alias, range);
                         }
                     }
                 }
@@ -136,7 +137,7 @@ namespace utilities
                 // std::cout << "\nAll fonts in resource path:\n";
                 // const std::regex txt_regex("[a-z]+\\.ttf");
                 // std::cmatch match;
-                // for (auto const& dir_entry : std::filesystem::recursive_directory_iterator{constants::resoucesPath})
+                // for (auto const& dir_entry : std::filesystem::recursive_directory_iterator{constants::resouces_path})
                 // {
                 //     if(std::regex_search(dir_entry.path().string().c_str(), match, txt_regex))
                 //     {
@@ -144,10 +145,10 @@ namespace utilities
                 //     }
                 // }
 
-                Font::font_cross_boxed.loadFromFile(constants::resoucesPath + "Cross Boxed.ttf");
-                Font::font_modesticsans_bolditalic.loadFromFile(constants::resoucesPath +
+                Font::font_cross_boxed.loadFromFile(constants::resouces_path + "Cross Boxed.ttf");
+                Font::font_modesticsans_bolditalic.loadFromFile(constants::resouces_path +
                                                                 "ModesticSans/ModesticSans-BoldItalic.ttf");
-                Font::font_modesticsans_bold.loadFromFile(constants::resoucesPath +
+                Font::font_modesticsans_bold.loadFromFile(constants::resouces_path +
                                                           "ModesticSans/ModesticSans-Bold.ttf");
                 initialized = true;
             }

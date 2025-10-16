@@ -98,7 +98,8 @@
     "string_view": "cpp",
     "cinttypes": "cpp",
     "valarray": "cpp",
-    "*.def": "cpp"
+    "*.def": "cpp",
+    "execution": "cpp"
   },
   "cmake.configureOnEdit": false,
   "cmake.configureArgs": [

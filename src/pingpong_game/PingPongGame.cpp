@@ -6,7 +6,7 @@
 #include "interactions.hpp"
 #include "soundplayer.hpp"
 
-std::string constants::resoucesPath;
+std::string constants::resouces_path;
 using namespace std;
 using namespace std::literals;
 using namespace utilities::texthelper;
@@ -16,7 +16,7 @@ extern void CountingTextUpdate(CountingText* text);
 
 void PingPongGame::updateGameSessionStartTime()
 {
-    std::array<char, constants::fmtnow> buffer{};
+    std::array<char, constants::fmt_now> buffer{};
     std::tm tmbuff{0};
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -25,7 +25,7 @@ void PingPongGame::updateGameSessionStartTime()
     gmtime_r(&m_GameSessionID, &tmbuff);
 #endif
 
-    strftime(buffer.data(), constants::fmtnow, "%F %T GMT", &tmbuff);
+    strftime(buffer.data(), constants::fmt_now, "%F %T GMT", &tmbuff);
 
     DBINSTANCE->UpdateDocument(make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
                                make_document(kvp("$set", make_document(kvp("history.$.start_time", buffer.data())))));
@@ -61,7 +61,7 @@ void PingPongGame::updateGameSessionEndTime()
     {
         auto oldGameSessionID = updateGameSessionID();
 
-        std::array<char, constants::fmtnow> buffer{};
+        std::array<char, constants::fmt_now> buffer{};
         std::tm tmbuff{0};
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -70,15 +70,15 @@ void PingPongGame::updateGameSessionEndTime()
         gmtime_r(&m_GameSessionID, &tmbuff);
 #endif
 
-        strftime(buffer.data(), constants::fmtnow, "%F %T GMT", &tmbuff);
+        strftime(buffer.data(), constants::fmt_now, "%F %T GMT", &tmbuff);
 
         auto duration = minus<decltype(m_GameSessionID)>{}(m_GameSessionID, oldGameSessionID);
 
-        DBINSTANCE->UpdateDocument(make_document(kvp("name", m_username), kvp("history.id", oldGameSessionID)),
-                                   make_document(kvp("$set",
-                                                     make_document(kvp("history.$.end_time", buffer.data()),
-                                                                   kvp("history.$.duration", duration)))));
-        updateGameRecord();
+        // DBINSTANCE->UpdateDocument(make_document(kvp("name", m_username), kvp("history.id", oldGameSessionID)),
+        //                            make_document(kvp("$set",
+        //                                              make_document(kvp("history.$.end_time", buffer.data()),
+        //                                                            kvp("history.$.duration", duration)))));
+        // updateGameRecord();
         savedData = true;
     }
 }
@@ -179,16 +179,16 @@ void PingPongGame::listening()
     {
         if (event.type == sf::Event::Closed)
         {
-            (m_state == game_state::running || m_state == game_state::paused) ? removeCurrentData()
-                                                                              : updateGameSessionEndTime();
+            // (m_state == game_state::running || m_state == game_state::paused) ? removeCurrentData()
+            //                                                                   : updateGameSessionEndTime();
             game_window.close();
         }
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
     {
-        (m_state == game_state::running || m_state == game_state::paused) ? removeCurrentData()
-                                                                          : updateGameSessionEndTime();
+        // (m_state == game_state::running || m_state == game_state::paused) ? removeCurrentData()
+        //                                                                   : updateGameSessionEndTime();
         game_window.close();
     }
 
@@ -203,7 +203,7 @@ void PingPongGame::handleKeyPressed_R(bool& reset_key_active)
     {
         if (!reset_key_active)
         {
-            databaseRetryUpdate();
+            // databaseRetryUpdate();
             reset();
         }
         reset_key_active = true;
@@ -257,14 +257,14 @@ void PingPongGame::stateHandler()
     break;
     case game_state::game_over:
     {
-        databaseResultUpdate(m_state);
+        // databaseResultUpdate(m_state);
         m_textState.setString("Game Over");
         aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
     }
     break;
     case game_state::player_wins:
     {
-        databaseResultUpdate(m_state);
+        // databaseResultUpdate(m_state);
         m_textState.setString("Win");
         aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
     }
@@ -285,10 +285,55 @@ void PingPongGame::update()
         m_entity_manager.update();
 
         //! Calculate interaction between the balls and the paddle
-        m_entity_manager.apply_all<ball>([this](ball& a_ball) {
-            m_entity_manager.apply_all<paddle>(
-                [&a_ball](const paddle& a_paddle) { interactions::handle_interaction(a_ball, a_paddle); });
-        });
+        //
+
+        {
+            std::set<std::pair<const paddle* const, ball* const>> handled_pairs;
+            std::mutex handled_pairs_mutex;
+            auto ball_paddle_interaction = [&handled_pairs, &handled_pairs_mutex](const paddle& a_paddle,
+                                                                                  ball& a_ball) {
+                {
+                    const std::unique_lock<std::mutex> lock(handled_pairs_mutex);
+                    if (handled_pairs.find(std::make_pair(&a_paddle, &a_ball)) != handled_pairs.end())
+                    {
+                        return;
+                    }
+                }
+                handled_pairs.insert(std::make_pair(&a_paddle, &a_ball));
+                interactions::BallvsPaddle handler(a_ball, a_paddle);
+                handler();
+            };
+
+            auto fut_a = std::async(std::launch::async, [this, &ball_paddle_interaction]() {
+                m_entity_manager.apply_all<paddle>([this, &ball_paddle_interaction](const paddle& a_paddle) {
+                    m_entity_manager.apply_all<ball>([&a_paddle, &ball_paddle_interaction](ball& a_ball) {
+                        ball_paddle_interaction(a_paddle, a_ball);
+                    });
+                });
+            });
+
+            auto fut_b = std::async(std::launch::async, [this, &ball_paddle_interaction]() {
+                m_entity_manager.apply_all<ball>([this, &ball_paddle_interaction](ball& a_ball) {
+                    m_entity_manager.apply_all<paddle>([&a_ball, &ball_paddle_interaction](const paddle& a_paddle) {
+                        ball_paddle_interaction(a_paddle, a_ball);
+                    });
+                });
+            });
+
+            try
+            {
+                fut_a.get();
+                fut_b.get();
+            }
+            catch (const std::exception& e)
+            {
+                std::cerr << "Exception in ball-paddle interaction: " << e.what() << '\n';
+            }
+            catch (...)
+            {
+                std::cerr << "Unknown exception in ball-paddle interaction\n";
+            }
+        }
 
         //! Calculate interaction between the balls and the wall
 
@@ -300,7 +345,8 @@ void PingPongGame::update()
                 auto suff_scale_state = prev_scale_state;
 
                 prev_scale_state = a_ball.get_scale_status();
-                interactions::handle_interaction(a_wall, a_ball);
+                interactions::BallVsWall handler(a_wall, a_ball);
+                handler();
                 suff_scale_state = a_ball.get_scale_status();
 
                 while (!a_ball.clone_balls.empty())
@@ -332,7 +378,7 @@ void PingPongGame::update()
         for (auto& a_wall : walls)
         {
             auto* const wptr = dynamic_cast<wall*>(a_wall);
-            m_point += wptr->getPoint();
+            m_point += wptr->get_point();
         }
 
         //! Checking if it's time out
@@ -404,7 +450,7 @@ void PingPongGame::try_createwall()
     {
         m_entity_manager.create<wall>();
         m_entity_manager.apply_all<wall>([](wall& a_wall) {
-            utilities::wallhelper::buildWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+            utilities::wallhelper::build_wall(a_wall, (constants::resouces_path + "wall.csv").c_str());
         });
     }
     catch (const std::ios::failure& e)
@@ -486,7 +532,7 @@ void PingPongGame::initialize_text()
     m_countingText.setPosition(0, 400);
     m_countingText.setFont(texthelper::getFont(CROSS_BOXED));
     m_countingText.setCharacterSize(24);
-    m_countingText.setLimit(CountingText::duration{constants::round_duration});
+    m_countingText.set_limit(CountingText::duration{constants::round_duration});
 }
 
 PingPongGame::PingPongGame(std::string resourcePath)
@@ -500,9 +546,9 @@ PingPongGame::PingPongGame() : m_live(constants::init_live), m_point(0), m_GameS
 
 void PingPongGame::init(std::string& resourcePath)
 {
-    constants::resoucesPath = resourcePath;
+    constants::resouces_path = resourcePath;
 
-    try_login();
+    // try_login();
 
     game_window.setFramerateLimit(60);
     game_window.setVerticalSyncEnabled(true);

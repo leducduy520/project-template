@@ -9,8 +9,8 @@ namespace utilities
 {
     namespace wallhelper
     {
-        void buildWall(wall& a_wall, const char* path);
-        void destroyAround(brick& a_brick, sf::Vector2i range);
+        void build_wall(wall& a_wall, const char* path);
+        void destroy_around(brick& a_brick, sf::Vector2i range);
 
     } // namespace wallhelper
 

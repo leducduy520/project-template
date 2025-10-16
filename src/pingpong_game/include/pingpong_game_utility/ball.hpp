@@ -12,7 +12,7 @@
 class ball : public moving_entity
 {
     // Private data members
-    static sf::Texture& getTexture();
+    static sf::Texture& get_texture();
     sf::Text m_text;
     std::atomic_bool m_running;
     std::atomic_bool m_pause;

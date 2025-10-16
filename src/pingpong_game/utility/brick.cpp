@@ -4,7 +4,7 @@
 #include <exception>
 #include "brick.hpp"
 
-extern template void wall::updatePoint<short>(short&& amount) noexcept;
+extern template void wall::update_point<short>(short&& amount) noexcept;
 
 using namespace std::literals;
 
@@ -15,9 +15,9 @@ sf::Image& getImage(brick::BrickProperty property)
     if (!initialized)
     {
         sf::Image source;
-        if (!source.loadFromFile(constants::resoucesPath + "brick.png"))
+        if (!source.loadFromFile(constants::resouces_path + "brick.png"))
         {
-            const std::string message = "Cannot open source image "s + constants::resoucesPath + "brick.png";
+            const std::string message = "Cannot open source image "s + constants::resouces_path + "brick.png";
             throw std::logic_error(message.c_str());
         }
 
@@ -52,7 +52,7 @@ sf::Image& getImage(brick::BrickProperty property)
     return list.at(static_cast<size_t>(property) - size_t(1));
 }
 
-sf::Texture& brick::getTexture(BrickProperty property)
+sf::Texture& brick::get_texture(BrickProperty property)
 {
     static sf::Texture empty;
     static sf::Texture brick;
@@ -123,7 +123,7 @@ sf::Texture& brick::getTexture(BrickProperty property)
 
 brick::brick(float px_x, float px_y, BrickProperty property) : m_wall(nullptr), m_property(property), m_hitCount(0)
 {
-    m_sprite.setTexture(getTexture(property));
+    m_sprite.setTexture(get_texture(property));
     brick::init(px_x, px_y);
 }
 
@@ -287,24 +287,24 @@ void brick::hit_brick(bool& destroyed, const bool relate)
     }
 }
 
-void wall::updateLive(bool increase) noexcept
+void wall::update_health(bool increase) noexcept
 {
     increase ? ++live : --live;
 }
 
-void wall::resetPoint() noexcept
+void wall::reset_point() noexcept
 {
     point = 0;
 }
 
-uint16_t wall::getPoint() const noexcept
+uint16_t wall::get_point() const noexcept
 {
     return point;
 }
 
 void wall::update()
 {
-    for (auto& elm : *this)
+    for (auto& elm : this->m_data)
     {
         elm.second->update();
     }
@@ -312,7 +312,7 @@ void wall::update()
 
 void wall::draw(sf::RenderWindow& window)
 {
-    for (auto& elm : *this)
+    for (auto& elm : this->m_data)
     {
         elm.second->draw(window);
     }
@@ -320,16 +320,16 @@ void wall::draw(sf::RenderWindow& window)
 
 void wall::init([[maybe_unused]] float px_x, [[maybe_unused]] float px_y)
 {
-    utilities::wallhelper::buildWall(*this, (constants::resoucesPath + "wall.csv").c_str());
+    utilities::wallhelper::build_wall(*this, (constants::resouces_path + "wall.csv").c_str());
 }
 
 void wall::refresh()
 {
-    for (auto it = this->begin(); it != this->end();)
+    for (auto it = this->m_data.begin(); it != this->m_data.end();)
     {
         if (it->second->is_destroyed())
         {
-            it = this->erase(it);
+            it = this->m_data.erase(it);
         }
         else
         {
