@@ -1,22 +1,21 @@
-#include <PingPongGame.hpp>
-#include <background.hpp>
-#include <ball.hpp>
-#include <brick.hpp>
-#include <catch2/benchmark/catch_benchmark_all.hpp>
-#include <catch2/catch_test_macros.hpp>
-#include <constants.hpp>
-#include <filesystem>
-#include <helper.hpp>
-#include <memory>
-#include <paddle.hpp>
-#include <vector>
-#include <DBClientGame.hpp>
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <linux/limits.h>
-#include <unistd.h>
-#endif
+// #include <PingPongGame.hpp>
+// #include <background.hpp>
+// #include <ball.hpp>
+// #include <brick.hpp>
+// #include <catch2/benchmark/catch_benchmark_all.hpp>
+// #include <catch2/catch_test_macros.hpp>
+// #include <constants.hpp>
+// #include <filesystem>
+// #include <helper.hpp>
+// #include <memory>
+// #include <paddle.hpp>
+// #include <vector>
+// #ifdef _WIN32
+// #include <Windows.h>
+// #else
+// #include <linux/limits.h>
+// #include <unistd.h>
+// #endif
 
 // static std::filesystem::path getExecutablePath()
 // {
@@ -33,39 +32,44 @@
 
 // #define EXECUTABLE_PATH getExecutablePath()
 
-// std::string constants::resoucesPath = (EXECUTABLE_PATH / ".." / "resources" / "").string();
+// std::string constants::resouces_path = (EXECUTABLE_PATH / ".." / "resources" / "").string();
 
-extern bsoncxx::stdx::optional<string> get_database_uri();
-extern bsoncxx::stdx::optional<string> get_database_name();
-extern bsoncxx::stdx::optional<string> get_coll_name();
+// extern bsoncxx::stdx::optional<string> get_database_uri();
+// extern bsoncxx::stdx::optional<string> get_database_name();
+// extern bsoncxx::stdx::optional<string> get_coll_name();
 
-TEST_CASE("Test mongo db connection", "[mongo-connnection]")
-{
-    SECTION("s1")
-    {
-        REQUIRE(get_database_name());
-    }
-    SECTION("s2")
-    {
-        REQUIRE(get_coll_name());
-    }
-    SECTION("s3")
-    {
-        CHECK_NOTHROW(DBClient::GetInstance());
-    }
-    SECTION("s4")
-    {
-        CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase(get_database_name().value().c_str()));
-    }
-    SECTION("s5")
-    {
-        CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase(get_coll_name().value().c_str()));
-    }
-}
+// TEST_CASE("Test mongo db connection", "[mongo-connnection]")
+// {
+    
+// }
+
+// TEST_CASE("Test mongo db connection", "[mongo-connnection]")
+// {
+//     SECTION("s1")
+//     {
+//         REQUIRE(get_database_name());
+//     }
+//     SECTION("s2")
+//     {
+//         REQUIRE(get_coll_name());
+//     }
+//     SECTION("s3")
+//     {
+//         CHECK_NOTHROW(DBClient::GetInstance());
+//     }
+//     SECTION("s4")
+//     {
+//         CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase(get_database_name().value().c_str()));
+//     }
+//     SECTION("s5")
+//     {
+//         CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase(get_coll_name().value().c_str()));
+//     }
+// }
 
 // TEST_CASE("Initializing entities", "[init]")
 // {
-//     UNSCOPED_INFO("resoucesPath: " << constants::resoucesPath + "wall.csv");
+//     UNSCOPED_INFO("resouces_path: " << constants::resouces_path + "wall.csv");
 
 //     SECTION("i1")
 //     {
@@ -89,7 +93,7 @@ TEST_CASE("Test mongo db connection", "[mongo-connnection]")
 //     {
 //         CHECK_NOTHROW([&]() {
 //             wall a_wall;
-//             utilities::wallhelper::buildWall(a_wall, (constants::resoucesPath + "wall.csv").c_str());
+//             utilities::wallhelper::build_wall(a_wall, (constants::resouces_path + "wall.csv").c_str());
 //         }());
 //     }
 // }
@@ -99,6 +103,6 @@ TEST_CASE("Test mongo db connection", "[mongo-connnection]")
 //     BENCHMARK("Bechmark creating a wall with benchmark.csv")
 //     {
 //         wall a_wall;
-//         return utilities::wallhelper::buildWall(a_wall, (constants::resoucesPath + "benchmark.csv").c_str());
+//         return utilities::wallhelper::build_wall(a_wall, (constants::resouces_path + "benchmark.csv").c_str());
 //     };
 // }

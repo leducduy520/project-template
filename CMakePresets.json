@@ -6,6 +6,7 @@
             "hidden": true,
             "binaryDir": "${sourceDir}/out/${presetName}/build",
             "installDir": "${sourceDir}/out/${presetName}/install",
+            "toolchainFile": "$penv{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
             "cacheVariables": {
                 "SFML_STATIC_LIBRARIES":{
                     "type": "BOOL",

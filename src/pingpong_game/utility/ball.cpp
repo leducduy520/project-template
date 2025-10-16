@@ -1,19 +1,19 @@
 #include "ball.hpp"
 #include "ThreadPoolGame.hpp"
-#include "soundplayer.hpp"
+#include "soundmanager.hpp"
 #include "helper.hpp"
 #include <filesystem>
 #include <thread>
 
 using namespace std::literals;
 
-sf::Texture& ball::getTexture()
+sf::Texture& ball::get_texture()
 {
     static sf::Texture texture;
     static bool initialized = false;
     if (!initialized)
     {
-        if (!texture.loadFromFile(constants::resoucesPath + "ball.png"))
+        if (!texture.loadFromFile(constants::resouces_path + "ball.png"))
         {
             std::cerr << "Get texture failed\n";
         }
@@ -25,14 +25,14 @@ sf::Texture& ball::getTexture()
 ball::ball(float px_x, float px_y)
     : moving_entity(), m_running(false), m_pause(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
 {
-    m_sprite.setTexture(getTexture());
+    m_sprite.setTexture(get_texture());
     m_sprite.setOrigin(get_centre());
     ball::init(px_x, px_y);
 }
 
 ball::ball() : m_running(false), m_pause(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
 {
-    m_sprite.setTexture(getTexture());
+    m_sprite.setTexture(get_texture());
     m_sprite.setOrigin(get_centre());
 }
 
@@ -65,24 +65,25 @@ void ball::init(float px_x, float px_y)
 // Compute the ball's new position
 void ball::update()
 {
+    bool play_sound = false;
     {
-        const bool touch_left = x() - getGlobalbound().width / 2 <= 0 && m_velocity.x < 0;
-        const bool touch_right = x() + getGlobalbound().width / 2 >= constants::window_width && m_velocity.x > 0;
+        const bool touch_left = x() - get_global_bound().width / 2 <= 0 && m_velocity.x < 0;
+        const bool touch_right = x() + get_global_bound().width / 2 >= constants::window_width && m_velocity.x > 0;
 
         if (touch_left || touch_right)
         {
             m_velocity.x = -m_velocity.x;
-            SoundPlayer::getInstance()->playSound(SoundPlayer::WALL_BOUNCE);
+            play_sound = true;
         }
     }
 
     {
-        const bool touch_up = y() - getGlobalbound().height / 2 <= 0 && m_velocity.y < 0;
-        const bool touch_down = y() + getGlobalbound().height / 2 >= constants::window_height;
+        const bool touch_up = y() - get_global_bound().height / 2 <= 0 && m_velocity.y < 0;
+        const bool touch_down = y() + get_global_bound().height / 2 >= constants::window_height;
         if (touch_up)
         {
             m_velocity.y = -m_velocity.y;
-            SoundPlayer::getInstance()->playSound(SoundPlayer::WALL_BOUNCE);
+            play_sound = true;
         }
         else if (touch_down)
         {
@@ -90,8 +91,15 @@ void ball::update()
         }
     }
 
-    m_sprite.move(m_velocity);
-    m_text.move(m_velocity);
+    if (!is_destroyed())
+    {
+        if (play_sound)
+        {
+            SoundManager::getInstance().playSoundEffect(SoundAdapter::get_sound_mode_id(SoundMode::WALL_BOUNCE));
+        }
+        m_sprite.move(m_velocity);
+        m_text.move(m_velocity);
+    }
 }
 
 void ball::draw(sf::RenderWindow& window)
@@ -136,7 +144,7 @@ void ball::scale(const int& n) noexcept
         const std::unique_lock<std::mutex> lock(m_mt);
         const auto rate = static_cast<float>(n);
         m_sprite.setScale(rate, rate);
-        m_result = ThreadPool::getInstance()->submit(0, &ball::reset_size, this);
+        m_result = ThreadPool::getInstance().submit(0, &ball::reset_size, this);
     }
 }
 
@@ -197,7 +205,7 @@ void ball::stop()
     }
 }
 
-int ball::get_strength() noexcept
+uint8_t ball::get_strength() noexcept
 {
     return m_strength;
 }

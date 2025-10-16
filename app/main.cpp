@@ -8,13 +8,14 @@
 
 #include "IGame.h"
 #include "ModuleManager.h"
+#include <boost/filesystem.hpp>
 
-static std::filesystem::path getExecutablePath()
+static boost::filesystem::path getExecutablePath()
 {
 #ifdef _WIN32
     char path[MAX_PATH];
     GetModuleFileNameA(nullptr, path, MAX_PATH);
-    return std::filesystem::path(path).parent_path();
+    return boost::filesystem::path(path).parent_path();
 #else
     char path[PATH_MAX];
     ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
@@ -27,40 +28,27 @@ static std::filesystem::path getExecutablePath()
 int main()
 {
     ModuleManager moduleManager;
-    std::cout << EXECUTABLE_PATH << std::endl;
-#if defined(_WIN32)
-    moduleManager.registerModule("PingPongGame", "pingpong_game.dll");
-#else
-    moduleManager.registerModule("PingPongGame", "pingpong_game.so");
-#endif
-    auto execPath = EXECUTABLE_PATH;
-    if (moduleManager.loadModule("PingPongGame"))
+    moduleManager.load_plugin(EXECUTABLE_PATH / "pingpong_game.dll");
+    if (moduleManager.has_plugin("pingpong_game.dll"))
     {
-        // Retrieve function pointers for creating and destroying the Game object
-        using CreateGameFunc = IGame* (*)();
-        using DestroyGameFunc = void (*)(IGame*);
-
-        CreateGameFunc createGame =
-            reinterpret_cast<CreateGameFunc>(moduleManager.getFunction("PingPongGame", "createPingPongGame"));
-        DestroyGameFunc destroyGame =
-            reinterpret_cast<DestroyGameFunc>(moduleManager.getFunction("PingPongGame", "destroyGame"));
-
-        if (createGame && destroyGame)
+        boost::function<IGame*()> CreateGameFunc = moduleManager.get_function<IGame*()>("pingpong_game.dll", "createGame");
+        boost::function<void(IGame*)> DestroyGameFunc = moduleManager.get_function<void(IGame*)>("pingpong_game.dll", "destroyGame");
+        if (CreateGameFunc && DestroyGameFunc)
         {
             // Create the Game object
-            IGame* game = createGame();
+            IGame* game = CreateGameFunc();
             if (game)
             {
-                std::string path = (getExecutablePath() / ".." / "resources" / "").string();
+                std::string path = (getExecutablePath().parent_path() / "resources/").string();
                 game->init(path);
                 game->run();
                 // Destroy the Game object
-                destroyGame(game);
+                DestroyGameFunc(game);
             }
         }
 
         // Release module
-        moduleManager.releaseModule("PingPongGame");
+        moduleManager.unload_plugin("pingpong_game.dll");
     }
     return 0;
 }

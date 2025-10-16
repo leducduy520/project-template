@@ -96,7 +96,8 @@ add_subdirectory(app)
 if(BUILD_TEST)
     include(CTest)
     enable_testing()
-    add_subdirectory(test)
+
+    # add_subdirectory(test)
 endif(BUILD_TEST)
 
 # if(NOT SUBPROJECT)

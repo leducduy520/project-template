@@ -51,7 +51,7 @@ void CountingText::start()
     m_counting_time = {};
     m_is_paused = false;
     m_is_running = true;
-    m_result = ThreadPool::getInstance()->submit(1, CountingTextUpdate, this);
+    m_result = ThreadPool::getInstance().submit(1, CountingTextUpdate, this);
 }
 
 void CountingText::restart()
@@ -83,12 +83,12 @@ void CountingText::pause()
     m_is_paused = true;
 }
 
-void CountingText::stop_pause()
+void CountingText::do_continue()
 {
     m_is_paused = false;
 }
 
-void CountingText::setLimit(duration limit)
+void CountingText::set_limit(duration limit)
 {
     m_limit = limit;
 }

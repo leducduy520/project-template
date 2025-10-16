@@ -26,8 +26,8 @@ public:
     void stop();
     void reset();
     void pause();
-    void stop_pause();
-    void setLimit(duration limit);
+    void do_continue();
+    void set_limit(duration limit);
     bool is_timeout();
 
 

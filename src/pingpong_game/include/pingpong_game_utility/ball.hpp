@@ -12,11 +12,11 @@
 class ball : public moving_entity
 {
     // Private data members
-    static sf::Texture& getTexture();
+    static sf::Texture& get_texture();
     sf::Text m_text;
     std::atomic_bool m_running;
     std::atomic_bool m_pause;
-    std::atomic_int m_strength;
+    std::atomic_uint8_t m_strength;
     std::atomic<time_t> m_scale_time;
     std::future<void> m_result;
     std::mutex m_mt;
@@ -42,7 +42,7 @@ public:
     void stop();
     std::pair<bool, time_t> get_scale_status() const noexcept;
 
-    int get_strength() noexcept;
+    uint8_t get_strength() noexcept;
 
     std::forward_list<std::pair<sf::Vector2f, sf::Vector2f>> clone_balls;
     void clone();

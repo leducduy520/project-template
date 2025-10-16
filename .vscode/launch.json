@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug MySFMLApp",
+            "name": "Debug MySFMLApp Windows",
             "type": "cppdbg",
-            "cwd": "/home/duyle/project-template/out/ubuntu/install/bin",
-            "program": "/home/duyle/project-template/out/ubuntu/install/bin/MySFMLApp",
-            "miDebuggerPath": "/usr/bin/gdb",
+            "cwd": "${workspaceFolder}/out/msvc/build/RelWithDebInfo/bin",
+            "program": "${workspaceFolder}/out/msvc/build/RelWithDebInfo/bin/MySFMLApp.exe",
+            "miDebuggerPath": "gdb",
             "request": "launch"
         }
     ]

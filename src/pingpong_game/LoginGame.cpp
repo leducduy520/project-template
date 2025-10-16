@@ -1,9 +1,9 @@
 #include "LoginGame.hpp"
-#include "DBClientGame.hpp"
 #include "constants.hpp"
 #include "helper.hpp"
 #include <memory>
 #include <thread>
+#include <chrono>
 
 #define INPUT_BOUND_WIDTH 200
 #define INPUT_BOUND_HEIGHT 50
@@ -14,55 +14,56 @@
 
 using namespace utilities;
 
-extern bsoncxx::stdx::optional<string> get_database_name();
-extern bsoncxx::stdx::optional<string> get_coll_name();
+//extern bsoncxx::stdx::optional<string> get_database_name();
+//extern bsoncxx::stdx::optional<string> get_coll_name();
 
 void LoginWindow::login(const std::string& username, const std::string& password)
 {
-    try
-    {
-        auto db_name = get_database_name();
-        auto coll_name = get_coll_name();
+    // try
+    // {
+    //     auto db_name = get_database_name();
+    //     auto coll_name = get_coll_name();
 
-        DBINSTANCE->GetDatabase(db_name.value_or("duyld").c_str());
-        if (!DBINSTANCE->GetCollection(coll_name.value_or("pingpong_game").c_str()))
-        {
-            DBINSTANCE->CreateCollection(coll_name.value_or("pingpong_game"));
-            if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
-            {
-                cout << "successfully insert initial data for " << username << '\n';
-                m_loginSuccess = true;
-                return;
-            }
-            throw std::runtime_error("Failed to insert initial data for "s + username);
-        }
-        if (DBINSTANCE->GetDocument(make_document(kvp("name", username))))
-        {
-            cout << "User " << username << " exists" << '\n';
-            if (DBINSTANCE->GetDocument(make_document(kvp("name", username), kvp("password", password))))
-            {
-                cout << "User " << username << " login successfully\n";
-                m_loginSuccess = true;
-                return;
-            }
-            throw std::runtime_error("It's not correct password for user "s + username);
-        }
-        if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
-        {
-            cout << "successfully insert initial data for " << username << '\n';
-            m_loginSuccess = true;
-            return;
-        }
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
+    //     DBINSTANCE->GetDatabase(db_name.value_or("duyld").c_str());
+    //     if (!DBINSTANCE->GetCollection(coll_name.value_or("pingpong_game").c_str()))
+    //     {
+    //         DBINSTANCE->CreateCollection(coll_name.value_or("pingpong_game"));
+    //         if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
+    //         {
+    //             cout << "successfully insert initial data for " << username << '\n';
+    //             m_loginSuccess = true;
+    //             return;
+    //         }
+    //         throw std::runtime_error("Failed to insert initial data for "s + username);
+    //     }
+    //     if (DBINSTANCE->GetDocument(make_document(kvp("name", username))))
+    //     {
+    //         cout << "User " << username << " exists" << '\n';
+    //         if (DBINSTANCE->GetDocument(make_document(kvp("name", username), kvp("password", password))))
+    //         {
+    //             cout << "User " << username << " login successfully\n";
+    //             m_loginSuccess = true;
+    //             return;
+    //         }
+    //         throw std::runtime_error("It's not correct password for user "s + username);
+    //     }
+    //     if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
+    //     {
+    //         cout << "successfully insert initial data for " << username << '\n';
+    //         m_loginSuccess = true;
+    //         return;
+    //     }
+    // }
+    // catch (const std::exception& e)
+    // {
+    //     std::cerr << e.what() << '\n';
+    // }
 }
 
 LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink_run(true)
 {
     using namespace utilities;
+    using namespace std;
 
     m_window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Login Window");
     m_window.setPosition(sf::Vector2i{(1920 - WINDOW_WIDTH) / 2, (1080 - WINDOW_HEIGHT) / 2});
@@ -223,6 +224,7 @@ void LoginWindow::handleKeyPress(const sf::Event& event)
 
 void LoginWindow::blinkAnimation()
 {
+    using namespace std::chrono_literals;
     std::unique_lock<std::mutex> lock(m_blink_mt, std::defer_lock);
     while (m_blink_run)
     {

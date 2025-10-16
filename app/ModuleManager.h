@@ -1,53 +1,65 @@
-#ifndef __MODULE_MANAGER_H__
-#define __MODULE_MANAGER_H__
+#ifndef MODULE_MANAGER_HPP
+#define MODULE_MANAGER_HPP
 
-#include "IGame.h"
-#include <iostream>
 #include <string>
-#include <unordered_map>
+#include <vector>
+#include <memory>
+#include <boost/dll/shared_library.hpp>
+#include <boost/dll/import.hpp>
+#include <boost/function.hpp>
+#include <boost/filesystem.hpp>
+#include <spdlog/spdlog.h>
 
-#ifdef _WIN32
-#include <Windows.h>
-typedef HMODULE LibraryHandle;
-typedef FARPROC FunctionAddress;
-#define LoadLibraryFunction LoadLibrary
-#define GetFunctionAddress GetProcAddress
-#define UnloadLibrary FreeLibrary
-#else
-#include <dlfcn.h>
-#include <limits.h>
-#include <unistd.h>
-typedef void* LibraryHandle;
-typedef void* FunctionAddress;
-#define LoadLibraryFunction(path) dlopen(path, RTLD_LAZY)
-#define GetFunctionAddress dlsym
-#define UnloadLibrary dlclose
-#endif
-
-class ModuleManager
-{
+class ModuleManager {
 public:
-    // Register a module with its expected path
-    void registerModule(const std::string& moduleName, const std::string& modulePath);
+    // Constructor: Initialize without a fixed directory
+    ModuleManager();
 
-    // Load a registered module
-    bool loadModule(const std::string& moduleName);
-
-    // Get a function pointer from a loaded module
-    FunctionAddress getFunction(const std::string& moduleName, const std::string& functionName);
-
-    // Release a loaded module
-    void releaseModule(const std::string& moduleName);
-
-    // Get the actual path of a loaded module
-    std::string getModulePath(const std::string& moduleName);
-
-    // Destructor to ensure all modules are released
+    // Destructor: Unload all libraries
     ~ModuleManager();
 
+    // Load a plugin from a user-specified path
+    bool load_plugin(const boost::filesystem::path& plugin_path);
+
+    // Unload a specific plugin by name
+    bool unload_plugin(const std::string& plugin_name);
+
+    // Check if a plugin is loaded
+    bool has_plugin(const std::string& plugin_name) const;
+
+    // Get a function from a specific plugin by name
+    template<typename Signature>
+    boost::function<Signature> get_function(const std::string& plugin_name,
+                                           const std::string& func_name) const;
+
+    // Get all loaded plugin names
+    std::vector<std::string> get_plugin_names() const;
+
 private:
-    std::unordered_map<std::string, std::string> modulePaths;
-    std::unordered_map<std::string, LibraryHandle> loadedModules;
+    struct Plugin {
+        std::shared_ptr<boost::dll::shared_library> library;
+        std::string name;
+    };
+
+    std::vector<Plugin> plugins_;
 };
 
-#endif // __MODULE_MANAGER_H__
+template<typename Signature>
+boost::function<Signature> ModuleManager::get_function(const std::string& plugin_name,
+                                                      const std::string& func_name) const {
+    for (const auto& plugin : plugins_) {
+        if (plugin.name == plugin_name) {
+            try {
+                return boost::dll::import_symbol<Signature>(*plugin.library, func_name);
+            } catch (const std::exception& e) {
+                spdlog::error("Failed to import '{}' from plugin '{}': {}",
+                              func_name, plugin_name, e.what());
+                throw;
+            }
+        }
+    }
+    spdlog::error("Plugin '{}' not found", plugin_name);
+    throw std::runtime_error("Plugin not found: " + plugin_name);
+}
+
+#endif // MODULE_MANAGER_HPP

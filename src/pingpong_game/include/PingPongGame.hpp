@@ -5,7 +5,6 @@
 #include "background.hpp"
 #include "ball.hpp"
 #include "brick.hpp"
-#include "bson/bson.h"
 #include "constants.hpp"
 #include "countingtext.hpp"
 #include "entitymanager.hpp"
@@ -46,7 +45,6 @@ class PingPongGame : public IGame
     static nlohmann::json toJson(const uint8_t* data, size_t length);
 
 public:
-    explicit PingPongGame(std::string resourcePath);
     PingPongGame();
 
     //! Database implementation
@@ -73,6 +71,7 @@ public:
     void try_createwall();
     void try_login();
     void initialize_text();
+    void initialize_sound_settings();
     void check_finish_by_ball();
     void check_finish_by_wall();
     void handleKeyPressed_P(bool& pause_key_active);

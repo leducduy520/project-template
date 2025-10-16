@@ -19,7 +19,7 @@ public:
 
 extern "C"
 {
-    EXPORT_API IGame* createPingPongGame();
+    EXPORT_API IGame* createGame();
     EXPORT_API void destroyGame(IGame* game);
 }
 

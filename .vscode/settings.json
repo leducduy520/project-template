@@ -98,7 +98,13 @@
     "string_view": "cpp",
     "cinttypes": "cpp",
     "valarray": "cpp",
-    "*.def": "cpp"
+    "*.def": "cpp",
+    "execution": "cpp",
+    "complex": "cpp",
+    "expected": "cpp",
+    "source_location": "cpp",
+    "stdfloat": "cpp",
+    "typeindex": "cpp"
   },
   "cmake.configureOnEdit": false,
   "cmake.configureArgs": [

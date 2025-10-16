@@ -32,8 +32,8 @@ struct constants
     static constexpr int cap_clone_hit{1};
     static constexpr int init_live{5};
     static constexpr std::chrono::minutes round_duration{9};
-    static constexpr size_t fmtnow{std::size("0000-00-00 00:00:00 GMT")};
-    static std::string resoucesPath;
+    static constexpr size_t fmt_now{std::size("0000-00-00 00:00:00 GMT")};
+    static std::string resouces_path;
 };
 
 #endif // CONSTANTS_H

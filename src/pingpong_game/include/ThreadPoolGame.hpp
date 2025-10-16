@@ -11,8 +11,11 @@
 class ThreadPool
 {
 public:
-    ThreadPool(size_t threads = std::thread::hardware_concurrency());
-    ~ThreadPool();
+    static ThreadPool& getInstance()
+    {
+        static ThreadPool instance;
+        return instance;
+    }
 
     // Submit a task to the thread pool
     template <class F, class... Args>
@@ -21,19 +24,10 @@ public:
     // Stop the pool from accepting new tasks and wait for current tasks to finish
     void shutdown();
 
-    static ThreadPool* getInstance()
-    {
-        std::call_once(creat_flag, []() { pool = new ThreadPool(); });
-        return pool;
-    }
-
-    static void destroyInstance()
-    {
-        delete pool;
-        pool = nullptr;
-    }
-
 private:
+    ThreadPool(size_t threads = 4ull);
+    ~ThreadPool();
+
     // Worker thread function
     void worker();
 
@@ -58,7 +52,7 @@ private:
     std::mutex queue_mutex;
     std::condition_variable condition;
     std::atomic<bool> stop_flag;
-    std::atomic<int> idle_threads;
+    std::atomic<size_t> idle_threads;
 
     static ThreadPool* pool;
     static std::once_flag creat_flag;
