@@ -27,7 +27,7 @@ sf::Image& getImage(brick::BrickProperty property)
         const auto width = source.getSize().x;
         const auto height = source.getSize().y;
         const auto* const pixels = source.getPixelsPtr();
-        std::vector<std::vector<sf::Uint8>> matrix(width / constants::brick_width);
+        std::vector<std::vector<uint8_t>> matrix(width / constants::brick_width);
 
         for (unsigned int px_y = 0; px_y < height; ++px_y)
         {
@@ -44,8 +44,7 @@ sf::Image& getImage(brick::BrickProperty property)
 
         for (const auto& elm : matrix)
         {
-            sf::Image des;
-            des.create(constants::brick_width, constants::brick_height, elm.data());
+            sf::Image des({constants::brick_width, constants::brick_height}, elm.data());
             list.push_back(std::move(des));
         }
 
@@ -132,7 +131,7 @@ brick::brick(float px_x, float px_y, BrickProperty property) : m_wall(nullptr), 
 
 void brick::init(float px_x, float px_y)
 {
-    m_sprite.setPosition(px_x, px_y);
+    m_sprite.setPosition({px_x, px_y});
 }
 
 // Compute the brick's new position

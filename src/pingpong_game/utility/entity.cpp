@@ -1,10 +1,7 @@
 #include "entity.hpp"
 
-entity::entity() : Ientity()
-{}
-
 // Helper function to get the bounding box of a sprite
-sf::FloatRect entity::get_global_bound() const noexcept
+FloatRect entity::get_global_bound() const noexcept
 {
     return m_sprite.getGlobalBounds();
 }
@@ -29,12 +26,12 @@ float entity::y() const noexcept
 
 float entity::width() const noexcept
 {
-    return m_sprite.getLocalBounds().width;
+    return m_sprite.getLocalBounds().size.x;
 }
 
 float entity::height() const noexcept
 {
-    return m_sprite.getLocalBounds().height;
+    return m_sprite.getLocalBounds().size.y;
 }
 
 void entity::destroy() noexcept
@@ -49,22 +46,22 @@ bool entity::is_destroyed() const noexcept
 
 float entity::left() const noexcept
 {
-    return m_sprite.getGlobalBounds().left;
+    return m_sprite.getGlobalBounds().position.x;
 }
 
 float entity::right() const noexcept
 {
-    return m_sprite.getGlobalBounds().left + m_sprite.getGlobalBounds().width;
+    return m_sprite.getGlobalBounds().position.x + m_sprite.getGlobalBounds().size.x;
 }
 
 float entity::top() const noexcept
 {
-    return m_sprite.getGlobalBounds().top;
+    return m_sprite.getGlobalBounds().position.y;
 }
 
 float entity::bottom() const noexcept
 {
-    return m_sprite.getGlobalBounds().top + m_sprite.getGlobalBounds().height;
+    return m_sprite.getGlobalBounds().position.y + m_sprite.getGlobalBounds().size.y;
 }
 
 void entity::set_position(const sf::Vector2f& pos) noexcept

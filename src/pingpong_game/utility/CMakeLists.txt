@@ -12,15 +12,16 @@ file(GLOB RESOURCE_FILES LIST_DIRECTORIES false "${THIS_PARENT_PATH}/resources/*
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC sfml-graphics sfml-audio rapidcsv magic_enum nlohmann_json::nlohmann_json
+    ${PROJECT_NAME} PUBLIC SFML::Graphics SFML::Audio rapidcsv magic_enum nlohmann_json::nlohmann_json
 )
 
 target_include_directories(
     ${PROJECT_NAME}
-    PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PARENT_PROJECT_NAME}/${PROJECT_NAME}>
+    PUBLIC
     $<BUILD_INTERFACE:${THIS_PARENT_PATH}/include/${PROJECT_NAME}>
-    INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PARENT_PROJECT_NAME}/${PROJECT_NAME}>
+    INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>
 )
 
 target_set_warnings(

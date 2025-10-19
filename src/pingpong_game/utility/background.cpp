@@ -23,7 +23,7 @@ background::background(float px_x, float px_y)
 
 void background::init(float px_x, float px_y)
 {
-    m_sprite.setPosition(px_x, px_y);
+    m_sprite.setPosition({px_x, px_y});
 }
 
 // Compute the background's new position

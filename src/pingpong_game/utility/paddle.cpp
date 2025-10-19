@@ -20,24 +20,24 @@ paddle::paddle(float px_x, float px_y) : moving_entity()
 {
     m_sprite.setTexture(get_texture());
     m_sprite.setOrigin(get_centre());
-    m_sprite.setScale(constants::paddlle_width / m_sprite.getLocalBounds().width,
-                      constants::paddlle_height / m_sprite.getLocalBounds().height);
+    m_sprite.setScale({constants::paddlle_width / m_sprite.getLocalBounds().size.x,
+                      constants::paddlle_height / m_sprite.getLocalBounds().size.y});
     paddle::init(px_x, px_y);
 }
 
 void paddle::init(float px_x, float px_y)
 {
-    m_sprite.setPosition(px_x, px_y);
+    m_sprite.setPosition({px_x, px_y});
     m_velocity = {0, 0};
 }
 
 void paddle::update()
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && x() >= get_global_bound().width / 2.0f)
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) && x() >= get_global_bound().width / 2.0f)
     {
         move_left();
     }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) &&
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right) &&
              x() <= constants::window_width - get_global_bound().width / 2.0f)
     {
         move_right();

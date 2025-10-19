@@ -21,11 +21,11 @@ namespace utilities
 
     namespace texthelper
     {
-        void aligning::Aligning(sf::Text* text, const sf::Rect<float>& bound, const aligning::Alignment& alignment)
+        void aligning::Aligning(sf::Text* text, const FloatRect& bound, const aligning::Alignment& alignment)
         {
             text->setOrigin({0, 0});
-            const auto text_width = text->getGlobalBounds().width;
-            const auto text_height = text->getGlobalBounds().height;
+            const auto text_width = text->getGlobalBounds().size.x;
+            const auto text_height = text->getGlobalBounds().size.y;
             sf::Vector2f newpos{};
 
             const auto align_name = magic_enum::enum_name(alignment);
@@ -90,10 +90,10 @@ namespace utilities
                 //     }
                 // }
 
-                Font::font_cross_boxed.loadFromFile(constants::resouces_path + "Cross Boxed.ttf");
-                Font::font_modesticsans_bolditalic.loadFromFile(constants::resouces_path +
+                Font::font_cross_boxed.openFromFile(constants::resouces_path + "Cross Boxed.ttf");
+                Font::font_modesticsans_bolditalic.openFromFile(constants::resouces_path +
                                                                 "ModesticSans/ModesticSans-BoldItalic.ttf");
-                Font::font_modesticsans_bold.loadFromFile(constants::resouces_path +
+                Font::font_modesticsans_bold.openFromFile(constants::resouces_path +
                                                           "ModesticSans/ModesticSans-Bold.ttf");
                 initialized = true;
             }

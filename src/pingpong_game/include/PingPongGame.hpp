@@ -15,7 +15,7 @@
 class PingPongGame : public IGame
 {
 
-    sf::RenderWindow game_window{{constants::window_width, constants::window_height},
+    sf::RenderWindow game_window{sf::VideoMode({constants::window_width, constants::window_height}),
                                  "Simple Breakout Game Version 9",
                                  sf::Style::None};
     entity_manager m_entity_manager;
@@ -28,10 +28,10 @@ class PingPongGame : public IGame
     };
     game_state m_state{game_state::running};
 
-    sf::Font m_font;
-    sf::Text m_textState;
-    sf::Text m_textLive;
-    sf::Text m_textPoint;
+    sf::Font m_font{};
+    sf::Text m_textState{m_font};
+    sf::Text m_textLive{m_font};
+    sf::Text m_textPoint{m_font};
 
     CountingText m_countingText;
 

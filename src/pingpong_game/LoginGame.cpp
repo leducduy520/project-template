@@ -65,33 +65,29 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
     using namespace utilities;
     using namespace std;
 
-    m_window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Login Window");
+    m_window.create(sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "Login Window");
     m_window.setPosition(sf::Vector2i{(1920 - WINDOW_WIDTH) / 2, (1080 - WINDOW_HEIGHT) / 2});
     m_window.setFramerateLimit(120);
 
-    m_textname = make_unique<sf::Text>();
-    m_textname->setFillColor(sf::Color{128, 128, 128, 128});
-    m_textname->setCharacterSize(FONT_SIZE);
-    m_textname->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
+    m_textname.setFillColor(sf::Color{128, 128, 128, 128});
+    m_textname.setCharacterSize(FONT_SIZE);
+    m_textname.setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
 
-    m_textpass = make_unique<sf::Text>();
-    m_textpass->setFillColor(sf::Color{128, 128, 128, 128});
-    m_textpass->setCharacterSize(FONT_SIZE);
-    m_textpass->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
+    m_textpass.setFillColor(sf::Color{128, 128, 128, 128});
+    m_textpass.setCharacterSize(FONT_SIZE);
+    m_textpass.setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
 
-    m_static_name = make_unique<sf::Text>();
-    m_static_name->setString("Name: ");
-    m_static_name->setFillColor(sf::Color::Black);
-    m_static_name->setCharacterSize(FONT_SIZE);
-    m_static_name->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
-    texthelper::aligning::Aligning(m_static_name.get(), sf::FloatRect{{200, 235}, {200, 50}}, texthelper::aligning::ML);
+    m_static_name.setString("Name: ");
+    m_static_name.setFillColor(sf::Color::Black);
+    m_static_name.setCharacterSize(FONT_SIZE);
+    m_static_name.setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
+    texthelper::aligning::Aligning(&m_static_name, sf::FloatRect{{200, 235}, {200, 50}}, texthelper::aligning::ML);
 
-    m_static_pass = make_unique<sf::Text>();
-    m_static_pass->setString("Password: ");
-    m_static_pass->setFillColor(sf::Color::Black);
-    m_static_pass->setCharacterSize(FONT_SIZE);
-    m_static_pass->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
-    texthelper::aligning::Aligning(m_static_pass.get(), sf::FloatRect{{200, 315}, {200, 50}}, texthelper::aligning::ML);
+    m_static_pass.setString("Password: ");
+    m_static_pass.setFillColor(sf::Color::Black);
+    m_static_pass.setCharacterSize(FONT_SIZE);
+    m_static_pass.setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
+    texthelper::aligning::Aligning(&m_static_pass, sf::FloatRect{{200, 315}, {200, 50}}, texthelper::aligning::ML);
 
     m_blink_fut = std::async(std::launch::async, &LoginWindow::blinkAnimation, this);
 }
@@ -104,33 +100,38 @@ std::pair<bool, std::string> LoginWindow::run()
         update();
         render();
     }
-    return std::make_pair(m_loginSuccess, m_textname->getString());
+    return std::make_pair(m_loginSuccess, m_textname.getString());
 }
 
 void LoginWindow::listening()
 {
-    sf::Event event{};
-    while (m_window.pollEvent(event))
+    while (true)
     {
-        if (event.type == sf::Event::TextEntered)
+        auto event = m_window.pollEvent();
+        if (event == std::nullopt)
+            break;
+
+        if (auto keypressed_event = event.value().getIf<sf::Event::KeyPressed>(); keypressed_event)
         {
-            auto code = event.text.unicode;
+            std::unique_ptr<sf::Event> event_ptr = std::make_unique<sf::Event>(*keypressed_event);
+            handleKeyPress(event_ptr.get());
+        }
+
+        if (auto textentered_event = event.value().getIf<sf::Event::TextEntered>(); textentered_event)
+        {
+            auto code = textentered_event->unicode;
             if (code < 128 && code != 0x09)
             {
                 updateText(code);
             }
-        }
-        if (event.type == sf::Event::KeyPressed)
-        {
-            handleKeyPress(event);
         }
     }
 }
 
 void LoginWindow::update()
 {
-    texthelper::aligning::Aligning(m_textname.get(), sf::FloatRect{{400, 235}, {200, 50}}, texthelper::aligning::MR);
-    texthelper::aligning::Aligning(m_textpass.get(), sf::FloatRect{{400, 315}, {200, 50}}, texthelper::aligning::MR);
+    texthelper::aligning::Aligning(&m_textname, sf::FloatRect{{400, 235}, {200, 50}}, texthelper::aligning::MR);
+    texthelper::aligning::Aligning(&m_textpass, sf::FloatRect{{400, 315}, {200, 50}}, texthelper::aligning::MR);
 }
 
 void LoginWindow::render()
@@ -138,28 +139,28 @@ void LoginWindow::render()
     if (m_window.isOpen())
     {
         m_window.clear(sf::Color{223, 228, 210, 255});
-        m_window.draw(*m_textname);
-        m_window.draw(*m_static_name);
-        m_window.draw(*m_textpass);
-        m_window.draw(*m_static_pass);
+        m_window.draw(m_textname);
+        m_window.draw(m_static_name);
+        m_window.draw(m_textpass);
+        m_window.draw(m_static_pass);
         m_window.display();
     }
 }
 
-void LoginWindow::updateText(const sf::Uint32& code)
+void LoginWindow::updateText(const uint32_t& code)
 {
-    sf::String str = m_focusedName.load() ? m_textname->getString() : m_textpass->getString();
+    sf::String str = m_focusedName.load() ? m_textname.getString() : m_textpass.getString();
 
     if (str.getSize() > 0 && str.getSize() <= TEXT_LIMIT && (code == 0x7F || code == 0x08))
     {
         str.erase(str.getSize() - 1);
         if (m_focusedName.load())
         {
-            m_textname->setString(str);
+            m_textname.setString(str);
         }
         else
         {
-            m_textpass->setString(str);
+            m_textpass.setString(str);
             m_strpass.erase(m_strpass.length() - 1);
         }
     }
@@ -167,40 +168,43 @@ void LoginWindow::updateText(const sf::Uint32& code)
     {
         str += static_cast<char>(code);
         //m_strname = str;
-        m_textname->setString(str);
+        m_textname.setString(str);
     }
     else if (code > 20)
     {
         str += '*';
         m_strpass += static_cast<char>(code);
-        m_textpass->setString(str);
+        m_textpass.setString(str);
     }
 }
 
-void LoginWindow::handleKeyPress(const sf::Event& event)
+void LoginWindow::handleKeyPress(const sf::Event* event)
 {
-    switch (event.key.code)
+    if (!event->is<sf::Event::KeyPressed>())
+        return;
+    auto &keypressed_event = *event->getIf<sf::Event::KeyPressed>();
+    switch (keypressed_event.code)
     {
-    case sf::Keyboard::Tab:
+    case sf::Keyboard::Key::Tab:
     {
         m_focusedName.store(!m_focusedName.load());
         if (m_focusedName.load())
         {
-            m_static_name->setCharacterSize(FONT_SIZE + 5);
-            m_static_pass->setCharacterSize(FONT_SIZE);
+            m_static_name.setCharacterSize(FONT_SIZE + 5);
+            m_static_pass.setCharacterSize(FONT_SIZE);
         }
         else
         {
-            m_static_pass->setCharacterSize(FONT_SIZE + 5);
-            m_static_name->setCharacterSize(FONT_SIZE);
+            m_static_pass.setCharacterSize(FONT_SIZE + 5);
+            m_static_name.setCharacterSize(FONT_SIZE);
         }
     }
     break;
-    case sf::Keyboard::Return:
+    case sf::Keyboard::Key::Enter:
     {
-        if (m_textname->getString().getSize() > 0 && !m_strpass.empty())
+        if (m_textname.getString().getSize() > 0 && !m_strpass.empty())
         {
-            login(m_textname->getString(), m_strpass);
+            login(m_textname.getString(), m_strpass);
             if (m_loginSuccess)
             {
                 m_window.close();
@@ -210,7 +214,7 @@ void LoginWindow::handleKeyPress(const sf::Event& event)
         }
     }
     break;
-    case sf::Keyboard::Escape:
+    case sf::Keyboard::Key::Escape:
     {
         m_window.close();
         m_blink_run = false;
@@ -231,10 +235,10 @@ void LoginWindow::blinkAnimation()
         std::this_thread::sleep_for(500ms);
 
         lock.lock();
-        m_focusedName.load() ? m_static_name->setCharacterSize(FONT_SIZE) : m_static_pass->setCharacterSize(FONT_SIZE);
+        m_focusedName.load() ? m_static_name.setCharacterSize(FONT_SIZE) : m_static_pass.setCharacterSize(FONT_SIZE);
         std::this_thread::sleep_for(500ms);
-        m_focusedName.load() ? m_static_name->setCharacterSize(FONT_SIZE + 5)
-                             : m_static_pass->setCharacterSize(FONT_SIZE + 5);
+        m_focusedName.load() ? m_static_name.setCharacterSize(FONT_SIZE + 5)
+                             : m_static_pass.setCharacterSize(FONT_SIZE + 5);
         lock.unlock();
     }
 }

@@ -32,7 +32,7 @@ namespace utilities
                 BR
             };
 
-            static void Aligning(sf::Text* text, const sf::Rect<float>& bound, const Alignment& alignment = MC);
+            static void Aligning(sf::Text* text, const FloatRect& bound, const Alignment& alignment = MC);
         };
 
         /// @brief Convert time_t duration in second to a string presents for digital clock

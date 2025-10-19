@@ -161,25 +161,22 @@ void PingPongGame::listening()
 {
     static bool pause_key_active = false;
     static bool reset_key_active = false;
-    sf::Event event{};
 
-    while (game_window.pollEvent(event))
+    while (true)
     {
-        if (event.type == sf::Event::Closed)
+        optional<sf::Event> event = game_window.pollEvent();
+        if (event == nullopt)
+        {
+            break;
+        }
+        
+        if (auto* keypressed_event = event.value().getIf<sf::Event::KeyPressed>(); keypressed_event != nullptr && keypressed_event->code == sf::Keyboard::Key::Escape)
         {
             // (m_state == game_state::running || m_state == game_state::paused) ? removeCurrentData()
             //                                                                   : updateGameSessionEndTime();
             game_window.close();
             return;
         }
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
-    {
-        // (m_state == game_state::running || m_state == game_state::paused) ? removeCurrentData()
-        //                                                                   : updateGameSessionEndTime();
-        game_window.close();
-        return;
     }
 
     handleKeyPressed_P(pause_key_active);
@@ -241,22 +238,22 @@ void PingPongGame::stateHandler()
         m_textState.setString("Paused");
         m_textLive.setString("Lives: " + std::to_string(m_live));
 
-        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
-        aligning::Aligning(&m_textLive, sf::FloatRect{0, 100, constants::window_width, constants::window_height - 100});
+        aligning::Aligning(&m_textState, FloatRect{0, 0, constants::window_width, constants::window_height});
+        aligning::Aligning(&m_textLive, FloatRect{0, 100, constants::window_width, constants::window_height - 100});
     }
     break;
     case game_state::game_over:
     {
         // databaseResultUpdate(m_state);
         m_textState.setString("Game Over");
-        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
+        aligning::Aligning(&m_textState, FloatRect{0, 0, constants::window_width, constants::window_height});
     }
     break;
     case game_state::player_wins:
     {
         // databaseResultUpdate(m_state);
         m_textState.setString("Win");
-        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
+        aligning::Aligning(&m_textState, FloatRect{0, 0, constants::window_width, constants::window_height});
     }
     break;
     case game_state::running:
@@ -540,10 +537,10 @@ void PingPongGame::initialize_text()
     m_textPoint.setString("0");
     m_textPoint.setCharacterSize(24);
     m_textPoint.setFillColor(sf::Color::Magenta);
-    m_textPoint.setPosition(0, 350);
+    m_textPoint.setPosition({0, 350});
 
     m_countingText.setFillColor(sf::Color::Blue);
-    m_countingText.setPosition(0, 400);
+    m_countingText.setPosition({0, 400});
     m_countingText.setFont(texthelper::getFont(CROSS_BOXED));
     m_countingText.setCharacterSize(24);
     m_countingText.set_limit(CountingText::duration{constants::round_duration});

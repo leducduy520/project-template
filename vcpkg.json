@@ -4,6 +4,11 @@
         "fmt",
         "spdlog",
         "boost-dll",
-        "boost-function"
+        "boost-function",
+        {
+            "name": "sfml",
+            "default-features": false,
+            "features": [ "audio", "graphics", "window" ]
+        }
     ]
 }

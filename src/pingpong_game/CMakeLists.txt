@@ -7,7 +7,7 @@ list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_PROJECT_DIR}/mongo-cxx-driver"
     "${EXTERNAL_PROJECT_DIR}/SFML"
 )
 
-find_package(SFML REQUIRED COMPONENTS graphics audio)
+find_package(SFML CONFIG REQUIRED COMPONENTS Audio Graphics Window)
 
 add_subdirectory(utility)
 

@@ -8,10 +8,11 @@
 class LoginWindow
 {
     sf::RenderWindow m_window;
-    std::unique_ptr<sf::Text> m_textname;
-    std::unique_ptr<sf::Text> m_textpass;
-    std::unique_ptr<sf::Text> m_static_name;
-    std::unique_ptr<sf::Text> m_static_pass;
+    sf::Font m_font;
+    sf::Text m_textname = sf::Text(m_font);
+    sf::Text m_textpass = sf::Text(m_font);
+    sf::Text m_static_name = sf::Text(m_font);
+    sf::Text m_static_pass = sf::Text(m_font);
     /*std::string m_strname;*/
     std::string m_strpass;
     std::atomic_bool m_focusedName;
@@ -25,8 +26,8 @@ class LoginWindow
     void listening();
     void update();
     void render();
-    void updateText(const sf::Uint32& code);
-    void handleKeyPress(const sf::Event& event);
+    void updateText(const uint32_t& code);
+    void handleKeyPress(const sf::Event* event);
     void blinkAnimation();
 
 public:

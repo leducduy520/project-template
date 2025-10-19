@@ -14,7 +14,7 @@ namespace interactions
     {
         auto box1 = element1->get_global_bound();
         auto box2 = element2->get_global_bound();
-        return box1.intersects(box2);
+        return box1.findIntersection(box2).has_value();
     }
 
     BallvsPaddle::BallvsPaddle(ball& a_ball, const paddle& a_paddle) : m_ball(a_ball), m_paddle(a_paddle)

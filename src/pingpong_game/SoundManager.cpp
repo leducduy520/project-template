@@ -14,7 +14,8 @@ SoundManager::SoundManager(size_t poolSize, float defaultVolume)
     soundPool.reserve(poolSize);
     for (size_t i = 0; i < poolSize; ++i)
     {
-        soundPool.emplace_back();
+        sf::SoundBuffer buffer;
+        soundPool.emplace_back(buffer);
     }
 }
 
@@ -62,7 +63,7 @@ void SoundManager::playSoundEffect(const std::string& name)
     sf::Sound* availableSound = nullptr;
     for (auto& sound : soundPool)
     {
-        if (sound.getStatus() == sf::Sound::Stopped)
+        if (sound.getStatus() == sf::SoundSource::Status::Stopped)
         {
             availableSound = &sound;
             break;
@@ -72,7 +73,8 @@ void SoundManager::playSoundEffect(const std::string& name)
     // If no available sound and pool isn't full, use a new slot
     if (!availableSound && soundPool.size() < maxConcurrentSounds)
     {
-        soundPool.emplace_back();
+        sf::SoundBuffer buffer;
+        soundPool.emplace_back(buffer);
         availableSound = &soundPool.back();
     }
 
@@ -93,7 +95,7 @@ void SoundManager::playMusic(const std::string& name, bool loop)
     {
         throw std::runtime_error("Music not found: " + name);
     }
-    it->second->setLoop(loop);
+    it->second->setLooping(loop);
     it->second->setVolume(globalVolume);
     it->second->play();
 }
@@ -132,7 +134,7 @@ void SoundManager::setGlobalVolume(float volume)
     // Update volume for active sounds
     for (auto& sound : soundPool)
     {
-        if (sound.getStatus() == sf::Sound::Playing)
+        if (sound.getStatus() == sf::SoundSource::Status::Playing)
         {
             sound.setVolume(globalVolume);
         }
@@ -141,7 +143,7 @@ void SoundManager::setGlobalVolume(float volume)
     // Update volume for playing music
     for (auto& music : musicTracks)
     {
-        if (music.second->getStatus() == sf::Music::Playing)
+        if (music.second->getStatus() == sf::SoundSource::Status::Playing)
         {
             music.second->setVolume(globalVolume);
         }
@@ -162,7 +164,7 @@ void SoundManager::cleanupSounds()
     {
         soundPool.erase(std::remove_if(soundPool.begin(),
                                        soundPool.end(),
-                                       [](const sf::Sound& sound) { return sound.getStatus() == sf::Sound::Stopped; }),
+                                       [](const sf::Sound& sound) { return sound.getStatus() == sf::SoundSource::Status::Stopped; }),
                         soundPool.end());
     }
 }

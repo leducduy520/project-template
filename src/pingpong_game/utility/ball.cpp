@@ -23,14 +23,15 @@ sf::Texture& ball::get_texture()
 }
 
 ball::ball(float px_x, float px_y)
-    : moving_entity(), m_running(false), m_pause(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
+    : moving_entity(), m_text(utilities::texthelper::getFont(utilities::texthelper::CROSS_BOXED)), m_running(false), m_pause(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
 {
     m_sprite.setTexture(get_texture());
     m_sprite.setOrigin(get_centre());
     ball::init(px_x, px_y);
 }
 
-ball::ball() : m_running(false), m_pause(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
+ball::ball() 
+    : moving_entity(), m_text(utilities::texthelper::getFont(utilities::texthelper::CROSS_BOXED)), m_running(false), m_pause(false), m_strength(constants::ball_strength_lv1), m_scale_time(0)
 {
     m_sprite.setTexture(get_texture());
     m_sprite.setOrigin(get_centre());
@@ -53,10 +54,9 @@ void ball::init(float px_x, float px_y)
     m_pause.store(false);
     m_strength.store(constants::ball_strength_lv1);
     m_scale_time.store(0);
-    m_sprite.setScale(1.0F, 1.0F);
-    m_sprite.setPosition(px_x, px_y);
+    m_sprite.setScale({1.0F, 1.0F});
+    m_sprite.setPosition({px_x, px_y});
     m_velocity = {0.0F, constants::ball_speed};
-    m_text.setFont(getFont(CROSS_BOXED));
     m_text.setCharacterSize(14);
     m_text.setFillColor(sf::Color{0, 0, 255, 175});
     aligning::Aligning(&m_text, {left(), top(), width(), height() * 2}, aligning::BC);
@@ -143,7 +143,7 @@ void ball::scale(const int& n) noexcept
         m_strength.store(constants::ball_strength_lv2);
         const std::unique_lock<std::mutex> lock(m_mt);
         const auto rate = static_cast<float>(n);
-        m_sprite.setScale(rate, rate);
+        m_sprite.setScale({rate, rate});
         m_result = ThreadPool::getInstance().submit(0, &ball::reset_size, this);
     }
 }
@@ -185,7 +185,7 @@ void ball::reset_size() noexcept
     m_scale_time.store(0);
     {
         const std::unique_lock<std::mutex> lock(m_mt);
-        m_sprite.setScale(1.0F, 1.0F);
+        m_sprite.setScale({1.0F, 1.0F});
     }
     m_text.setString("");
     m_text.setFillColor(sf::Color{0, 0, 255, 175});

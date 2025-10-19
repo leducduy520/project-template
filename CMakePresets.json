@@ -8,10 +8,8 @@
             "installDir": "${sourceDir}/out/${presetName}/install",
             "toolchainFile": "$penv{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
             "cacheVariables": {
-                "SFML_STATIC_LIBRARIES":{
-                    "type": "BOOL",
-                    "value": true
-                }
+                "SFML_STATIC_LIBRARIES": true,
+                "VCPKG_TARGET_TRIPLET": "x64-windows-static-md"
             }
         },
         {

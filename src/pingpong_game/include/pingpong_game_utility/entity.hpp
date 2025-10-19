@@ -4,10 +4,37 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+struct FloatRect : public sf::FloatRect
+{
+    float left;
+    float top;
+    float width;
+    float height;
+
+    FloatRect(float px_left, float px_top, float px_width, float px_height)
+        : sf::FloatRect({px_left, px_top}, {px_width, px_height}),
+          left(this->position.x),
+          top(this->position.y),
+          width(this->size.x),
+          height(this->size.y)
+    {
+    }
+
+    FloatRect(const sf::FloatRect& rect)
+        : sf::FloatRect(rect.position, rect.size),
+          left(this->position.x),
+          top(this->position.y),
+          width(this->size.x),
+          height(this->size.y)
+    {
+    }
+};
+
 class Ientity
 {
 protected:
-    sf::Sprite m_sprite;
+    sf::Texture m_texture;
+    sf::Sprite m_sprite = sf::Sprite(m_texture);
     bool m_destroyed{false};
 
 public:
@@ -26,8 +53,8 @@ public:
 class entity : public Ientity
 {
 public:
-    entity();
-    sf::FloatRect get_global_bound() const noexcept;
+    entity() = default;
+    FloatRect get_global_bound() const noexcept;
 
     sf::Vector2f get_centre() const noexcept;
 

@@ -33,7 +33,7 @@ void CountingTextUpdate(CountingText* text)
 }
 
 CountingText::CountingText()
-    : m_start_time(system_clock::now()), m_counting_time({}), m_limit({}), m_is_running(false), m_is_paused(false)
+    : sf::Text(utilities::texthelper::getFont(utilities::texthelper::CROSS_BOXED)), m_start_time(system_clock::now()), m_counting_time({}), m_limit({}), m_is_running(false), m_is_paused(false)
 {}
 
 CountingText::~CountingText()
