@@ -10,7 +10,6 @@
 #include <memory>
 #include <paddle.hpp>
 #include <vector>
-#include <DBClientGame.hpp>
 #ifdef _WIN32
 #include <Windows.h>
 #else
@@ -35,33 +34,7 @@
 
 // std::string constants::resouces_path = (EXECUTABLE_PATH / ".." / "resources" / "").string();
 
-extern bsoncxx::stdx::optional<string> get_database_uri();
-extern bsoncxx::stdx::optional<string> get_database_name();
-extern bsoncxx::stdx::optional<string> get_coll_name();
-
-TEST_CASE("Test mongo db connection", "[mongo-connnection]")
-{
-    SECTION("s1")
-    {
-        REQUIRE(get_database_name());
-    }
-    SECTION("s2")
-    {
-        REQUIRE(get_coll_name());
-    }
-    SECTION("s3")
-    {
-        CHECK_NOTHROW(DBClient::GetInstance());
-    }
-    SECTION("s4")
-    {
-        CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase(get_database_name().value().c_str()));
-    }
-    SECTION("s5")
-    {
-        CHECK_NOTHROW(DBClient::GetInstance()->GetDatabase(get_coll_name().value().c_str()));
-    }
-}
+// MongoDB tests removed
 
 // TEST_CASE("Initializing entities", "[init]")
 // {

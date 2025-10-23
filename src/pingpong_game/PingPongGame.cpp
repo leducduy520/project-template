@@ -1,5 +1,4 @@
 #include "PingPongGame.hpp"
-#include "DBClientGame.hpp"
 #include "LoginGame.hpp"
 #include "ThreadPoolGame.hpp"
 #include "helper.hpp"
@@ -16,43 +15,33 @@ extern void CountingTextUpdate(CountingText* text);
 
 void PingPongGame::updateGameSessionStartTime()
 {
-    std::array<char, constants::fmt_now> buffer{};
-    std::tm tmbuff{0};
-
-#if defined(_WIN32) || defined(_WIN64)
-    gmtime_s(&tmbuff, &m_GameSessionID);
-#else
-    gmtime_r(&m_GameSessionID, &tmbuff);
-#endif
-
-    strftime(buffer.data(), constants::fmt_now, "%F %T GMT", &tmbuff);
-
-    DBINSTANCE->UpdateDocument(make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
-                               make_document(kvp("$set", make_document(kvp("history.$.start_time", buffer.data())))));
+    // No-op: MongoDB removed
 }
 
 std::string PingPongGame::toJsonString(const uint8_t* data, size_t length)
 {
-    bson_t bson;
-    bson_init_static(&bson, data, length);
+    // bson_t bson;
+    // bson_init_static(&bson, data, length);
 
-    size_t size{};
-    auto* result = bson_array_as_json(&bson, &size);
+    // size_t size{};
+    // auto* result = bson_array_as_json(&bson, &size);
 
-    if (result != nullptr)
-    {
-        return {};
-    }
+    // if (result != nullptr)
+    // {
+    //     return {};
+    // }
 
-    const auto deleter = [](char* result) { bson_free(result); };
-    const std::unique_ptr<char[], decltype(deleter)> cleanup(result, deleter);
+    // const auto deleter = [](char* result) { bson_free(result); };
+    // const std::unique_ptr<char[], decltype(deleter)> cleanup(result, deleter);
 
-    return {result, size};
+    // return {result, size};
+    return {};
 }
 
 nlohmann::json PingPongGame::toJson(const uint8_t* data, size_t length)
 {
-    return json{toJsonString(data, length)};
+    // return json{toJsonString(data, length)};
+    return {};
 }
 
 void PingPongGame::updateGameSessionEndTime()
@@ -85,40 +74,12 @@ void PingPongGame::updateGameSessionEndTime()
 
 void PingPongGame::updateGameRecord()
 {
-    mongocxx::v_noabi::pipeline pipeline;
-    mongocxx::v_noabi::options::aggregate opts;
-
-    opts.allow_disk_use(true);
-    opts.max_time(std::chrono::milliseconds{60000});
-
-    pipeline
-        .add_fields(make_document(
-            kvp("record",
-                make_document(kvp("$slice",
-                                  make_array(make_document(kvp("$sortArray",
-                                                               make_document(kvp("input", "$history"),
-                                                                             kvp("sortBy",
-                                                                                 make_document(kvp("score", -1),
-                                                                                               kvp("duration", 1),
-                                                                                               kvp("live", -1),
-                                                                                               kvp("id", 1)))))),
-                                             3))))))
-        .merge(make_document(kvp("into", make_document(kvp("db", "duyld"), kvp("coll", "pingpong_game")))));
-    DBINSTANCE->RunPipeLine(pipeline, opts);
+    // No-op: MongoDB removed
 }
 
 void PingPongGame::updateGameNewHistory()
 {
-    DBINSTANCE->UpdateDocument(make_document(kvp("name", m_username)),
-                               make_document(kvp("$push",
-                                                 make_document(kvp("history",
-                                                                   make_document(kvp("id", m_GameSessionID),
-                                                                                 kvp("end_time", ""),
-                                                                                 kvp("result", ""),
-                                                                                 kvp("score", 0),
-                                                                                 kvp("live", 3)))))
-
-                                                 ));
+    // No-op: MongoDB removed
     updateGameSessionStartTime();
     savedData = false;
 }
@@ -141,32 +102,13 @@ void PingPongGame::databaseRetryUpdate()
 
 void PingPongGame::databaseResultUpdate(const game_state& state)
 {
-    if (game_state::player_wins == state)
-    {
-        DBINSTANCE->UpdateDocument(
-            make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
-            make_document(kvp("$set",
-                              make_document(kvp("history.$.result", "win"),
-                                            kvp("history.$.live", m_live),
-                                            kvp("history.$.score",
-                                                static_cast<int32_t>(m_point) + static_cast<int32_t>(20 * m_live))))));
-    }
-    else if (game_state::game_over == state)
-    {
-        DBINSTANCE->UpdateDocument(
-            make_document(kvp("name", m_username), kvp("history.id", m_GameSessionID)),
-            make_document(kvp("$set",
-                              make_document(kvp("history.$.result", "lose"),
-                                            kvp("history.$.live", m_live),
-                                            kvp("history.$.score", static_cast<int32_t>(m_point))))));
-    }
+    // No-op: MongoDB removed
     updateGameSessionEndTime();
 }
 
 void PingPongGame::removeCurrentData()
 {
-    DBINSTANCE->UpdateDocument(make_document(kvp("name", m_username)),
-                               make_document(kvp("$pop", make_document(kvp("history", 1)))));
+    // No-op: MongoDB removed
 }
 
 void PingPongGame::listening()
@@ -619,7 +561,6 @@ void PingPongGame::run()
         m_entity_manager.clear();
         ThreadPool::destroyInstance();
         SoundPlayer::destroyInstance();
-        DBClient::DestroyInstance();
     }
     catch (const std::exception& e)
     {

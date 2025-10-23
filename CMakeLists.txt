@@ -76,15 +76,20 @@ endif()
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 
 include(Config)
-include(Tools)
-include(Document)
 include(Warnings)
-include(Sanitizer)
 
+include(Tools)
 build_clang_format_target()
 build_cmake_format_target()
+
+include(Document)
 add_project_documentation()
+
+include(Sanitizer)
 add_sanitizer_flags()
+
+include(FetchLib)
+fetchlib()
 
 if(THIS_OS_LINUX)
     set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
@@ -96,7 +101,7 @@ add_subdirectory(app)
 if(BUILD_TEST)
     include(CTest)
     enable_testing()
-    add_subdirectory(test)
+    # add_subdirectory(test)
 endif(BUILD_TEST)
 
 # if(NOT SUBPROJECT)

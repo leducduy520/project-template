@@ -1,4 +1,5 @@
 #include "ThreadPoolGame.hpp"
+#include <execution>
 
 ThreadPool* ThreadPool::pool;
 std::once_flag ThreadPool::creat_flag;
@@ -23,10 +24,13 @@ void ThreadPool::shutdown()
         stop_flag.store(true);
     }
     condition.notify_all();
-    for (std::thread& worker : workers)
+    std::for_each(std::execution::par_unseq, workers.begin(), workers.end(), [](std::thread& worker)
     {
-        worker.join();
-    }
+        if (worker.joinable())
+        {
+            worker.join();
+        }
+    });
 }
 
 void ThreadPool::worker()

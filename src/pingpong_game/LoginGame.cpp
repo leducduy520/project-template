@@ -1,7 +1,7 @@
 #include "LoginGame.hpp"
-#include "DBClientGame.hpp"
 #include "constants.hpp"
 #include "helper.hpp"
+#include <chrono>
 #include <memory>
 #include <thread>
 
@@ -13,50 +13,14 @@
 #define TEXT_LIMIT 16
 
 using namespace utilities;
-
-extern bsoncxx::stdx::optional<string> get_database_name();
-extern bsoncxx::stdx::optional<string> get_coll_name();
+using namespace std::chrono_literals;
 
 void LoginWindow::login(const std::string& username, const std::string& password)
 {
-    try
+    if (!username.empty() && !password.empty())
     {
-        auto db_name = get_database_name();
-        auto coll_name = get_coll_name();
-
-        DBINSTANCE->GetDatabase(db_name.value_or("duyld").c_str());
-        if (!DBINSTANCE->GetCollection(coll_name.value_or("pingpong_game").c_str()))
-        {
-            DBINSTANCE->CreateCollection(coll_name.value_or("pingpong_game"));
-            if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
-            {
-                cout << "successfully insert initial data for " << username << '\n';
-                m_loginSuccess = true;
-                return;
-            }
-            throw std::runtime_error("Failed to insert initial data for "s + username);
-        }
-        if (DBINSTANCE->GetDocument(make_document(kvp("name", username))))
-        {
-            cout << "User " << username << " exists" << '\n';
-            if (DBINSTANCE->GetDocument(make_document(kvp("name", username), kvp("password", password))))
-            {
-                cout << "User " << username << " login successfully\n";
-                m_loginSuccess = true;
-                return;
-            }
-            throw std::runtime_error("It's not correct password for user "s + username);
-        }
-        if (DBINSTANCE->InsertDocument(make_document(kvp("name", username), kvp("password", password))))
-        {
-            cout << "successfully insert initial data for " << username << '\n';
-            m_loginSuccess = true;
-            return;
-        }
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
+        m_loginSuccess = true;
+        return;
     }
 }
 
@@ -68,24 +32,24 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
     m_window.setPosition(sf::Vector2i{(1920 - WINDOW_WIDTH) / 2, (1080 - WINDOW_HEIGHT) / 2});
     m_window.setFramerateLimit(120);
 
-    m_textname = make_unique<sf::Text>();
+    m_textname = std::make_unique<sf::Text>();
     m_textname->setFillColor(sf::Color{128, 128, 128, 128});
     m_textname->setCharacterSize(FONT_SIZE);
     m_textname->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
 
-    m_textpass = make_unique<sf::Text>();
+    m_textpass = std::make_unique<sf::Text>();
     m_textpass->setFillColor(sf::Color{128, 128, 128, 128});
     m_textpass->setCharacterSize(FONT_SIZE);
     m_textpass->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
 
-    m_static_name = make_unique<sf::Text>();
+    m_static_name = std::make_unique<sf::Text>();
     m_static_name->setString("Name: ");
     m_static_name->setFillColor(sf::Color::Black);
     m_static_name->setCharacterSize(FONT_SIZE);
     m_static_name->setFont(texthelper::getFont(texthelper::MODESTICSANS_BOLDITALIC));
     texthelper::aligning::Aligning(m_static_name.get(), sf::FloatRect{{200, 235}, {200, 50}}, texthelper::aligning::ML);
 
-    m_static_pass = make_unique<sf::Text>();
+    m_static_pass = std::make_unique<sf::Text>();
     m_static_pass->setString("Password: ");
     m_static_pass->setFillColor(sf::Color::Black);
     m_static_pass->setCharacterSize(FONT_SIZE);

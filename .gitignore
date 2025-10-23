@@ -2,5 +2,4 @@
 .git
 /out
 /docs
-/external/mongo-cxx-driver
-/external/SFML
+/external

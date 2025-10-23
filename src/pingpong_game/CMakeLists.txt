@@ -1,14 +1,5 @@
 project(pingpong_game)
 
-include(${CMAKE_CURRENT_LIST_DIR}/FetchLib.cmake)
-fetchlib()
-
-list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_PROJECT_DIR}/mongo-cxx-driver"
-     "${EXTERNAL_PROJECT_DIR}/SFML"
-     )
-find_package(mongocxx REQUIRED)
-find_package(SFML REQUIRED COMPONENTS graphics audio)
-
 add_subdirectory(utility)
 
 file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp" "${CMAKE_CURRENT_LIST_DIR}/*.c")
@@ -47,21 +38,6 @@ endif()
 target_sources(
     ${PROJECT_NAME} PRIVATE FILE_SET ${PROJECT_NAME}_headers TYPE HEADERS FILES "${HEADER_FILES}"
     )
-
-if(THIS_OS_WINDOWS)
-    add_custom_command(
-        TARGET ${PROJECT_NAME}
-        COMMENT " Copy OpenAL DLL "
-        PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy "${EXTERNAL_PROJECT_DIR}/SFML/bin/openal32.dll"
-                $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        VERBATIM
-        )
-
-    install(
-        FILES "${EXTERNAL_PROJECT_DIR}/SFML/bin/openal32.dll" DESTINATION ${CMAKE_INSTALL_BINDIR}
-        )
-endif()
 
 set_directory_properties(PROPERTIES VS_STARTUP_PROJECT ${PROJECT_NAME})
 
