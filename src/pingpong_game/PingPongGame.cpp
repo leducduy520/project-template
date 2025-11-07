@@ -5,7 +5,7 @@
 #include "interactions.hpp"
 #include "soundplayer.hpp"
 
-std::string constants::resouces_path;
+std::filesystem::path constants::resouces_path;
 using namespace std;
 using namespace std::literals;
 using namespace utilities::texthelper;
@@ -392,7 +392,7 @@ void PingPongGame::try_createwall()
     {
         m_entity_manager.create<wall>();
         m_entity_manager.apply_all<wall>([](wall& a_wall) {
-            utilities::wallhelper::build_wall(a_wall, (constants::resouces_path + "wall.csv").c_str());
+            utilities::wallhelper::build_wall(a_wall, (constants::resouces_path / "wall.csv").string().c_str());
         });
     }
     catch (const std::ios::failure& e)
@@ -546,8 +546,12 @@ void PingPongGame::clear()
 // Game loop
 void PingPongGame::run()
 {
+    constexpr size_t sound_pool_volume = 10;
+    constexpr float sound_default_volume = 80.0f;
     try
     {
+        SoundManager::getInstance(sound_pool_volume, sound_default_volume);
+        SoundPlayer::loadSound();
         m_countingText.start();
         while (game_window.isOpen())
         {
@@ -558,9 +562,9 @@ void PingPongGame::run()
             render();
         }
         m_countingText.stop();
+        SoundPlayer::stopSound();
         m_entity_manager.clear();
         ThreadPool::destroyInstance();
-        SoundPlayer::destroyInstance();
     }
     catch (const std::exception& e)
     {

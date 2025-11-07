@@ -3,6 +3,7 @@
 
 #include <string>
 #include <chrono>
+#include <filesystem>
 
 // Code for a "breakout" game
 // Based on a talk by Vittorio Romeo and code by "FamTrimli"
@@ -33,7 +34,7 @@ struct constants
     static constexpr int init_live{5};
     static constexpr std::chrono::minutes round_duration{9};
     static constexpr size_t fmt_now{std::size("0000-00-00 00:00:00 GMT")};
-    static std::string resouces_path;
+    static std::filesystem::path resouces_path;
 };
 
 #endif // CONSTANTS_H

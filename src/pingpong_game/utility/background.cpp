@@ -1,4 +1,6 @@
 #include "background.hpp"
+#include "constants.hpp"
+#include <iostream>
 
 sf::Texture& background::get_texture()
 {
@@ -6,7 +8,7 @@ sf::Texture& background::get_texture()
     static bool initialized = false;
     if (!initialized)
     {
-        if (!texture.loadFromFile(constants::resouces_path + "background.jpg"))
+        if (!texture.loadFromFile((constants::resouces_path / "background.jpg").string()))
         {
             std::cerr << "Get texture failed\n";
         }

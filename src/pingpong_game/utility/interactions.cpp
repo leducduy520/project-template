@@ -1,11 +1,6 @@
 #include "interactions.hpp"
 #include "helper.hpp"
 #include "soundplayer.hpp"
-#include <algorithm>
-#include <future>
-#include <mutex>
-#include <random>
-#include <thread>
 #include <execution>
 
 namespace interactions
@@ -24,7 +19,7 @@ namespace interactions
     {
         if (are_interacting(&m_ball, &m_paddle))
         {
-            SoundPlayer::getInstance()->playSound(SoundPlayer::PADDLE_BOUNCE);
+            SoundPlayer::playSound(SoundPlayer::Sound_t::PADDLE_BOUNCE);
 
             sf::Vector2f new_vel{m_ball.get_velocity()};
 

@@ -1,12 +1,8 @@
 //#include "ThreadPoolGame.hpp"
-#include <iomanip>
-#include <iostream>
-#include <limits>
-#include <sstream>
-#include <thread>
 #include "countingtext.hpp"
 #include "ThreadPoolGame.hpp"
 #include "helper.hpp"
+#include "constants.hpp"
 
 void CountingTextUpdate(CountingText* text)
 {

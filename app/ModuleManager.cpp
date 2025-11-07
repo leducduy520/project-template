@@ -1,110 +1,106 @@
-#include "ModuleManager.h"
+#include "ModuleManager.hpp"
+#include <boost/filesystem.hpp>
+#include <spdlog/spdlog.h>
 
-// Register a module with its expected path
-void ModuleManager::registerModule(const std::string& moduleName, const std::string& modulePath)
-{
-    modulePaths[moduleName] = modulePath;
-}
-
-// Load a registered module
-bool ModuleManager::loadModule(const std::string& moduleName)
-{
-    auto it = modulePaths.find(moduleName);
-    if (it == modulePaths.end())
-    {
-        std::cerr << "Module not registered: " << moduleName << std::endl;
-        return false;
-    }
-
-    LibraryHandle hModule = LoadLibraryFunction(it->second.c_str());
-    if (hModule == nullptr)
-    {
-#ifdef _WIN32
-        std::cerr << "Failed to load module: " << moduleName << " Error: " << GetLastError() << std::endl;
-#else
-        std::cerr << "Failed to load module: " << moduleName << " Error: " << dlerror() << std::endl;
-#endif
-        return false;
-    }
-
-    loadedModules[moduleName] = hModule;
-    std::cout << "Loaded module: " << it->second << std::endl;
-    return true;
-}
-
-// Get a function pointer from a loaded module
-FunctionAddress ModuleManager::getFunction(const std::string& moduleName, const std::string& functionName)
-{
-    auto it = loadedModules.find(moduleName);
-    if (it == loadedModules.end())
-    {
-        std::cerr << "Module not loaded: " << moduleName << std::endl;
-        return nullptr;
-    }
-
-    FunctionAddress func = GetFunctionAddress(it->second, functionName.c_str());
-    if (func == nullptr)
-    {
-        std::cerr << "Failed to get function: " << functionName << " from module: " << moduleName << std::endl;
-    }
-
-    return func;
-}
-
-// Release a loaded module
-void ModuleManager::releaseModule(const std::string& moduleName)
-{
-    auto it = loadedModules.find(moduleName);
-    if (it != loadedModules.end())
-    {
-        UnloadLibrary(it->second);
-        std::cout << "Released module: " << modulePaths[moduleName] << std::endl;
-        loadedModules.erase(it);
-    }
-    else
-    {
-        std::cerr << "Module not loaded: " << moduleName << std::endl;
+ModuleManager::ModuleManager(const boost::filesystem::path& plugin_dir)
+    : plugin_dir_(plugin_dir) {
+    spdlog::info("ModuleManager initialized with plugin directory: {}", plugin_dir_.string());
+    if (!boost::filesystem::exists(plugin_dir_)) {
+        spdlog::warn("Plugin directory {} does not exist, creating it", plugin_dir_.string());
+        boost::filesystem::create_directory(plugin_dir_);
     }
 }
 
-// Destructor to ensure all modules are released
-ModuleManager::~ModuleManager()
-{
-    for (const auto& pair : loadedModules)
-    {
-        UnloadLibrary(pair.second);
-        std::cout << "Released module in destructor: " << modulePaths[pair.first] << std::endl;
-    }
-    loadedModules.clear();
+ModuleManager::~ModuleManager() {
+    spdlog::info("Unloading all plugins");
+    plugins_.clear();
 }
 
-// Helper function to get the actual path of a loaded module (DLL)
-std::string ModuleManager::getModulePath(const std::string& moduleName)
-{
-    auto it = loadedModules.find(moduleName);
-    if (it == loadedModules.end())
-    {
-        std::cerr << "Module not loaded: " << moduleName << std::endl;
-        return "";
+void ModuleManager::load_plugin(const std::string& plugin_name) {
+    namespace fs = boost::filesystem;
+    namespace dll = boost::dll;
+    
+    // Check if plugin is already loaded
+    if (has_plugin(plugin_name)) {
+        spdlog::warn("Plugin '{}' is already loaded", plugin_name);
+        return;
     }
 
-    LibraryHandle hModule = it->second;
+    // Get platform-specific extension using Boost.DLL
+    const std::string ext = dll::shared_library::suffix().string();
+    
+    // Construct full plugin path
+    fs::path plugin_path = plugin_dir_ / (plugin_name + ext);
+    
+    spdlog::info("Attempting to load plugin: {} from {}", plugin_name, plugin_path.string());
 
-#ifdef _WIN32
-    char path[MAX_PATH];
-    if (GetModuleFileName(hModule, path, MAX_PATH) == 0)
-    {
-        std::cerr << "Failed to get module path. Error: " << GetLastError() << std::endl;
-        return "";
+    if (!fs::exists(plugin_path)) {
+        spdlog::error("Plugin file not found: {}", plugin_path.string());
+        throw std::runtime_error("Plugin file not found: " + plugin_path.string());
     }
-    return std::string(path);
-#else
-    Dl_info info;
-    if (dladdr(hModule, &info) == 0)
-    {
-        std::cerr << "Failed to get module path. Error: " << dlerror() << std::endl;
-        return "";
+
+    try {
+        Plugin plugin;
+        plugin.name = plugin_name;
+        plugin.library = std::make_shared<dll::shared_library>(plugin_path);
+        plugins_.push_back(std::move(plugin));
+        spdlog::info("Successfully loaded plugin: {}", plugin_name);
+    } catch (const std::exception& e) {
+        spdlog::error("Failed to load plugin {}: {}", plugin_name, e.what());
+        throw;
     }
-    return std::string(info.dli_fname);
-#endif
+}
+
+bool ModuleManager::unload_plugin(const std::string& plugin_name) {
+    auto it = std::find_if(plugins_.begin(), plugins_.end(),
+        [&plugin_name](const Plugin& p) { return p.name == plugin_name; });
+    if (it != plugins_.end()) {
+        spdlog::info("Unloading plugin: {}", plugin_name);
+        plugins_.erase(it);
+        return true;
+    }
+    spdlog::warn("Plugin {} not found for unloading", plugin_name);
+    return false;
+}
+
+bool ModuleManager::has_plugin(const std::string& plugin_name) const {
+    return std::any_of(plugins_.begin(), plugins_.end(),
+        [&plugin_name](const Plugin& p) { return p.name == plugin_name; });
+}
+
+std::vector<std::string> ModuleManager::get_plugin_names() const {
+    std::vector<std::string> names;
+    for (const auto& plugin : plugins_) {
+        names.push_back(plugin.name);
+    }
+    return names;
+}
+
+std::vector<std::string> ModuleManager::list_available_plugins() const {
+    namespace fs = boost::filesystem;
+    namespace dll = boost::dll;
+    
+    std::vector<std::string> available_plugins;
+    
+    // Get platform-specific extension using Boost.DLL
+    const std::string ext = dll::shared_library::suffix().string();
+    
+    if (!fs::exists(plugin_dir_)) {
+        spdlog::warn("Plugin directory {} does not exist", plugin_dir_.string());
+        return available_plugins;
+    }
+    
+    try {
+        for (const auto& entry : fs::directory_iterator(plugin_dir_)) {
+            if (fs::is_regular_file(entry) && entry.path().extension().string() == ext) {
+                // Get filename without extension
+                std::string plugin_name = entry.path().stem().string();
+                available_plugins.push_back(plugin_name);
+            }
+        }
+    } catch (const fs::filesystem_error& e) {
+        spdlog::error("Error scanning plugin directory {}: {}", plugin_dir_.string(), e.what());
+    }
+    
+    return available_plugins;
 }

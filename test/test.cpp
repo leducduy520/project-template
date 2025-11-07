@@ -38,7 +38,7 @@
 
 // TEST_CASE("Initializing entities", "[init]")
 // {
-//     UNSCOPED_INFO("resouces_path: " << constants::resouces_path + "wall.csv");
+//     UNSCOPED_INFO("resouces_path: " << constants::resouces_path / "wall.csv");
 
 //     SECTION("i1")
 //     {
@@ -62,7 +62,7 @@
 //     {
 //         CHECK_NOTHROW([&]() {
 //             wall a_wall;
-//             utilities::wallhelper::build_wall(a_wall, (constants::resouces_path + "wall.csv").c_str());
+//             utilities::wallhelper::build_wall(a_wall, (constants::resouces_path / "wall.csv").c_str());
 //         }());
 //     }
 // }
@@ -72,6 +72,6 @@
 //     BENCHMARK("Bechmark creating a wall with benchmark.csv")
 //     {
 //         wall a_wall;
-//         return utilities::wallhelper::build_wall(a_wall, (constants::resouces_path + "benchmark.csv").c_str());
+//         return utilities::wallhelper::build_wall(a_wall, (constants::resouces_path / "benchmark.csv").c_str());
 //     };
 // }

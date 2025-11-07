@@ -1,7 +1,6 @@
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 
-#include "constants.hpp"
 #include "entity.hpp"
 
 class background : public entity

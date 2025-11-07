@@ -4,12 +4,6 @@
 #include "constants.hpp"
 #include "entity.hpp"
 #include <functional>
-#include <memory>
-#include <unordered_map>
-#include <utility>
-#include <type_traits>
-#include <limits>
-#include <numeric>
 
 #define fnhit(OBJECT) void hit_##OBJECT(bool& destroyed, const bool relate);
 

@@ -39,6 +39,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MESSAGE_LOG_LEVEL VERBOSE)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set(X_VCPKG_APPLOCAL_DEPS_INSTALL CACHE BOOL "Enable app local deps install" ON)
 
 # Set custom variables
 set(INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
@@ -46,11 +47,11 @@ set(INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 if(NOT DEFINED ENV{EXTERNAL_PROJECT_DIR} AND NOT DEFINED EXTERNAL_PROJECT_DIR)
     set(EXTERNAL_PROJECT_DIR "${CMAKE_SOURCE_DIR}/external"
         CACHE PATH "Where to file external projects" FORCE
-    )
+        )
 elseif(DEFINED ENV{EXTERNAL_PROJECT_DIR} AND NOT DEFINED EXTERNAL_PROJECT_DIR)
     set(EXTERNAL_PROJECT_DIR "$ENV{EXTERNAL_PROJECT_DIR}"
         CACHE PATH "Where to file external projects" FORCE
-    )
+        )
 endif()
 
 message(STATUS "EXTERNAL_PROJECT_DIR: ${EXTERNAL_PROJECT_DIR}")
@@ -58,22 +59,7 @@ message(STATUS "EXTERNAL_PROJECT_DIR: ${EXTERNAL_PROJECT_DIR}")
 # Set output directory for each configuration
 get_property(THIS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
-if(THIS_MULTI_CONFIG)
-    foreach(build_type IN LISTS CMAKE_CONFIGURATION_TYPES)
-        string(TOUPPER ${build_type} build_type_upper)
-        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper}
-            ${CMAKE_BINARY_DIR}/${build_type}/lib
-        )
-        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${build_type_upper}
-            ${CMAKE_BINARY_DIR}/${build_type}/lib
-        )
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper}
-            ${CMAKE_BINARY_DIR}/${build_type}/bin
-        )
-    endforeach()
-endif()
-
-add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+# add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 
 include(Config)
 include(Warnings)
@@ -87,9 +73,6 @@ add_project_documentation()
 
 include(Sanitizer)
 add_sanitizer_flags()
-
-include(FetchLib)
-fetchlib()
 
 if(THIS_OS_LINUX)
     set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})

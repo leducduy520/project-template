@@ -5,9 +5,6 @@
 #include "ball.hpp"
 #include "brick.hpp"
 #include "paddle.hpp"
-#include <cmath>
-#include <map>
-
 namespace interactions
 {
     bool are_interacting(const entity* element1, const entity* element12) noexcept;

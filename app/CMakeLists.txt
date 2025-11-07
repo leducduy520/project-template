@@ -1,6 +1,13 @@
 # Add source files for the executable
 add_executable(MySFMLApp main.cpp ModuleManager.cpp)
 
+find_package(spdlog CONFIG REQUIRED)
+find_package(boost_dll_boost_fs CONFIG REQUIRED)
+find_package(boost_function CONFIG REQUIRED)
+target_link_libraries(
+    MySFMLApp PRIVATE spdlog::spdlog_header_only Boost::function Boost::dll_boost_fs
+    )
+
 # Include directories
 target_include_directories(
     MySFMLApp

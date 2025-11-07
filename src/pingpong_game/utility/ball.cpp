@@ -2,8 +2,7 @@
 #include "ThreadPoolGame.hpp"
 #include "soundplayer.hpp"
 #include "helper.hpp"
-#include <filesystem>
-#include <thread>
+#include "constants.hpp"
 
 using namespace std::literals;
 
@@ -13,7 +12,7 @@ sf::Texture& ball::get_texture()
     static bool initialized = false;
     if (!initialized)
     {
-        if (!texture.loadFromFile(constants::resouces_path + "ball.png"))
+        if (!texture.loadFromFile((constants::resouces_path / "ball.png").string()))
         {
             std::cerr << "Get texture failed\n";
         }
@@ -72,7 +71,7 @@ void ball::update()
         if (touch_left || touch_right)
         {
             m_velocity.x = -m_velocity.x;
-            SoundPlayer::getInstance()->playSound(SoundPlayer::WALL_BOUNCE);
+            SoundPlayer::playSound(SoundPlayer::Sound_t::WALL_BOUNCE);
         }
     }
 
@@ -82,7 +81,7 @@ void ball::update()
         if (touch_up)
         {
             m_velocity.y = -m_velocity.y;
-            SoundPlayer::getInstance()->playSound(SoundPlayer::WALL_BOUNCE);
+            SoundPlayer::playSound(SoundPlayer::Sound_t::WALL_BOUNCE);
         }
         else if (touch_down)
         {

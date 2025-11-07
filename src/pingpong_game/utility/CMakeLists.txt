@@ -25,12 +25,14 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 # =============================================================================
 # External Dependencies
 # =============================================================================
+find_path(RAPIDCSV_INCLUDE_DIRS "rapidcsv.h")
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(magic_enum CONFIG REQUIRED)
+find_package(SFML COMPONENTS system window graphics audio CONFIG REQUIRED)
+find_package(Boost CONFIG REQUIRED COMPONENTS dll filesystem)
 target_link_libraries(
-    ${PROJECT_NAME}
-    PUBLIC rapidcsv_INTERFACE # CSV parsing library (header-only)
-           magic_enum_INTERFACE # Enum reflection library (header-only)
-           nlohmann_json_INTERFACE # JSON library (header-only)
-           SFML_INTERFACE # SFML graphics/audio/window/system libraries
+    ${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json magic_enum::magic_enum sfml-graphics
+                           sfml-audio
     )
 
 # =============================================================================
@@ -41,7 +43,7 @@ target_include_directories(
     PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PARENT_PROJECT_NAME}/${PROJECT_NAME}>
            $<BUILD_INTERFACE:${THIS_PARENT_PATH}/include/${PROJECT_NAME}>
     INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface>
+              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface> ${RAPIDCSV_INCLUDE_DIRS}
     )
 
 # =============================================================================
@@ -96,14 +98,14 @@ source_group("Resource Files" FILES ${RESOURCE_FILES})
 # =============================================================================
 if(THIS_OS_WINDOWS)
     # Copy SFML DLLs to output directory for runtime execution
-    add_custom_command(
-        TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMENT "Copy SFML DLLs"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${SFML_BIN_DIR}
-                $<TARGET_FILE_DIR:${PROJECT_NAME}>/../bin
-        VERBATIM
-        )
+    # add_custom_command(
+    #     TARGET ${PROJECT_NAME}
+    #     POST_BUILD
+    #     COMMENT "Copy SFML DLLs"
+    #     COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${SFML_BIN_DIR}
+    #             $<TARGET_FILE_DIR:${PROJECT_NAME}>/../bin
+    #     VERBATIM
+    #     )
 
     # Copy resource files to output directory
     add_custom_command(

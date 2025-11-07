@@ -1,8 +1,9 @@
+#include <cstdlib>
+#include <iostream>
 #include "helper.hpp"
 #include "soundplayer.hpp"
-#include <cstdlib>
-#include <exception>
 #include "brick.hpp"
+#include "constants.hpp"
 
 extern template void wall::update_point<short>(short&& amount) noexcept;
 
@@ -15,9 +16,9 @@ sf::Image& getImage(brick::BrickProperty property)
     if (!initialized)
     {
         sf::Image source;
-        if (!source.loadFromFile(constants::resouces_path + "brick.png"))
+        if (!source.loadFromFile((constants::resouces_path / "brick.png").string()))
         {
-            const std::string message = "Cannot open source image "s + constants::resouces_path + "brick.png";
+            const std::string message = "Cannot open source image "s + (constants::resouces_path / "brick.png").string();
             throw std::logic_error(message.c_str());
         }
 
@@ -247,7 +248,7 @@ void brick::hit_bomb(bool& destroyed, const bool relate)
     }
     if (!relate)
     {
-        SoundPlayer::getInstance()->playSound(SoundPlayer::BOMB_EXPLOSION);
+        SoundPlayer::playSound(SoundPlayer::Sound_t::BOMB_EXPLOSION);
     }
 }
 
@@ -267,7 +268,7 @@ void brick::hit_diamond(bool& destroyed, const bool relate)
     }
     if (!relate)
     {
-        SoundPlayer::getInstance()->playSound(SoundPlayer::DIAMOND_DESTROY);
+        SoundPlayer::playSound(SoundPlayer::Sound_t::DIAMOND_DESTROY);
     }
 }
 
@@ -283,7 +284,7 @@ void brick::hit_brick(bool& destroyed, const bool relate)
     }
     if (!relate)
     {
-        SoundPlayer::getInstance()->playSound(SoundPlayer::BRICK_BOUNCE);
+        SoundPlayer::playSound(SoundPlayer::Sound_t::BRICK_BOUNCE);
     }
 }
 
@@ -320,7 +321,7 @@ void wall::draw(sf::RenderWindow& window)
 
 void wall::init([[maybe_unused]] float px_x, [[maybe_unused]] float px_y)
 {
-    utilities::wallhelper::build_wall(*this, (constants::resouces_path + "wall.csv").c_str());
+    utilities::wallhelper::build_wall(*this, (constants::resouces_path / "wall.csv").string().c_str());
 }
 
 void wall::refresh()

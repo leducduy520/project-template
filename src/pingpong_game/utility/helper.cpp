@@ -1,11 +1,7 @@
 #include "helper.hpp"
 #include "brick.hpp"
-#include "magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"
 #include "rapidcsv.h"
-#include <exception>
-#include <ios>
-#include <filesystem>
-#include <regex>
 
 template void wall::update_point<short>(short&& amount) noexcept;
 
@@ -145,11 +141,9 @@ namespace utilities
                 //     }
                 // }
 
-                Font::font_cross_boxed.loadFromFile(constants::resouces_path + "Cross Boxed.ttf");
-                Font::font_modesticsans_bolditalic.loadFromFile(constants::resouces_path +
-                                                                "ModesticSans/ModesticSans-BoldItalic.ttf");
-                Font::font_modesticsans_bold.loadFromFile(constants::resouces_path +
-                                                          "ModesticSans/ModesticSans-Bold.ttf");
+                Font::font_cross_boxed.loadFromFile((constants::resouces_path / "Cross Boxed.ttf").string());
+                Font::font_modesticsans_bolditalic.loadFromFile((constants::resouces_path / "ModesticSans/ModesticSans-BoldItalic.ttf").string());
+                Font::font_modesticsans_bold.loadFromFile((constants::resouces_path / "ModesticSans/ModesticSans-Bold.ttf").string());
                 initialized = true;
             }
 

@@ -1,5 +1,5 @@
 #include "paddle.hpp"
-#include <cmath>
+#include <iostream>
 
 sf::Texture& paddle::get_texture()
 {
@@ -7,7 +7,7 @@ sf::Texture& paddle::get_texture()
     static bool initialized = false;
     if (!initialized)
     {
-        if (!texture.loadFromFile(constants::resouces_path + "steel.png"))
+        if (!texture.loadFromFile((constants::resouces_path / "steel.png").string()))
         {
             std::cerr << "Get texture failed\n";
         }
