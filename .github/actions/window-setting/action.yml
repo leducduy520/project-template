@@ -1,0 +1,16 @@
+name: Installer
+description: 'For installing windows dependencies'
+author: duyld15
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies by choco
+      run: choco install graphviz make dos2unix doxygen.portable
+      shell: bash
+    - name: install cmake-format
+      run: |
+        pip install cmake-format
+        pip install clang-format
+        pip install clang-tidy
+        pip install PyYAML
+      shell: bash
