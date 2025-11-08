@@ -1,0 +1,16 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug MySFMLApp",
+            "type": "cppdbg",
+            "cwd": "${workspaceFolder}/out/msvc/install/bin",
+            "program": "${workspaceFolder}/out/msvc/install/bin/MySFMLApp.exe",
+            "miDebuggerPath": "C:\\ProgramData\\mingw64\\mingw64\\bin\\gdb.exe",
+            "request": "launch"
+        }
+    ]
+}

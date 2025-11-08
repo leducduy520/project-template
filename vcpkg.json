@@ -1,0 +1,27 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+    "dependencies": [
+        {
+            "name": "sfml",
+            "default-features": false,
+            "features": [
+                "graphics",
+                "audio"
+            ]
+        },
+        "nlohmann-json",
+        "magic-enum",
+        "boost-filesystem",
+        "boost-dll",
+        "boost-thread",
+        "boost-asio",
+        "rapidcsv",
+        "spdlog"
+    ],
+    "overrides": [
+        {
+            "name": "sfml",
+            "version": "2.6.2"
+        }
+    ]
+}
