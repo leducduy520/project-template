@@ -1,0 +1,52 @@
+name: Builder
+description: 'For building'
+author: duyld15
+inputs:
+  preset:
+    description: 'Cmake preset to be built'
+    required: true
+  build:
+    description: 'Build project with Ubuntu'
+    required: true
+  test:
+    description: 'Run tests with Ubuntu'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Check environment variable
+      run: |
+        echo "${{ env.MONGODB_URI }}"
+        echo "${{ env.MONGODB_NAME }}"
+        echo "${{ env.MONGODB_COLL }}"
+      shell: bash
+    - name: Save current directory
+      run: echo "CURRENT_DIR=$(pwd)" >> $GITHUB_ENV
+      shell: bash
+    - name: Configure Project
+      env:
+        EXTERNAL_PROJECT_DIR: '/usr/src/external'
+      run: make configure PRESET=${{ inputs.preset }}
+      shell: bash
+    - name: Build Project
+      id: build
+      if: ${{ inputs.build == true }}
+      run: cmake --build --preset=${{ inputs.preset }}
+      shell: bash
+    - name: Install Project
+      id: install
+      if: ${{ steps.build.conclusion == 'success' }}
+      run: cmake --build --preset=${{ inputs.preset }} -t install
+      shell: bash
+    - name: Test Project
+      if: ${{ inputs.test == true && steps.install.conclusion == 'success' }}
+      env:
+        MONGODB_URI: ${{ env.MONGODB_TEST_URI }}
+        MONGODB_NAME: test
+        MONGODB_COLL: game
+      run: |
+        echo "$MONGODB_URI"
+        echo "$MONGODB_NAME"
+        echo "$MONGODB_COLL"
+        ./out/${{ inputs.preset }}/install/bin/Catch-test
+      shell: bash
