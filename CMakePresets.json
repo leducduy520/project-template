@@ -1,0 +1,189 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/out/${presetName}/build",
+            "installDir": "${sourceDir}/out/${presetName}/install",
+            "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        },
+        {
+            "name": "ubuntu",
+            "inherits": "base",
+            "generator": "Unix Makefiles",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "msvc",
+            "displayName": "MSVC configuration",
+            "inherits": "base",
+            "generator": "Visual Studio 17 2022",
+            "architecture":{
+                "strategy": "set",
+                "value": "x64"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "windows-clang",
+            "displayName": "Windows Clang configuration",
+            "inherits": "base",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang-cl",
+                "CMAKE_CXX_COMPILER": "clang-cl"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "base",
+            "configurePreset": "base",
+            "hidden": true,
+            "inheritConfigureEnvironment": true,
+            "configuration": "Debug",
+            "jobs": 6,
+            "targets": "all"
+        },
+        {
+            "name": "ubuntu",
+            "configurePreset": "ubuntu",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "targets": "install"
+        },
+        {
+            "name": "msvc",
+            "configurePreset": "msvc",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "targets": "ALL_BUILD",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "windows-clang",
+            "configurePreset": "windows-clang",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "base",
+            "configurePreset": "base",
+            "hidden": true,
+            "output": {
+                "verbosity": "verbose",
+                "shortProgress": true,
+                "labelSummary": true
+            },
+            "execution": {
+                "jobs": 8
+            }
+        },
+        {
+            "name": "ubuntu",
+            "configurePreset": "ubuntu",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "msvc",
+            "displayName": "Test msvc build",
+            "configurePreset": "msvc",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "windows-clang",
+            "displayName": "Test windows-clang build",
+            "configurePreset": "windows-clang",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        }
+    ],
+    "packagePresets": [
+        {
+            "name": "msvc",
+            "configurePreset": "msvc"
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "ubuntu",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "ubuntu"
+                },
+                {
+                    "type": "build",
+                    "name": "ubuntu"
+                },
+                {
+                    "type": "test",
+                    "name": "ubuntu"
+                }
+            ]
+        },
+        {
+            "name": "msvc",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "msvc"
+                },
+                {
+                    "type": "build",
+                    "name": "msvc"
+                },
+                {
+                    "type": "test",
+                    "name": "msvc"
+                }
+            ]
+        }
+    ]
+}
