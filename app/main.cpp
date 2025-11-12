@@ -18,7 +18,7 @@ static boost::filesystem::path getExecutablePath()
 #else
     char path[PATH_MAX];
     ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
-    return std::filesystem::path(std::string(path, (count > 0) ? count : 0)).parent_path();
+    return boost::filesystem::path(std::string(path, (count > 0) ? count : 0)).parent_path();
 #endif
 }
 

@@ -1,4 +1,5 @@
 #include "paddle.hpp"
+#include <cmath>
 #include <iostream>
 
 sf::Texture& paddle::get_texture()
