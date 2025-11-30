@@ -38,7 +38,7 @@ class entity_manager
 
     // Get the next available ID (reuse from pool if available, otherwise generate new)
     size_t get_next_id() noexcept;
-    
+
     // Recycle an ID back to the pool
     void recycle_id(size_t id) noexcept;
 
@@ -50,8 +50,7 @@ public:
     T& create(Args&&... args)
     {
         // Check that the type parameter is derived from the entity base class
-        static_assert(std::is_base_of_v<Ientity, T>,
-                      R"("T" type parameter in create() must be derived from "entity")");
+        static_assert(std::is_base_of_v<Ientity, T>, R"("T" type parameter in create() must be derived from "entity")");
 
         // Create a unique_ptr to the entity
         // Forward the arguments to the entity's constructor
@@ -100,8 +99,7 @@ public:
     {
         auto& entity_group = get_all<T>();
 
-        for (auto ptr : entity_group)
-        {
+        for (auto ptr : entity_group) {
             auto* entity = dynamic_cast<T*>(ptr);
 
             // Apply each function in the parameter pack to the entity using an initializer list
@@ -121,10 +119,10 @@ public:
     // Pub/Sub methods
     // Subscribe an entity to a topic
     void subscribe(const std::string& topic, Ientity* entity);
-    
+
     // Publish an event to a topic
     void publish(const std::string& topic, Ientity* entity);
-    
+
     // Unsubscribe an entity from a topic
     void unsubscribe(const std::string& topic, Ientity* entity);
 };

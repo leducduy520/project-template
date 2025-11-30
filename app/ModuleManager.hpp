@@ -12,25 +12,28 @@
 #include <boost/filesystem.hpp>
 #include <spdlog/spdlog.h>
 
-struct Plugin {
+struct Plugin
+{
     std::shared_ptr<boost::dll::shared_library> library;
     std::string name;
     Plugin() noexcept = default;
 };
 
-class ModuleManager {
+class ModuleManager
+{
 public:
     // Constructor: Initialize with plugin directory
     explicit ModuleManager(const boost::filesystem::path& plugin_dir);
 
     ModuleManager(const ModuleManager&) = delete;
     ModuleManager& operator=(const ModuleManager&) = delete;
-    ModuleManager(ModuleManager&& other) noexcept 
-        : plugin_dir_(std::move(other.plugin_dir_)),
-        plugins_(std::move(other.plugins_))
+
+    ModuleManager(ModuleManager&& other) noexcept
+        : plugin_dir_(std::move(other.plugin_dir_)), plugins_(std::move(other.plugins_))
+    {}
+
+    ModuleManager& operator=(ModuleManager&& other) noexcept
     {
-    }
-    ModuleManager& operator=(ModuleManager&& other) noexcept {
         if (this != &other) {
             plugin_dir_ = std::move(other.plugin_dir_);
             plugins_ = std::move(other.plugins_);
@@ -51,9 +54,8 @@ public:
     bool has_plugin(const std::string& plugin_name) const;
 
     // Get a function from a specific plugin by name
-    template<typename Signature>
-    std::function<Signature> get_function(const std::string& plugin_name,
-                                         const std::string& func_name) const;
+    template <typename Signature>
+    std::function<Signature> get_function(const std::string& plugin_name, const std::string& func_name) const;
 
     // Get all loaded plugin names
     std::vector<std::string> get_plugin_names() const;
@@ -66,17 +68,17 @@ private:
     std::vector<Plugin> plugins_;
 };
 
-template<typename Signature>
-std::function<Signature> ModuleManager::get_function(const std::string& plugin_name,
-                                                     const std::string& func_name) const {
+template <typename Signature>
+std::function<Signature> ModuleManager::get_function(const std::string& plugin_name, const std::string& func_name) const
+{
     for (const auto& plugin : plugins_) {
         if (plugin.name == plugin_name) {
             try {
                 auto imported_func = boost::dll::import_symbol<Signature>(*plugin.library, func_name);
                 return std::function<Signature>(imported_func);
-            } catch (const std::exception& e) {
-                spdlog::error("Failed to import '{}' from plugin '{}': {}",
-                              func_name, plugin_name, e.what());
+            }
+            catch (const std::exception& e) {
+                spdlog::error("Failed to import '{}' from plugin '{}': {}", func_name, plugin_name, e.what());
                 throw;
             }
         }

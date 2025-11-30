@@ -29,8 +29,7 @@ nlohmann::json PingPongGame::toJson(const uint8_t*, size_t)
 
 void PingPongGame::updateGameSessionEndTime()
 {
-    if (!savedData)
-    {
+    if (!savedData) {
         auto oldGameSessionID = updateGameSessionID();
 
         std::array<char, constants::fmt_now> buffer{};
@@ -71,8 +70,7 @@ int64_t PingPongGame::updateGameSessionID()
 
 void PingPongGame::databaseRetryUpdate()
 {
-    if (m_state == game_state::running || m_state == game_state::paused)
-    {
+    if (m_state == game_state::running || m_state == game_state::paused) {
         databaseResultUpdate(game_state::game_over);
     }
     updateGameNewHistory();
@@ -95,16 +93,13 @@ void PingPongGame::listening()
     static bool reset_key_active = false;
     sf::Event event{};
 
-    while (game_window.pollEvent(event))
-    {
-        if (event.type == sf::Event::Closed)
-        {
+    while (game_window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
             game_window.close();
         }
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
-    {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
         game_window.close();
     }
 
@@ -115,48 +110,38 @@ void PingPongGame::listening()
 
 void PingPongGame::handleKeyPressed_R(bool& reset_key_active)
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
-    {
-        if (!reset_key_active)
-        {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
+        if (!reset_key_active) {
             reset();
         }
         reset_key_active = true;
     }
-    else
-    {
+    else {
         reset_key_active = false;
     }
 }
 
 void PingPongGame::handleKeyPressed_P(bool& pause_key_active)
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P))
-    {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P)) {
         // If it was not pressed on the last iteration, toggle the status
-        if (!pause_key_active)
-        {
-            if (m_state == game_state::paused)
-            {
+        if (!pause_key_active) {
+            if (m_state == game_state::paused) {
                 m_state = game_state::running;
                 m_countingText.stop_pause();
-                m_entity_manager.apply_all<BallCountingText>([](BallCountingText& a_coutningtext) {
-                    a_coutningtext.stop_pause();
-                });
+                m_entity_manager.apply_all<BallCountingText>(
+                    [](BallCountingText& a_coutningtext) { a_coutningtext.stop_pause(); });
             }
-            else if (m_state == game_state::running)
-            {
+            else if (m_state == game_state::running) {
                 m_state = game_state::paused;
                 m_countingText.pause();
-                m_entity_manager.apply_all<BallCountingText>([](BallCountingText& a_coutningtext) {
-                    a_coutningtext.pause();
-                });
+                m_entity_manager.apply_all<BallCountingText>(
+                    [](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
             }
         }
         pause_key_active = true;
     }
-    else
-    {
+    else {
         pause_key_active = false;
     }
 }
@@ -164,8 +149,7 @@ void PingPongGame::handleKeyPressed_P(bool& pause_key_active)
 void PingPongGame::stateHandler()
 {
     using namespace utilities::texthelper;
-    switch (m_state)
-    {
+    switch (m_state) {
     case game_state::paused:
     {
         m_textState.setString("Paused");
@@ -173,20 +157,17 @@ void PingPongGame::stateHandler()
 
         aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
         aligning::Aligning(&m_textLive, sf::FloatRect{0, 100, constants::window_width, constants::window_height - 100});
-    }
-    break;
+    } break;
     case game_state::game_over:
     {
         m_textState.setString("Game Over");
         aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
-    }
-    break;
+    } break;
     case game_state::player_wins:
     {
         m_textState.setString("Win");
         aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
-    }
-    break;
+    } break;
     case game_state::running:
         [[fallthrough]];
     default:
@@ -197,8 +178,7 @@ void PingPongGame::stateHandler()
 /// @brief updating graphics
 void PingPongGame::update()
 {
-    if (m_state == game_state::running)
-    {
+    if (m_state == game_state::running) {
         //! Calculate the updated graphics
         m_entity_manager.update();
 
@@ -225,8 +205,7 @@ void PingPongGame::update()
                 });
             });
 
-            for (auto& fut : futures)
-            {
+            for (auto& fut : futures) {
                 fut.wait();
             }
         }
@@ -234,20 +213,17 @@ void PingPongGame::update()
         //! Update point
         m_point = 0;
         const auto& walls = m_entity_manager.get_all<wall>();
-        for (auto& a_wall : walls)
-        {
+        for (auto& a_wall : walls) {
             const auto* const wptr = dynamic_cast<wall*>(a_wall);
             m_point += wptr->getStatus().point;
         }
 
         //! Checking if it's time out
-        if (m_countingText.is_timeout())
-        {
+        if (m_countingText.is_timeout()) {
             m_state = game_state::game_over;
             m_countingText.pause();
-            m_entity_manager.apply_all<BallCountingText>([](BallCountingText& a_coutningtext) {
-                    a_coutningtext.pause();
-                });
+            m_entity_manager.apply_all<BallCountingText>(
+                [](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
             return;
         }
 
@@ -259,53 +235,43 @@ void PingPongGame::update()
 
 void PingPongGame::check_finish_by_ball()
 {
-    if (m_entity_manager.get_all<ball>().empty())
-    {
+    if (m_entity_manager.get_all<ball>().empty()) {
         --m_live;
-        if (m_live > 0)
-        {
+        if (m_live > 0) {
             m_entity_manager.apply_all<paddle>([](paddle& a_paddle) {
                 a_paddle.init(constants::window_width / 2.0F, constants::window_height * 1.0F);
             });
             m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
             m_countingText.pause();
-            m_entity_manager.apply_all<BallCountingText>([](BallCountingText& a_coutningtext) {
-                    a_coutningtext.pause();
-                });
+            m_entity_manager.apply_all<BallCountingText>(
+                [](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
             m_state = game_state::paused;
         }
-        else
-        {
+        else {
             m_state = game_state::game_over;
             m_countingText.pause();
-            m_entity_manager.apply_all<BallCountingText>([](BallCountingText& a_coutningtext) {
-                    a_coutningtext.pause();
-                });
+            m_entity_manager.apply_all<BallCountingText>(
+                [](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
         }
     }
 }
 
 void PingPongGame::check_finish_by_wall()
 {
-    if (m_entity_manager.get_all<wall>().empty())
-    {
+    if (m_entity_manager.get_all<wall>().empty()) {
         m_state = game_state::player_wins;
         m_countingText.pause();
-        m_entity_manager.apply_all<BallCountingText>([](BallCountingText& a_coutningtext) {
-                    a_coutningtext.pause();
-                });
+        m_entity_manager.apply_all<BallCountingText>([](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
     }
 }
 
 void PingPongGame::render()
 {
     m_entity_manager.draw(game_window);
-    if (m_state != game_state::running)
-    {
+    if (m_state != game_state::running) {
         game_window.draw(m_textState);
     }
-    if (m_state == game_state::paused)
-    {
+    if (m_state == game_state::paused) {
         game_window.draw(m_textLive);
     }
     m_textPoint.setString(std::to_string(m_point));
@@ -316,27 +282,23 @@ void PingPongGame::render()
 
 void PingPongGame::try_createwall()
 {
-    try
-    {
+    try {
         m_entity_manager.create<wall>();
         m_entity_manager.apply_all<wall>([](wall& a_wall) {
             utilities::wallhelper::build_wall(a_wall, (constants::resouces_path / "wall.csv").string().c_str());
         });
     }
-    catch (const std::ios::failure& e)
-    {
+    catch (const std::ios::failure& e) {
         spdlog::error("Game terminated due to I/O failure: {}", e.what());
         clear();
         return;
     }
-    catch (const std::exception& e)
-    {
+    catch (const std::exception& e) {
         spdlog::error("Game terminated due to exception: {}", e.what());
         clear();
         return;
     }
-    catch (...)
-    {
+    catch (...) {
         spdlog::critical("Game terminated due to unknown error");
         clear();
         return;
@@ -345,26 +307,22 @@ void PingPongGame::try_createwall()
 
 void PingPongGame::try_login()
 {
-    try
-    {
+    try {
         std::pair<bool, std::string> result;
         {
             const auto window = std::make_unique<LoginWindow>();
             result = window->run();
         }
-        if (result.first)
-        {
+        if (result.first) {
             m_username = result.second;
             updateGameSessionID();
             updateGameNewHistory();
         }
-        else
-        {
+        else {
             throw std::logic_error("User does not continue to login");
         }
     }
-    catch (const std::exception& e)
-    {
+    catch (const std::exception& e) {
         spdlog::error("Failed to connect PingPong Game to database: {}", e.what());
         clear();
     }
@@ -439,9 +397,7 @@ void PingPongGame::reset()
         [](paddle& a_paddle) { a_paddle.init(constants::window_width / 2.0f, constants::window_height * 1.0F); });
 
     //! Destroy the entities
-    m_entity_manager.apply_all<ball>([](ball& a_ball) {
-        a_ball.destroy();
-    });
+    m_entity_manager.apply_all<ball>([](ball& a_ball) { a_ball.destroy(); });
     m_entity_manager.apply_all<wall>([](wall& a_wall) { a_wall.destroy(); });
     m_entity_manager.apply_all<BallCountingText>([](BallCountingText& a_countingtext) { a_countingtext.destroy(); });
 
@@ -469,15 +425,13 @@ void PingPongGame::run()
     constexpr size_t sound_pool_volume = 10;
     constexpr float sound_default_volume = 80.0f;
     constexpr size_t thread_pool_volume = 8;
-    try
-    {
+    try {
         SoundManager::getInstance(sound_pool_volume, sound_default_volume);
         ThreadPool::getInstance(thread_pool_volume);
 
         SoundPlayer::loadSounds();
         m_countingText.start();
-        while (game_window.isOpen())
-        {
+        while (game_window.isOpen()) {
             game_window.clear(sf::Color::Black);
             listening();
             stateHandler();
@@ -489,8 +443,7 @@ void PingPongGame::run()
         ThreadPool::getInstance().wait();
         m_entity_manager.clear();
     }
-    catch (const std::exception& e)
-    {
+    catch (const std::exception& e) {
         spdlog::critical("Failed to run PingPong Game: {}", e.what());
     }
 }

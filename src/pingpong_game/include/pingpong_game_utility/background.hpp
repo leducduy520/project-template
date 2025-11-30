@@ -3,7 +3,7 @@
 
 #include "entity.hpp"
 
-class background : public Ientity
+class background : public static_entity
 {
     // Private data members
     static sf::Texture& get_texture();

@@ -32,7 +32,7 @@ public:
     void move_right() noexcept override;
     void scale(const int& n) noexcept;
     void destroy() noexcept override;
-    
+
     void set_counting_text_id(size_t id) noexcept;
 
     int strength() noexcept;

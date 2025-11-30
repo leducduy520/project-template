@@ -12,12 +12,11 @@ sf::Image& getImage(brick::BrickProperty property)
 {
     static bool initialized = false;
     static std::vector<sf::Image> list;
-    if (!initialized)
-    {
+    if (!initialized) {
         sf::Image source;
-        if (!source.loadFromFile((constants::resouces_path / "brick.png").string()))
-        {
-            const std::string message = "Cannot open source image "s + (constants::resouces_path / "brick.png").string();
+        if (!source.loadFromFile((constants::resouces_path / "brick.png").string())) {
+            const std::string message =
+                "Cannot open source image "s + (constants::resouces_path / "brick.png").string();
             throw std::logic_error(message.c_str());
         }
 
@@ -26,10 +25,8 @@ sf::Image& getImage(brick::BrickProperty property)
         const auto* const pixels = source.getPixelsPtr();
         std::vector<std::vector<sf::Uint8>> matrix(width / constants::brick_width);
 
-        for (unsigned int px_y = 0; px_y < height; ++px_y)
-        {
-            for (unsigned int px_x = 0; px_x < width; ++px_x)
-            {
+        for (unsigned int px_y = 0; px_y < height; ++px_y) {
+            for (unsigned int px_x = 0; px_x < width; ++px_x) {
                 auto index = (px_x + px_y * width) * 4; // 4 bytes per pixel (RGBA)
                 auto index_matrix = px_x / constants::brick_width;
                 matrix.at(index_matrix).push_back(pixels[index]);
@@ -39,8 +36,7 @@ sf::Image& getImage(brick::BrickProperty property)
             }
         }
 
-        for (const auto& elm : matrix)
-        {
+        for (const auto& elm : matrix) {
             list.emplace_back();
             list.back().create(constants::brick_width, constants::brick_height, elm.data());
         }
@@ -61,36 +57,27 @@ sf::Texture& brick::get_texture(BrickProperty property)
     static sf::Texture clone;
     static bool initialized = false;
     static int retryCount = 0;
-    while (!initialized)
-    {
-        try
-        {
-            if (!brick.loadFromImage(getImage(BRICK)))
-            {
+    while (!initialized) {
+        try {
+            if (!brick.loadFromImage(getImage(BRICK))) {
                 throw std::logic_error("Get texture brick from image data has failed\n");
             }
-            if (!diamond.loadFromImage(getImage(DIAMOND)))
-            {
+            if (!diamond.loadFromImage(getImage(DIAMOND))) {
                 throw std::logic_error("Get texture diamond from image data has failed\n");
             }
-            if (!bomb.loadFromImage(getImage(BOMB)))
-            {
+            if (!bomb.loadFromImage(getImage(BOMB))) {
                 throw std::logic_error("Get texture bomb from image data has failed\n");
             }
-            if (!scaleup.loadFromImage(getImage(SCALEUP)))
-            {
+            if (!scaleup.loadFromImage(getImage(SCALEUP))) {
                 throw std::logic_error("Get texture scaleup from image data has failed\n");
             }
-            if (!clone.loadFromImage(getImage(CLONE)))
-            {
+            if (!clone.loadFromImage(getImage(CLONE))) {
                 throw std::logic_error("Get texture clone from image data has failed\n");
             }
         }
-        catch (const std::exception& e)
-        {
+        catch (const std::exception& e) {
             spdlog::error("Failed to load brick textures: {}", e.what());
-            if (retryCount < 2)
-            {
+            if (retryCount < 2) {
                 spdlog::warn("Retrying texture loading after 1 second... (attempt {}/{})", retryCount + 1, 2);
                 retryCount++;
                 sf::sleep(sf::seconds(1.0f));
@@ -101,8 +88,7 @@ sf::Texture& brick::get_texture(BrickProperty property)
 
         initialized = true;
     }
-    switch (property)
-    {
+    switch (property) {
     case BRICK:
         return brick;
     case DIAMOND:
@@ -139,8 +125,7 @@ void brick::update() noexcept
 
 void brick::registerDiamondAmountCallback(const std::function<void(int)>& fnc)
 {
-    if (m_property == brick::DIAMOND && fnc)
-    {
+    if (m_property == brick::DIAMOND && fnc) {
         m_diamond_amount_update_fnc = fnc;
         m_diamond_amount_update_fnc(1);
     }
@@ -148,8 +133,7 @@ void brick::registerDiamondAmountCallback(const std::function<void(int)>& fnc)
 
 void brick::registerPontUpdate(const std::function<void(int16_t)>& fnc) noexcept
 {
-    if (m_property == brick::DIAMOND || m_property == brick::BRICK)
-    {
+    if (m_property == brick::DIAMOND || m_property == brick::BRICK) {
         m_point_update_fnc = fnc;
     }
 }
@@ -179,138 +163,113 @@ void brick::hit(const int damage, const bool relate) noexcept
 {
     m_hitCount += damage;
     bool destroyed = false;
-    switch (m_property)
-    {
+    switch (m_property) {
     case BRICK:
     {
         hit_brick(destroyed, relate);
-    }
-    break;
+    } break;
     case DIAMOND:
     {
         hit_diamond(destroyed, relate);
-    }
-    break;
+    } break;
     case BOMB:
     {
         hit_bomb(destroyed, relate);
-    }
-    break;
+    } break;
     case SCALEUP:
     {
         hit_scaleup(destroyed, relate);
-    }
-    break;
+    } break;
     case CLONE:
     {
         hit_clone(destroyed, relate);
-    }
-    break;
+    } break;
     case NONE:
         [[fallthrough]];
     default:
         break;
     }
-    if (destroyed)
-    {
+    if (destroyed) {
         destroy();
     }
 }
 
 void brick::hit_clone(bool& destroyed, const bool relate) const
 {
-    if (m_hitCount >= constants::cap_clone_hit)
-    {
+    if (m_hitCount >= constants::cap_clone_hit) {
         destroyed = true;
     }
-    if (!relate)
-    {
+    if (!relate) {
         // SoundPlayer::getInstance()->playSoundEffect(SoundPlayer::SCALEUP_EFFECT);
     }
 }
 
 void brick::hit_scaleup(bool& destroyed, const bool relate) const
 {
-    if (m_hitCount >= constants::cap_scaleup_hit)
-    {
+    if (m_hitCount >= constants::cap_scaleup_hit) {
         destroyed = true;
     }
-    if (!relate)
-    {
+    if (!relate) {
         // SoundPlayer::getInstance()->playSoundEffect(SoundPlayer::SCALEUP_EFFECT);
     }
 }
 
 void brick::hit_bomb(bool& destroyed, const bool relate) const
 {
-    if (m_hitCount >= constants::cap_bomb_hit)
-    {
+    if (m_hitCount >= constants::cap_bomb_hit) {
         destroyed = true;
     }
-    if (!relate)
-    {
+    if (!relate) {
         SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::BOMB_EXPLOSION);
     }
 }
 
 void brick::hit_diamond(bool& destroyed, const bool relate) const
 {
-    if (m_hitCount >= constants::cap_diamond_hit)
-    {
+    if (m_hitCount >= constants::cap_diamond_hit) {
         destroyed = true;
-        if (m_diamond_amount_update_fnc)
-        {
+        if (m_diamond_amount_update_fnc) {
             m_diamond_amount_update_fnc(-1);
         }
-        if (m_point_update_fnc)
-        {
+        if (m_point_update_fnc) {
             m_point_update_fnc(int16_t(5));
         }
     }
-    if (!relate)
-    {
+    if (!relate) {
         SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::DIAMOND_DESTROY);
     }
 }
 
 void brick::hit_brick(bool& destroyed, const bool relate) const
 {
-    if (m_hitCount >= constants::cap_brick_hit)
-    {
+    if (m_hitCount >= constants::cap_brick_hit) {
         destroyed = true;
-        if (m_point_update_fnc)
-        {
+        if (m_point_update_fnc) {
             m_point_update_fnc(int16_t(1));
         }
     }
-    if (!relate)
-    {
+    if (!relate) {
         SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::BRICK_BOUNCE);
     }
 }
 
 void wall::update()
 {
-    if (is_destroyed())
-    {
+    if (is_destroyed()) {
         return;
     }
-    for (const auto& [position, a_brick] : this->m_data)
-    {
+    for (const auto& [position, a_brick] : this->m_data) {
         a_brick->update();
     }
 }
 
 void wall::draw(sf::RenderWindow& window) noexcept
 {
-    if (is_destroyed())
-    {
+    if (is_destroyed()) {
         return;
     }
-    for (const auto& [position, a_brick] : this->m_data)
-    {
-        if (!a_brick->is_destroyed())
-        {
+    for (const auto& [position, a_brick] : this->m_data) {
+        if (!a_brick->is_destroyed()) {
             a_brick->draw(window);
         }
     }
@@ -323,25 +282,20 @@ void wall::init([[maybe_unused]] float px_x, [[maybe_unused]] float px_y)
 
 void wall::refresh()
 {
-    if (is_destroyed())
-    {
+    if (is_destroyed()) {
         return;
     }
-    
-    for (auto it = this->m_data.begin(); it != this->m_data.end();)
-    {
-        if (it->second->is_destroyed())
-        {
+
+    for (auto it = this->m_data.begin(); it != this->m_data.end();) {
+        if (it->second->is_destroyed()) {
             it = this->m_data.erase(it);
         }
-        else
-        {
+        else {
             ++it;
         }
     }
 
-    if (this->m_status.live <= 0)
-    {
+    if (this->m_status.live <= 0) {
         this->destroy();
     }
 }

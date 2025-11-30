@@ -33,7 +33,7 @@ public:
      * @param obj Object pointer
      * @return std::future<void> Future object to track task completion
      */
-    template<typename ClassType, typename Ret>
+    template <typename ClassType, typename Ret>
     std::future<void> submit(int priority, Ret (ClassType::*func)(), ClassType* obj);
 
     /**
@@ -45,8 +45,9 @@ public:
      * @param args Arguments to pass to the function
      * @return std::future<void> Future object to track task completion
      */
-    template<typename Function, typename... Args>
-    typename std::enable_if<!std::is_member_function_pointer<typename std::decay<Function>::type>::value, std::future<void>>::type
+    template <typename Function, typename... Args>
+    typename std::enable_if<!std::is_member_function_pointer<typename std::decay<Function>::type>::value,
+                            std::future<void>>::type
     submit(int priority, Function&& func, Args&&... args);
 
     /**
@@ -84,7 +85,7 @@ private:
 };
 
 // Template implementation for member functions
-template<typename ClassType, typename Ret>
+template <typename ClassType, typename Ret>
 std::future<void> ThreadPool::submit(int priority, Ret (ClassType::*func)(), ClassType* obj)
 {
     (void)priority; // Reserved for future use
@@ -96,7 +97,8 @@ std::future<void> ThreadPool::submit(int priority, Ret (ClassType::*func)(), Cla
         try {
             (obj->*func)();
             promise->set_value();
-        } catch (...) {
+        }
+        catch (...) {
             promise->set_exception(std::current_exception());
         }
     };
@@ -108,8 +110,8 @@ std::future<void> ThreadPool::submit(int priority, Ret (ClassType::*func)(), Cla
 }
 
 // Template implementation for free functions
-template<typename Function, typename... Args>
-typename std::enable_if<!std::is_member_function_pointer< std::decay_t<Function>>::value, std::future<void>>::type
+template <typename Function, typename... Args>
+typename std::enable_if<!std::is_member_function_pointer<std::decay_t<Function>>::value, std::future<void>>::type
 ThreadPool::submit(int priority, Function&& func, Args&&... args)
 {
     (void)priority; // Reserved for future use
@@ -121,7 +123,8 @@ ThreadPool::submit(int priority, Function&& func, Args&&... args)
         try {
             func(args...);
             promise->set_value();
-        } catch (...) {
+        }
+        catch (...) {
             promise->set_exception(std::current_exception());
         }
     };
@@ -133,4 +136,3 @@ ThreadPool::submit(int priority, Function&& func, Args&&... args)
 }
 
 #endif // THREAD_POOL_GAME_H
-
