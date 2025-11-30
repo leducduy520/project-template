@@ -32,7 +32,7 @@ cmake_dependent_option(INSTALL_DOCS "install docs" OFF "NOT BUILD_DOCS" OFF)
 cmake_dependent_option(INSTALL_GRAPH "install graph" OFF "NOT BUILD_GRAPH" OFF)
 
 # Set CXX standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

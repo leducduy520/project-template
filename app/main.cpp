@@ -26,28 +26,25 @@ static boost::filesystem::path getExecutablePath()
 
 int main()
 {
-    #ifdef NDEBUG
-        spdlog::set_level(spdlog::level::warn);
-    #else
-        spdlog::set_level(spdlog::level::debug);
-    #endif
-#ifdef _WIN32    
+#ifdef NDEBUG
+    spdlog::set_level(spdlog::level::warn);
+#else
+    spdlog::set_level(spdlog::level::debug);
+#endif
+#ifdef _WIN32
     ModuleManager moduleManager(EXECUTABLE_PATH);
 #else
-    ModuleManager moduleManager(EXECUTABLE_PATH.parent_path()/"lib");
+    ModuleManager moduleManager(EXECUTABLE_PATH.parent_path() / "lib");
 #endif
     moduleManager.load_plugin("pingpong_game");
-    if (moduleManager.has_plugin("pingpong_game"))
-    {
+    if (moduleManager.has_plugin("pingpong_game")) {
         // Retrieve function pointers for creating and destroying the Game object
         auto createGame = moduleManager.get_function<IGame*()>("pingpong_game", "createPingPongGame");
-        
-        if (createGame)
-        {
+
+        if (createGame) {
             // Create the Game object
             auto game = std::unique_ptr<IGame>(createGame());
-            if (game)
-            {
+            if (game) {
                 std::string path = (getExecutablePath().parent_path() / "resources").string();
                 game->init(path);
                 game->run();
