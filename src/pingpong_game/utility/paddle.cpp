@@ -6,10 +6,8 @@ sf::Texture& paddle::get_texture()
 {
     static sf::Texture texture;
     static bool initialized = false;
-    if (!initialized)
-    {
-        if (!texture.loadFromFile((constants::resouces_path / "steel.png").string()))
-        {
+    if (!initialized) {
+        if (!texture.loadFromFile((constants::resouces_path / "steel.png").string())) {
             spdlog::error("Failed to load paddle texture from: {}", (constants::resouces_path / "steel.png").string());
         }
         initialized = true;
@@ -21,8 +19,7 @@ paddle::paddle(float px_x, float px_y) : moving_entity()
 {
     set_texture(get_texture());
     set_origin_centre();
-    set_scale(constants::paddlle_width / w(),
-                      constants::paddlle_height / h());
+    set_scale(constants::paddlle_width / w(), constants::paddlle_height / h());
     paddle::init(px_x, px_y);
 }
 
@@ -34,23 +31,17 @@ void paddle::init(float px_x, float px_y) noexcept
 
 void paddle::update()
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && left() > 0.0f)
-    {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && left() > 0.0f) {
         move_left();
     }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) &&
-             right() < constants::window_width)
-    {
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && right() < constants::window_width) {
         move_right();
     }
-    else
-    {
-        if (std::abs(m_velocity.x) < constants::paddle_decel / 2.0f)
-        {
+    else {
+        if (std::abs(m_velocity.x) < constants::paddle_decel / 2.0f) {
             m_velocity = {0.0f, 0.0f};
         }
-        else
-        {
+        else {
             m_velocity.x += constants::paddle_decel / 2.0f * (std::signbit(m_velocity.x) ? 1.0F : -1.0F);
         }
     }
@@ -67,24 +58,20 @@ void paddle::move_up() noexcept
 
 void paddle::move_left() noexcept
 {
-    if (m_velocity.x <= -constants::paddle_speed)
-    {
+    if (m_velocity.x <= -constants::paddle_speed) {
         m_velocity = {-constants::paddle_speed, 0.0f};
     }
-    else
-    {
+    else {
         m_velocity = {m_velocity.x + -constants::paddle_accel / 2.0f, 0.0f};
     }
 }
 
 void paddle::move_right() noexcept
 {
-    if (m_velocity.x >= constants::paddle_speed)
-    {
+    if (m_velocity.x >= constants::paddle_speed) {
         m_velocity = {constants::paddle_speed, 0.0f};
     }
-    else
-    {
+    else {
         m_velocity = {m_velocity.x + constants::paddle_accel / 2.0f, 0.0f};
     }
 }

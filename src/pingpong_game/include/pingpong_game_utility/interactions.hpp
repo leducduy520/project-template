@@ -6,6 +6,7 @@
 #include "brick.hpp"
 #include "paddle.hpp"
 #include "entitymanager.hpp"
+
 namespace interactions
 {
     bool are_interacting(const Ientity* element1, const Ientity* element12) noexcept;

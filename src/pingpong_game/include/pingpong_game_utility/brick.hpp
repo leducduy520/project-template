@@ -76,7 +76,7 @@ namespace std
 //    }
 //};
 
-using WallMap = std::map<e_location, std::unique_ptr<brick>> ;
+using WallMap = std::map<e_location, std::unique_ptr<brick>>;
 
 struct WallStatus
 {
@@ -88,19 +88,42 @@ class wall : public Ientity
 {
     WallMap m_data;
     WallStatus m_status;
+
 public:
     wall() = default;
 
     // Brick management methods
-    WallMap& data() noexcept { return m_data; }
-    bool empty() const noexcept { return m_data.empty(); }
-    std::size_t size() const noexcept { return m_data.size(); }
-    void clear() noexcept { m_data.clear(); }
+    WallMap& data() noexcept
+    {
+        return m_data;
+    }
+
+    bool empty() const noexcept
+    {
+        return m_data.empty();
+    }
+
+    std::size_t size() const noexcept
+    {
+        return m_data.size();
+    }
+
+    void clear() noexcept
+    {
+        m_data.clear();
+    }
 
     // Status get/set methods
-    const WallStatus& getStatus() const noexcept { return m_status; }
-    void setStatus(const WallStatus& status) noexcept { m_status = status; }
-    
+    const WallStatus& getStatus() const noexcept
+    {
+        return m_status;
+    }
+
+    void setStatus(const WallStatus& status) noexcept
+    {
+        m_status = status;
+    }
+
     // Render and update methods
     void update() override;
     void draw(sf::RenderWindow& window) noexcept override;

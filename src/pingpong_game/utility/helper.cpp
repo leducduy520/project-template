@@ -11,8 +11,7 @@ namespace utilities
     {
         void build_wall(wall& a_wall, const char* path)
         {
-            if (!a_wall.empty())
-            {
+            if (!a_wall.empty()) {
                 a_wall.clear();
             }
             {
@@ -24,22 +23,19 @@ namespace utilities
             const rapidcsv::Document doc(path, rapidcsv::LabelParams(-1, -1));
 
             const auto padding = (constants::window_width - constants::brick_width * doc.GetColumnCount()) / 2;
-            for (decltype(doc.GetRowCount()) i = 0; i < doc.GetRowCount(); i++)
-            {
+            for (decltype(doc.GetRowCount()) i = 0; i < doc.GetRowCount(); i++) {
                 const auto rows = doc.GetRow<int>(i);
-                for (decltype(rows.size()) j = 0; j < rows.size(); j++)
-                {
+                for (decltype(rows.size()) j = 0; j < rows.size(); j++) {
                     const auto px_x = static_cast<float>(padding + j * constants::brick_width);
                     const auto px_y = static_cast<float>(i * constants::brick_height);
                     const auto property = static_cast<brick::BrickProperty>(doc.GetCell<int>(j, i));
                     auto a_brick = std::make_unique<brick>(px_x, px_y, property);
-                    a_brick->registerDiamondAmountCallback(
-                        [&a_wall](int amount) mutable { 
-                            auto status = a_wall.getStatus();
-                            status.live += amount;
-                            a_wall.setStatus(status);
-                        });
-                    a_brick->registerPontUpdate([&a_wall](short point) mutable { 
+                    a_brick->registerDiamondAmountCallback([&a_wall](int amount) mutable {
+                        auto status = a_wall.getStatus();
+                        status.live += amount;
+                        a_wall.setStatus(status);
+                    });
+                    a_brick->registerPontUpdate([&a_wall](short point) mutable {
                         auto status = a_wall.getStatus();
                         status.point += static_cast<uint16_t>(point);
                         a_wall.setStatus(status);
@@ -59,21 +55,17 @@ namespace utilities
             auto px_x = explode_point.x - floorf((static_cast<float>(range.x) - 1.0F) / 2.0F) * a_brick.w();
             auto px_y = explode_point.y - floorf((static_cast<float>(range.y) - 1.0F) / 2.0F) * a_brick.h();
 
-            for (int i = 0; i < range.y; ++i)
-            {
-                for (int j = 0; j < range.x; ++j)
-                {
+            for (int i = 0; i < range.y; ++i) {
+                for (int j = 0; j < range.x; ++j) {
                     const sf::Vector2f hit_point{px_x + static_cast<float>(i) * a_brick.w(),
                                                  px_y + static_cast<float>(j) * a_brick.h()};
 
                     auto& wall_data = a_wall->data();
                     auto iter = wall_data.find(hit_point);
-                    if (iter != wall_data.end() && !iter->second->is_destroyed())
-                    {
+                    if (iter != wall_data.end() && !iter->second->is_destroyed()) {
                         auto* alias = iter->second.get();
                         alias->hit(constants::cap_brick_hit, true);
-                        if (alias->getProperty() == brick::BOMB)
-                        {
+                        if (alias->getProperty() == brick::BOMB) {
                             destroy_around(*alias, range);
                         }
                     }
@@ -92,8 +84,7 @@ namespace utilities
             sf::Vector2f newpos{};
 
             const auto align_name = magic_enum::enum_name(alignment);
-            switch (align_name[1])
-            {
+            switch (align_name[1]) {
             case 'L':
                 newpos.x = bound.left;
                 break;
@@ -106,8 +97,7 @@ namespace utilities
             default:
                 throw std::invalid_argument{"Invalid alignment direction"};
             }
-            switch (align_name[0])
-            {
+            switch (align_name[0]) {
             case 'B':
                 newpos.y = bound.top + bound.height - text_height;
                 break;
@@ -126,11 +116,11 @@ namespace utilities
         std::string format_duration(time_t duration)
         {
             using namespace std::chrono;
-            
+
             const auto total_seconds = seconds(duration);
             const auto mins = duration_cast<minutes>(total_seconds).count();
             const auto secs = (total_seconds % minutes(1)).count();
-            
+
             return fmt::format("{:02d}:{:02d}", mins, secs);
         }
 
@@ -145,19 +135,19 @@ namespace utilities
             static sf::Font font_modesticsans_bold;
             static sf::Font font_modesticsans_bolditalic;
 
-            if (!initialized)
-            {
+            if (!initialized) {
                 font_cross_boxed.loadFromFile((constants::resouces_path / "Cross Boxed.ttf").string());
                 font_roboto_regurlar.loadFromFile((constants::resouces_path / "Roboto/Roboto-Regular.ttf").string());
                 font_roboto_italic.loadFromFile((constants::resouces_path / "Roboto/Roboto-Italic.ttf").string());
                 font_roboto_bold.loadFromFile((constants::resouces_path / "Roboto/Roboto-Bold.ttf").string());
-                font_modesticsans_bolditalic.loadFromFile((constants::resouces_path / "ModesticSans/ModesticSans-BoldItalic.ttf").string());
-                font_modesticsans_bold.loadFromFile((constants::resouces_path / "ModesticSans/ModesticSans-Bold.ttf").string());
+                font_modesticsans_bolditalic.loadFromFile(
+                    (constants::resouces_path / "ModesticSans/ModesticSans-BoldItalic.ttf").string());
+                font_modesticsans_bold.loadFromFile(
+                    (constants::resouces_path / "ModesticSans/ModesticSans-Bold.ttf").string());
                 initialized = true;
             }
 
-            switch (style)
-            {
+            switch (style) {
             case Style::CROSS_BOXED:
                 return font_cross_boxed;
             case Style::ROBOTO_REGULAR:

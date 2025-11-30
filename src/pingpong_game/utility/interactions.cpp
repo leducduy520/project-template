@@ -9,8 +9,8 @@ namespace interactions
 {
     bool are_interacting(const Ientity* element1, const Ientity* element2) noexcept
     {
-        auto box1 = sf::FloatRect{element1->left(),element1->top(),element1->w(),element1->h()};
-        auto box2 = sf::FloatRect{element2->left(),element2->top(),element2->w(),element2->h()};
+        auto box1 = sf::FloatRect{element1->left(), element1->top(), element1->w(), element1->h()};
+        auto box2 = sf::FloatRect{element2->left(), element2->top(), element2->w(), element2->h()};
         return box1.intersects(box2);
     }
 
@@ -19,16 +19,14 @@ namespace interactions
 
     void BallvsPaddle::operator()()
     {
-        if (are_interacting(&m_ball, &m_paddle))
-        {
+        if (are_interacting(&m_ball, &m_paddle)) {
             SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::PADDLE_BOUNCE);
 
             sf::Vector2f new_vel{m_ball.get_velocity()};
 
             new_vel.x += m_paddle.get_velocity().x * constants::paddle_damping;
             const bool new_x_signed = std::signbit(new_vel.x);
-            if (std::abs(new_vel.x) > 0.9F * constants::ball_speed)
-            {
+            if (std::abs(new_vel.x) > 0.9F * constants::ball_speed) {
                 new_vel.x = 0.9f * constants::ball_speed * (new_x_signed ? -1.0f : 1.0f);
             }
             new_vel.y = -sqrtf(powf(constants::ball_speed, 2.0f) - powf(new_vel.x, 2.0f));
@@ -36,7 +34,8 @@ namespace interactions
         }
     }
 
-    BallVsWall::BallVsWall(wall& a_wall, ball& a_ball, entity_manager& entity_mgr) : m_wall(a_wall), m_ball(a_ball), m_entity_manager(entity_mgr)
+    BallVsWall::BallVsWall(wall& a_wall, ball& a_ball, entity_manager& entity_mgr)
+        : m_wall(a_wall), m_ball(a_ball), m_entity_manager(entity_mgr)
     {}
 
     void BallVsWall::operator()()
@@ -46,35 +45,28 @@ namespace interactions
         auto& wall_data = m_wall.data();
         std::for_each(wall_data.begin(), wall_data.end(), [this](auto& it) {
             auto& a_brick = *it.second.get();
-            if (are_interacting(&m_ball, &a_brick))
-            {
-                switch (a_brick.getProperty())
-                {
+            if (are_interacting(&m_ball, &a_brick)) {
+                switch (a_brick.getProperty()) {
                 case brick::BRICK:
                 {
                     ball_interact_normal_brick(a_brick);
-                }
-                break;
+                } break;
                 case brick::DIAMOND:
                 {
                     ball_interact_diamond_brick(a_brick);
-                }
-                break;
+                } break;
                 case brick::BOMB:
                 {
                     ball_interact_bomb_brick(a_brick);
-                }
-                break;
+                } break;
                 case brick::SCALEUP:
                 {
                     ball_interact_scaleup_brick(a_brick);
-                }
-                break;
+                } break;
                 case brick::CLONE:
                 {
                     ball_interact_clone_brick(a_brick);
-                }
-                break;
+                } break;
                 case brick::NONE:
                 {
                     [[fallthrough]];
@@ -88,20 +80,17 @@ namespace interactions
         m_wall.refresh();
 
         // Create entities after parallel execution completes (thread-safe)
-        if (m_should_create_counting_text)
-        {
+        if (m_should_create_counting_text) {
             auto id = m_ball.get_counting_text_id();
             auto ballcountingtexts = m_entity_manager.get_all<BallCountingText>();
 
             if (auto found_it = std::find_if(begin(ballcountingtexts),
                                              end(ballcountingtexts),
                                              [id](Ientity* entity) { return entity->get_id() == id; });
-                found_it != end(ballcountingtexts))
-            {
+                found_it != end(ballcountingtexts)) {
                 dynamic_cast<BallCountingText*>(*found_it)->add_time_and_restart(std::chrono::seconds(10));
             }
-            else
-            {
+            else {
                 using namespace utilities::texthelper;
                 auto& associated_text = m_entity_manager.create<BallCountingText>();
                 spdlog::warn("Created BallCountingText entity ID {}", associated_text.get_id());
@@ -115,7 +104,8 @@ namespace interactions
         }
     }
 
-    std::tuple<bool, bool, bool> BallVsWall::cal_ball_direction(const ball& a_ball, const Ientity& an_entity) const noexcept
+    std::tuple<bool, bool, bool> BallVsWall::cal_ball_direction(const ball& a_ball,
+                                                                const Ientity& an_entity) const noexcept
     {
         const float left_overlap = a_ball.right() - an_entity.left();
         const float right_overlap = an_entity.right() - a_ball.left();
@@ -164,12 +154,10 @@ namespace interactions
         a_brick.hit(m_ball.strength());
         auto [more_at_side, from_left, from_top] = cal_ball_direction(m_ball, a_brick);
 
-        if (more_at_side)
-        {
+        if (more_at_side) {
             from_left ? m_ball.move_left() : m_ball.move_right();
         }
-        else
-        {
+        else {
             from_top ? m_ball.move_up() : m_ball.move_down();
         }
     }

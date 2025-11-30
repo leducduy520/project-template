@@ -78,16 +78,12 @@ float Ientity::bottom() const noexcept
 Ientity::~Ientity() noexcept
 {
     // Unsubscribe from all cached topics
-    if (m_manager != nullptr)
-    {
-        for (const auto& topic : m_subscribed_topics)
-        {
-            try
-            {
+    if (m_manager != nullptr) {
+        for (const auto& topic : m_subscribed_topics) {
+            try {
                 m_manager->unsubscribe(topic, this);
             }
-            catch (...)
-            {
+            catch (...) {
                 // Suppress exceptions in destructor to maintain noexcept guarantee
                 (void)0;
             }
@@ -100,27 +96,24 @@ Ientity::~Ientity() noexcept
 // Pub/Sub methods implementation
 void Ientity::subscribe(const std::string& topic)
 {
-    if (!topic.empty() && m_manager != nullptr && m_subscribed_topics.find(topic) == m_subscribed_topics.end())
-    {
+    if (!topic.empty() && m_manager != nullptr && m_subscribed_topics.find(topic) == m_subscribed_topics.end()) {
         m_manager->subscribe(topic, this);
-        m_subscribed_topics.insert(topic);  // Cache the topic
+        m_subscribed_topics.insert(topic); // Cache the topic
     }
 }
 
 void Ientity::publish(const std::string& topic, Ientity* entity)
 {
-    if (m_manager != nullptr)
-    {
+    if (m_manager != nullptr) {
         m_manager->publish(topic, entity);
     }
 }
 
 void Ientity::unsubscribe(const std::string& topic)
 {
-    if (m_manager != nullptr)
-    {
+    if (m_manager != nullptr) {
         m_manager->unsubscribe(topic, this);
-        m_subscribed_topics.erase(topic);  // Remove from cache
+        m_subscribed_topics.erase(topic); // Remove from cache
     }
 }
 

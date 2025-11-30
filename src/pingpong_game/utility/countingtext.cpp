@@ -20,8 +20,7 @@ void CountingTextUpdate(CountingText* text)
     text->setString(utilities::texthelper::format_duration(left_time));
 }
 
-CountingText::CountingText()
-    : Timer([this](){CountingTextUpdate(this);})
+CountingText::CountingText() : Timer([this]() { CountingTextUpdate(this); })
 {
     this->setOrigin({0, 0});
 }
@@ -130,26 +129,24 @@ void BallCountingText::associate_with(Ientity* entity)
 
 void BallCountingText::on_message(const std::string& topic, Ientity* entity)
 {
-    if (m_associate == nullptr || entity->is_destroyed() || this->is_destroyed() || entity->get_id() != m_associate->get_id())
+    if (m_associate == nullptr || entity->is_destroyed() || this->is_destroyed() ||
+        entity->get_id() != m_associate->get_id())
         return;
     using namespace utilities::texthelper;
     const std::string ball_destruction_topic = Ientity::get_type_name<ball>() + "/destroyed";
     const std::string ball_update_topic = Ientity::get_type_name<ball>() + "/update";
-    if (topic == ball_destruction_topic)
-    {
+    if (topic == ball_destruction_topic) {
         m_associate = nullptr;
         destroy();
         return;
     }
-    if (topic == ball_update_topic)
-    {
-        if (is_timeout())
-        {
+    if (topic == ball_update_topic) {
+        if (is_timeout()) {
             m_associate->scale(1);
             destroy();
             return;
         }
-        
+
         sf::Text::setPosition({m_associate->left(), m_associate->top() + m_associate->h() * 3 / 2});
     }
 }
