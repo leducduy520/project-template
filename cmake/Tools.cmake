@@ -20,6 +20,7 @@ function(build_cmake_format_target)
             list(
                 APPEND
                 FORMATTING_COMMANDS
+                COMMAND
                 cmake-format
                 -c
                 ${CMAKE_SOURCE_DIR}/.cmake-format.yaml

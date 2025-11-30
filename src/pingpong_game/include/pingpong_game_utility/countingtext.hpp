@@ -47,18 +47,25 @@ private:
     duration m_limit = duration::zero();
 };
 
-class BallCountingText : public CountingText, public Ientity
+class BallCountingText : public CountingText, public static_entity
 {
 public:
     BallCountingText() = default;
     BallCountingText(const BallCountingText& other) = delete;
     BallCountingText& operator=(const BallCountingText& other) = delete;
 
-    BallCountingText(BallCountingText&& other) noexcept
+    BallCountingText(BallCountingText&& other) noexcept : CountingText(), static_entity(std::move(other))
     {
         if (this == &other) {
             return;
         }
+        // Move CountingText base class (sf::Text part)
+        // Note: Timer<std::milli> is private base, so we rely on CountingText's default construction
+        // and move the sf::Text part which contains the visual state
+        static_cast<sf::Text&>(*this) = std::move(static_cast<sf::Text&>(other));
+        // Note: m_limit and Timer state cannot be moved directly due to private access
+        // The timer will need to be restarted if needed after move
+        // Move member
         m_associate = other.m_associate;
         other.m_associate = nullptr;
     }
@@ -68,6 +75,13 @@ public:
         if (this == &other) {
             return *this;
         }
+        // Move assign CountingText base class (sf::Text part)
+        static_cast<sf::Text&>(*this) = std::move(static_cast<sf::Text&>(other));
+        // Note: m_limit and Timer state cannot be moved directly due to private access
+        // The timer will need to be restarted if needed after move
+        // Move assign static_entity base class
+        static_cast<static_entity&>(*this) = std::move(static_cast<static_entity&>(other));
+        // Move member
         m_associate = other.m_associate;
         other.m_associate = nullptr;
         return *this;

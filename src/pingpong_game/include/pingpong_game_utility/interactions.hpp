@@ -9,7 +9,7 @@
 
 namespace interactions
 {
-    bool are_interacting(const Ientity* element1, const Ientity* element12) noexcept;
+    bool are_interacting(const static_entity* element1, const static_entity* element12) noexcept;
 
     class BallvsPaddle
     {
@@ -33,7 +33,8 @@ namespace interactions
         void operator()();
 
     private:
-        std::tuple<bool, bool, bool> cal_ball_direction(const ball& a_ball, const Ientity& an_entity) const noexcept;
+        std::tuple<bool, bool, bool> cal_ball_direction(const ball& a_ball,
+                                                        const static_entity& an_entity) const noexcept;
 
         void ball_interact_clone_brick(brick& a_brick);
         void ball_interact_scaleup_brick(brick& a_brick);

@@ -293,7 +293,7 @@ struct SoundPlayer
      * Each value corresponds to a specific sound effect used in the game.
      * Used with playSoundEffect() to play the corresponding sound.
      */
-    enum class SoundEffect_t
+    enum class SoundEffect_t : uint8_t
     {
         WALL_BOUNCE,     ///< Sound played when ball bounces off wall
         BRICK_BOUNCE,    ///< Sound played when ball bounces off brick
@@ -302,7 +302,7 @@ struct SoundPlayer
         BOMB_EXPLOSION   ///< Sound played when bomb brick explodes
     };
 
-    enum class Mussic_t
+    enum class Mussic_t : uint8_t
     {
         BACKGROUND
     };

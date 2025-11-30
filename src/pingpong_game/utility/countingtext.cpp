@@ -102,7 +102,7 @@ void BallCountingText::draw(sf::RenderWindow& window)
 
 void BallCountingText::destroy() noexcept
 {
-    Ientity::destroy();
+    static_entity::destroy();
     try {
         CountingText::stop();
     }

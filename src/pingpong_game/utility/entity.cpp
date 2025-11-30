@@ -3,77 +3,6 @@
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
-void Ientity::set_texture(const sf::Texture& texture)
-{
-    m_sprite.setTexture(texture);
-}
-
-void Ientity::set_origin_centre() noexcept
-{
-    m_sprite.setOrigin(w() / 2.0f, h() / 2.0f);
-}
-
-void Ientity::set_scale(float scale_x, float scale_y) noexcept
-{
-    m_sprite.setScale(scale_x, scale_y);
-}
-
-void Ientity::set_position(const sf::Vector2f& pos) noexcept
-{
-    m_sprite.setPosition(pos);
-}
-
-void Ientity::move(const sf::Vector2f& velocity) noexcept
-{
-    m_sprite.move(velocity);
-}
-
-sf::Vector2f Ientity::get_centre() const noexcept
-{
-    auto bounds = m_sprite.getLocalBounds();
-    return {bounds.width / 2.0f, bounds.height / 2.0f};
-}
-
-float Ientity::x() const noexcept
-{
-    return m_sprite.getPosition().x;
-}
-
-float Ientity::y() const noexcept
-{
-    return m_sprite.getPosition().y;
-}
-
-float Ientity::w() const noexcept
-{
-    return m_sprite.getLocalBounds().width;
-}
-
-float Ientity::h() const noexcept
-{
-    return m_sprite.getLocalBounds().height;
-}
-
-float Ientity::left() const noexcept
-{
-    return m_sprite.getGlobalBounds().left;
-}
-
-float Ientity::top() const noexcept
-{
-    return m_sprite.getGlobalBounds().top;
-}
-
-float Ientity::right() const noexcept
-{
-    return m_sprite.getGlobalBounds().left + m_sprite.getGlobalBounds().width;
-}
-
-float Ientity::bottom() const noexcept
-{
-    return m_sprite.getGlobalBounds().top + m_sprite.getGlobalBounds().height;
-}
-
 // Destructor implementation
 Ientity::~Ientity() noexcept
 {
@@ -117,6 +46,99 @@ void Ientity::unsubscribe(const std::string& topic)
     }
 }
 
+void static_entity::set_texture(const sf::Texture& texture)
+{
+    m_sprite.setTexture(texture);
+}
+
+void static_entity::set_origin_centre() noexcept
+{
+    m_sprite.setOrigin(w() / 2.0f, h() / 2.0f);
+}
+
+void static_entity::set_scale(float scale_x, float scale_y) noexcept
+{
+    m_sprite.setScale(scale_x, scale_y);
+}
+
+void static_entity::set_position(const sf::Vector2f& pos) noexcept
+{
+    m_sprite.setPosition(pos);
+}
+
+void static_entity::move(const sf::Vector2f& velocity) noexcept
+{
+    m_sprite.move(velocity);
+}
+
+sf::Vector2f static_entity::get_centre() const noexcept
+{
+    auto bounds = m_sprite.getLocalBounds();
+    return {bounds.width / 2.0f, bounds.height / 2.0f};
+}
+
+float static_entity::x() const noexcept
+{
+    return m_sprite.getPosition().x;
+}
+
+float static_entity::y() const noexcept
+{
+    return m_sprite.getPosition().y;
+}
+
+float static_entity::w() const noexcept
+{
+    return m_sprite.getLocalBounds().width;
+}
+
+float static_entity::h() const noexcept
+{
+    return m_sprite.getLocalBounds().height;
+}
+
+float static_entity::left() const noexcept
+{
+    return m_sprite.getGlobalBounds().left;
+}
+
+float static_entity::top() const noexcept
+{
+    return m_sprite.getGlobalBounds().top;
+}
+
+float static_entity::right() const noexcept
+{
+    return m_sprite.getGlobalBounds().left + m_sprite.getGlobalBounds().width;
+}
+
+float static_entity::bottom() const noexcept
+{
+    return m_sprite.getGlobalBounds().top + m_sprite.getGlobalBounds().height;
+}
+
+void static_entity::swap(static_entity& other) noexcept
+{
+    std::swap(m_sprite, other.m_sprite);
+    Ientity::swap(other);
+}
+
+static_entity::static_entity(static_entity&& other) noexcept : Ientity(), m_sprite(std::move(other.m_sprite))
+{
+    // Move base class members
+    Ientity::swap(other);
+}
+
+static_entity& static_entity::operator=(static_entity&& other) noexcept
+{
+    if (this != &other) {
+        static_entity default_entity;
+        swap(default_entity);
+        swap(other);
+    }
+    return *this;
+}
+
 void moving_entity::set_velocity(const sf::Vector2f& vel) noexcept
 {
     m_velocity = vel;
@@ -125,4 +147,10 @@ void moving_entity::set_velocity(const sf::Vector2f& vel) noexcept
 sf::Vector2f moving_entity::get_velocity() const noexcept
 {
     return m_velocity;
+}
+
+void moving_entity::swap(moving_entity& other) noexcept
+{
+    std::swap(m_velocity, other.m_velocity);
+    static_entity::swap(other);
 }

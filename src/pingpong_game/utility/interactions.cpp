@@ -7,7 +7,7 @@
 
 namespace interactions
 {
-    bool are_interacting(const Ientity* element1, const Ientity* element2) noexcept
+    bool are_interacting(const static_entity* element1, const static_entity* element2) noexcept
     {
         auto box1 = sf::FloatRect{element1->left(), element1->top(), element1->w(), element1->h()};
         auto box2 = sf::FloatRect{element2->left(), element2->top(), element2->w(), element2->h()};
@@ -105,7 +105,7 @@ namespace interactions
     }
 
     std::tuple<bool, bool, bool> BallVsWall::cal_ball_direction(const ball& a_ball,
-                                                                const Ientity& an_entity) const noexcept
+                                                                const static_entity& an_entity) const noexcept
     {
         const float left_overlap = a_ball.right() - an_entity.left();
         const float right_overlap = an_entity.right() - a_ball.left();

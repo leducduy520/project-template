@@ -10,7 +10,7 @@
 
 class wall;
 
-class brick : public Ientity
+class brick : public static_entity
 {
 public:
     enum BrickProperty
@@ -84,7 +84,7 @@ struct WallStatus
     int live = 0;
 };
 
-class wall : public Ientity
+class wall : public static_entity
 {
     WallMap m_data;
     WallStatus m_status;

@@ -54,7 +54,9 @@ void paddle::draw(sf::RenderWindow& window)
 }
 
 void paddle::move_up() noexcept
-{}
+{
+    (void)0;
+}
 
 void paddle::move_left() noexcept
 {
@@ -77,4 +79,6 @@ void paddle::move_right() noexcept
 }
 
 void paddle::move_down() noexcept
-{}
+{
+    (void)0;
+}
