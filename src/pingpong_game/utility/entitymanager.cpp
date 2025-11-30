@@ -7,12 +7,11 @@ void entity_manager::refresh()
 {
     // Collect destroyed entities and their IDs
     std::vector<size_t> ids_to_recycle;
-    
-    for (auto& [type, alias_vector] : grouped_entities)
-    {
+
+    for (auto& [type, alias_vector] : grouped_entities) {
         alias_vector.erase(remove_if(begin(alias_vector),
                                      end(alias_vector),
-                                     [&ids_to_recycle](const auto& pointer) { 
+                                     [&ids_to_recycle](const auto& pointer) {
                                          if (pointer->is_destroyed()) {
                                              // Collect ID for recycling
                                              if (size_t id = pointer->get_id(); id > 0) {
@@ -24,32 +23,27 @@ void entity_manager::refresh()
                                      }),
                            end(alias_vector));
     }
-    
+
     // Collect entities to destroy (destructors may call unsubscribe, which needs the lock)
     std::vector<std::unique_ptr<Ientity>> entities_to_destroy;
-    for (auto it = all_entities.begin(); it != all_entities.end();)
-    {
-        if ((*it)->is_destroyed())
-        {
+    for (auto it = all_entities.begin(); it != all_entities.end();) {
+        if ((*it)->is_destroyed()) {
             // Move to temporary vector for destruction outside
             entities_to_destroy.push_back(std::move(*it));
             it = all_entities.erase(it);
         }
-        else
-        {
+        else {
             ++it;
         }
     }
-    
+
     // Destroy entities (destructors will unsubscribe, which needs the lock)
     entities_to_destroy.clear();
-    
+
     // Recycle IDs (with lock - only ID management needs protection)
-    if (!ids_to_recycle.empty())
-    {
+    if (!ids_to_recycle.empty()) {
         std::scoped_lock lock(m_mutex);
-        for (size_t id : ids_to_recycle)
-        {
+        for (size_t id : ids_to_recycle) {
             m_available_ids.insert(id);
         }
     }
@@ -61,7 +55,7 @@ void entity_manager::clear() noexcept
     // Again, we must clean up the alias pointers first
     grouped_entities.clear();
     all_entities.clear();
-    
+
     // Only lock for subscriptions and ID management
     {
         const std::scoped_lock lock(m_mutex);
@@ -76,8 +70,7 @@ void entity_manager::clear() noexcept
 size_t entity_manager::get_next_id() noexcept
 {
     const std::scoped_lock lock(m_mutex);
-    if (!m_available_ids.empty())
-    {
+    if (!m_available_ids.empty()) {
         // Reuse an ID from the pool
         auto it = m_available_ids.begin();
         size_t id = *it;
@@ -91,7 +84,7 @@ size_t entity_manager::get_next_id() noexcept
 // Recycle an ID back to the pool
 void entity_manager::recycle_id(size_t id) noexcept
 {
-    if (id > 0)  // Don't recycle ID 0 (invalid/default)
+    if (id > 0) // Don't recycle ID 0 (invalid/default)
     {
         std::scoped_lock lock(m_mutex);
         m_available_ids.insert(id);
@@ -102,10 +95,8 @@ void entity_manager::recycle_id(size_t id) noexcept
 void entity_manager::update() const
 {
     // Entities may call publish() which needs the lock, but we don't need to lock here
-    for (auto& entity : all_entities)
-    {
-        if (!entity->is_destroyed())
-        {
+    for (auto& entity : all_entities) {
+        if (!entity->is_destroyed()) {
             entity->update();
         }
     }
@@ -114,10 +105,8 @@ void entity_manager::update() const
 // Function to update make all the entities draw themselves
 void entity_manager::draw(sf::RenderWindow& window) const
 {
-    for (auto& entity : all_entities)
-    {
-        if (!entity->is_destroyed())
-        {
+    for (auto& entity : all_entities) {
+        if (!entity->is_destroyed()) {
             entity->draw(window);
         }
     }
@@ -126,14 +115,12 @@ void entity_manager::draw(sf::RenderWindow& window) const
 // Pub/Sub implementation
 void entity_manager::subscribe(const std::string& topic, Ientity* entity)
 {
-    if (entity != nullptr)
-    {
+    if (entity != nullptr) {
         const std::scoped_lock lock(m_mutex);
-        
+
         auto& subscribers = subscriptions[topic];
         // Check if entity is already subscribed to prevent duplicates
-        if (std::find(subscribers.begin(), subscribers.end(), entity) == subscribers.end())
-        {
+        if (std::find(subscribers.begin(), subscribers.end(), entity) == subscribers.end()) {
             subscribers.push_back(entity);
         }
     }
@@ -146,17 +133,14 @@ void entity_manager::publish(const std::string& topic, Ientity* entity)
     {
         const std::scoped_lock lock(m_mutex);
         auto it = subscriptions.find(topic);
-        if (it != subscriptions.end())
-        {
-            subscribers_copy = it->second;  // Copy the subscribers list
+        if (it != subscriptions.end()) {
+            subscribers_copy = it->second; // Copy the subscribers list
         }
     }
-    
+
     // Call on_message outside the lock to avoid deadlocks
-    for (auto* subscriber : subscribers_copy)
-    {
-        if (subscriber != nullptr && !subscriber->is_destroyed())
-        {
+    for (auto* subscriber : subscribers_copy) {
+        if (subscriber != nullptr && !subscriber->is_destroyed()) {
             subscriber->on_message(topic, entity);
         }
     }
@@ -164,17 +148,12 @@ void entity_manager::publish(const std::string& topic, Ientity* entity)
 
 void entity_manager::unsubscribe(const std::string& topic, Ientity* entity)
 {
-    if (entity != nullptr)
-    {
+    if (entity != nullptr) {
         const std::scoped_lock lock(m_mutex);
         auto it = subscriptions.find(topic);
-        if (it != subscriptions.end())
-        {
+        if (it != subscriptions.end()) {
             auto& subscribers = it->second;
-            subscribers.erase(
-                std::remove(subscribers.begin(), subscribers.end(), entity),
-                subscribers.end());
+            subscribers.erase(std::remove(subscribers.begin(), subscribers.end(), entity), subscribers.end());
         }
     }
 }
-

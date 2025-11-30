@@ -43,4 +43,3 @@ void ThreadPool::wait()
         m_joined.store(true);
     }
 }
-

@@ -12,10 +12,8 @@ sf::Texture& ball::get_texture()
 {
     static sf::Texture texture;
     static bool initialized = false;
-    if (!initialized)
-    {
-        if (!texture.loadFromFile((constants::resouces_path / "ball.png").string()))
-        {
+    if (!initialized) {
+        if (!texture.loadFromFile((constants::resouces_path / "ball.png").string())) {
             spdlog::error("Failed to load ball texture from: {}", (constants::resouces_path / "ball.png").string());
         }
         initialized = true;
@@ -23,8 +21,7 @@ sf::Texture& ball::get_texture()
     return texture;
 }
 
-ball::ball(float px_x, float px_y)
-    : moving_entity(), m_strength(constants::ball_strength_lv1)
+ball::ball(float px_x, float px_y) : moving_entity(), m_strength(constants::ball_strength_lv1)
 {
     set_texture(get_texture());
     set_origin_centre();
@@ -51,8 +48,7 @@ void ball::update()
         const bool touch_left = x() - (w() / 2) <= 0 && m_velocity.x < 0;
         const bool touch_right = x() + (w() / 2) >= constants::window_width && m_velocity.x > 0;
 
-        if (touch_left || touch_right)
-        {
+        if (touch_left || touch_right) {
             m_velocity.x = -m_velocity.x;
             SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::WALL_BOUNCE);
         }
@@ -61,14 +57,14 @@ void ball::update()
     {
         const bool touch_up = y() - (h() / 2) <= 0 && m_velocity.y < 0;
         const bool touch_down = y() + (h() / 2) >= constants::window_height;
-        if (touch_up)
-        {
+
+        if (touch_down) {
+            destroy();
+            return;
+        }
+        if (touch_up) {
             m_velocity.y = -m_velocity.y;
             SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::WALL_BOUNCE);
-        }
-        else if (touch_down)
-        {
-            destroy();
         }
     }
 
@@ -124,12 +120,10 @@ void ball::destroy() noexcept
         return;
     }
     // Publish destruction message before destroying
-    try 
-    {
+    try {
         publish(Ientity::get_type_name<ball>() + "/destroyed", this);
     }
-    catch (const std::exception& e)
-    {
+    catch (const std::exception& e) {
         spdlog::error("Failed to publish destruction message: {}", e.what());
     }
     moving_entity::destroy();

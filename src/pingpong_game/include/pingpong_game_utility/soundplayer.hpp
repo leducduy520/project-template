@@ -45,7 +45,8 @@
  * @note This class is thread-safe. All public methods use mutex locks internally.
  * @warning Call shutdown() before DLL unload to prevent hangs during static destruction.
  */
-class SoundManager {
+class SoundManager
+{
 public:
     /**
      * @brief Get the singleton instance of SoundManager
@@ -249,7 +250,7 @@ private:
      * @param defaultVolume Initial global volume level (0.0f to 100.0f)
      */
     SoundManager(size_t poolSize, float defaultVolume);
-    
+
     /**
      * @brief Destructor
      * 
@@ -259,12 +260,14 @@ private:
      */
     ~SoundManager();
 
-    std::unordered_map<std::string, sf::SoundBuffer> soundBuffers; ///< Map of loaded sound effect buffers (name -> buffer)
+    std::unordered_map<std::string, sf::SoundBuffer>
+        soundBuffers;                 ///< Map of loaded sound effect buffers (name -> buffer)
     std::vector<sf::Sound> soundPool; ///< Pre-allocated pool of reusable sound objects for efficient playback
-    std::unordered_map<std::string, std::unique_ptr<sf::Music>> musicTracks; ///< Map of loaded music tracks (name -> music)
-    float globalVolume; ///< Global volume level applied to all sounds (0.0f to 100.0f)
-    size_t maxConcurrentSounds; ///< Maximum number of concurrent sounds allowed in the pool
-    mutable std::mutex mutex; ///< Mutex for thread-safe access to all member variables
+    std::unordered_map<std::string, std::unique_ptr<sf::Music>>
+        musicTracks;               ///< Map of loaded music tracks (name -> music)
+    float globalVolume;            ///< Global volume level applied to all sounds (0.0f to 100.0f)
+    size_t maxConcurrentSounds;    ///< Maximum number of concurrent sounds allowed in the pool
+    mutable std::mutex mutex;      ///< Mutex for thread-safe access to all member variables
     static bool s_shutdown_called; ///< Flag indicating if shutdown() was called (prevents double-cleanup)
 };
 
@@ -290,15 +293,17 @@ struct SoundPlayer
      * Each value corresponds to a specific sound effect used in the game.
      * Used with playSoundEffect() to play the corresponding sound.
      */
-    enum class SoundEffect_t {
-        WALL_BOUNCE,      ///< Sound played when ball bounces off wall
+    enum class SoundEffect_t : uint8_t
+    {
+        WALL_BOUNCE,     ///< Sound played when ball bounces off wall
         BRICK_BOUNCE,    ///< Sound played when ball bounces off brick
         PADDLE_BOUNCE,   ///< Sound played when ball bounces off paddle
         DIAMOND_DESTROY, ///< Sound played when diamond brick is destroyed
         BOMB_EXPLOSION   ///< Sound played when bomb brick explodes
     };
 
-    enum class Mussic_t {
+    enum class Mussic_t : uint8_t
+    {
         BACKGROUND
     };
 
@@ -358,12 +363,15 @@ private:
      * in the SoundManager. These identifiers are used as keys in the
      * SoundManager's internal sound buffer map.
      */
-    struct sound_id {
-        static constexpr std::string_view WALL_BOUNCE_ID = "wall_bounce_t";      ///< Identifier for wall bounce sound
-        static constexpr std::string_view BRICK_BOUNCE_ID = "brick_bounce_t";      ///< Identifier for brick bounce sound
+    struct sound_id
+    {
+        static constexpr std::string_view WALL_BOUNCE_ID = "wall_bounce_t";     ///< Identifier for wall bounce sound
+        static constexpr std::string_view BRICK_BOUNCE_ID = "brick_bounce_t";   ///< Identifier for brick bounce sound
         static constexpr std::string_view PADDLE_BOUNCE_ID = "paddle_bounce_t"; ///< Identifier for paddle bounce sound
-        static constexpr std::string_view DIAMOND_DESTROY_ID = "diamond_destroy_t"; ///< Identifier for diamond destroy sound
-        static constexpr std::string_view BOMB_EXPLOSION_ID = "bomb_explosion_t";   ///< Identifier for bomb explosion sound
+        static constexpr std::string_view DIAMOND_DESTROY_ID =
+            "diamond_destroy_t"; ///< Identifier for diamond destroy sound
+        static constexpr std::string_view BOMB_EXPLOSION_ID =
+            "bomb_explosion_t"; ///< Identifier for bomb explosion sound
     };
 
     /**
@@ -373,8 +381,10 @@ private:
      * in the SoundManager. These identifiers are used as keys in the
      * SoundManager's internal music track map.
      */
-    struct music_id {
-        static constexpr std::string_view BACKGROUND_MUSIC_ID = "background_music_t"; ///< Identifier for background music
+    struct music_id
+    {
+        static constexpr std::string_view BACKGROUND_MUSIC_ID =
+            "background_music_t"; ///< Identifier for background music
     };
 };
 

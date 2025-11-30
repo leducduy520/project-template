@@ -5,22 +5,22 @@
 #include <memory>
 #include <thread>
 
-namespace {
+namespace
+{
     constexpr unsigned int INPUT_BOUND_WIDTH = 200;
     constexpr unsigned int INPUT_BOUND_HEIGHT = 50;
     constexpr unsigned int FONT_SIZE = 28;
     constexpr unsigned int WINDOW_WIDTH = 800;
     constexpr unsigned int WINDOW_HEIGHT = 600;
     constexpr unsigned int TEXT_LIMIT = 16;
-}
+} // namespace
 
 using namespace utilities;
 using namespace std::chrono_literals;
 
 void LoginWindow::login(const std::string& username, const std::string& password)
 {
-    if (!username.empty() && !password.empty())
-    {
+    if (!username.empty() && !password.empty()) {
         m_loginSuccess = true;
         return;
     }
@@ -63,8 +63,7 @@ LoginWindow::LoginWindow() : m_focusedName(true), m_loginSuccess(false), m_blink
 
 std::pair<bool, std::string> LoginWindow::run()
 {
-    while (m_window.isOpen())
-    {
+    while (m_window.isOpen()) {
         listening();
         update();
         render();
@@ -75,18 +74,14 @@ std::pair<bool, std::string> LoginWindow::run()
 void LoginWindow::listening()
 {
     sf::Event event{};
-    while (m_window.pollEvent(event))
-    {
-        if (event.type == sf::Event::TextEntered)
-        {
+    while (m_window.pollEvent(event)) {
+        if (event.type == sf::Event::TextEntered) {
             auto code = event.text.unicode;
-            if (code < 128 && code != 0x09)
-            {
+            if (code < 128 && code != 0x09) {
                 updateText(code);
             }
         }
-        if (event.type == sf::Event::KeyPressed)
-        {
+        if (event.type == sf::Event::KeyPressed) {
             handleKeyPress(event);
         }
     }
@@ -100,8 +95,7 @@ void LoginWindow::update()
 
 void LoginWindow::render()
 {
-    if (m_window.isOpen())
-    {
+    if (m_window.isOpen()) {
         m_window.clear(sf::Color{223, 228, 210, 255});
         m_window.draw(*m_textname);
         m_window.draw(*m_static_name);
@@ -115,27 +109,22 @@ void LoginWindow::updateText(const sf::Uint32& code)
 {
     sf::String str = m_focusedName.load() ? m_textname->getString() : m_textpass->getString();
 
-    if (str.getSize() > 0 && str.getSize() <= TEXT_LIMIT && (code == 0x7F || code == 0x08))
-    {
+    if (str.getSize() > 0 && str.getSize() <= TEXT_LIMIT && (code == 0x7F || code == 0x08)) {
         str.erase(str.getSize() - 1);
-        if (m_focusedName.load())
-        {
+        if (m_focusedName.load()) {
             m_textname->setString(str);
         }
-        else
-        {
+        else {
             m_textpass->setString(str);
             m_strpass.erase(m_strpass.length() - 1);
         }
     }
-    else if (m_focusedName.load() && code > 20)
-    {
+    else if (m_focusedName.load() && code > 20) {
         str += static_cast<char>(code);
         //m_strname = str;
         m_textname->setString(str);
     }
-    else if (code > 20)
-    {
+    else if (code > 20) {
         str += '*';
         m_strpass += static_cast<char>(code);
         m_textpass->setString(str);
@@ -144,44 +133,36 @@ void LoginWindow::updateText(const sf::Uint32& code)
 
 void LoginWindow::handleKeyPress(const sf::Event& event)
 {
-    switch (event.key.code)
-    {
+    switch (event.key.code) {
     case sf::Keyboard::Tab:
     {
         m_focusedName.store(!m_focusedName.load());
-        if (m_focusedName.load())
-        {
+        if (m_focusedName.load()) {
             m_static_name->setCharacterSize(FONT_SIZE + 5);
             m_static_pass->setCharacterSize(FONT_SIZE);
         }
-        else
-        {
+        else {
             m_static_pass->setCharacterSize(FONT_SIZE + 5);
             m_static_name->setCharacterSize(FONT_SIZE);
         }
-    }
-    break;
+    } break;
     case sf::Keyboard::Return:
     {
-        if (m_textname->getString().getSize() > 0 && !m_strpass.empty())
-        {
+        if (m_textname->getString().getSize() > 0 && !m_strpass.empty()) {
             login(m_textname->getString(), m_strpass);
-            if (m_loginSuccess)
-            {
+            if (m_loginSuccess) {
                 m_window.close();
                 m_blink_run = false;
                 m_blink_fut.wait();
             }
         }
-    }
-    break;
+    } break;
     case sf::Keyboard::Escape:
     {
         m_window.close();
         m_blink_run = false;
         m_blink_fut.wait();
-    }
-    break;
+    } break;
     default:
         break;
     }
@@ -190,8 +171,7 @@ void LoginWindow::handleKeyPress(const sf::Event& event)
 void LoginWindow::blinkAnimation()
 {
     std::unique_lock<std::mutex> lock(m_blink_mt, std::defer_lock);
-    while (m_blink_run)
-    {
+    while (m_blink_run) {
         std::this_thread::sleep_for(500ms);
 
         lock.lock();

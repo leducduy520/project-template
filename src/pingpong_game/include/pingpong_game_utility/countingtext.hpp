@@ -23,15 +23,15 @@ public:
 
     CountingText();
     ~CountingText();
-    
+
     void start();
     void restart();
     void stop();
     void pause() noexcept;
     void stop_pause() noexcept;
-    
+
     bool is_timeout() noexcept;
-    
+
     void set_limit(duration limit);
     void add_time_and_restart(duration delta);
 
@@ -39,34 +39,21 @@ public:
     friend void CountingTextUpdate(CountingText* text);
 
 private:
-
-    void configure_timer(size_t interval, size_t total) {
+    void configure_timer(size_t interval, size_t total)
+    {
         timer::configure<std::milli>(std::chrono::milliseconds(interval), total / interval);
     }
 
     duration m_limit = duration::zero();
 };
 
-class BallCountingText : public CountingText, public Ientity {
+class BallCountingText : public CountingText, public static_entity
+{
 public:
     BallCountingText() = default;
     BallCountingText(const BallCountingText& other) = delete;
     BallCountingText& operator=(const BallCountingText& other) = delete;
-    BallCountingText(BallCountingText&& other) noexcept{
-        if (this == &other) {
-            return;
-        }
-        m_associate = other.m_associate;
-        other.m_associate = nullptr;
-    }
-    BallCountingText& operator=(BallCountingText&& other) noexcept{
-        if (this == &other) {
-            return *this;
-        }
-        m_associate = other.m_associate;
-        other.m_associate = nullptr;
-        return *this;
-    }
+
     ~BallCountingText();
 
     void init(float px_x, float px_y) override;
@@ -74,7 +61,7 @@ public:
     void draw(sf::RenderWindow& window) override;
     void destroy() noexcept override;
 
-    void associate_with(Ientity* entity);
+    void associate_with(ball* entity);
 
     using sf::Drawable::draw;
 
