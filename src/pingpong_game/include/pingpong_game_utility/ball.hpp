@@ -3,7 +3,6 @@
 
 
 #include "SFML/Audio.hpp"
-#include "SFML/System/Thread.hpp"
 #include "constants.hpp"
 #include "entity.hpp"
 #include <future>
@@ -16,11 +15,12 @@ class ball : public moving_entity
     static sf::Texture& get_texture();
     std::atomic_int m_strength;
     size_t m_counting_text_id{0};
+    std::atomic_bool m_publish_update{false};
 
 public:
     ball(float px_x, float px_y);
     ball();
-    ~ball() = default;
+    ~ball() final = default;
 
     void init(float px_x, float px_y) override;
     void update() override;
@@ -37,6 +37,9 @@ public:
 
     int strength() noexcept;
     size_t get_counting_text_id() const noexcept;
+
+    void turn_on_update_publishing() noexcept;
+    void turn_off_update_publishing() noexcept;
 };
 
 #endif // BALL_H

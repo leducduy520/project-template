@@ -14,7 +14,7 @@
 using entity_vector = std::vector<std::unique_ptr<Ientity>>;
 using entity_alias_vector = std::vector<Ientity*>;
 
-class entity_manager
+class entity_manager : public std::enable_shared_from_this<entity_manager>
 {
     // A vector to store all the entities in the game (all brick objects, background, ball, paddle)
     entity_vector all_entities;
@@ -73,7 +73,7 @@ public:
         all_entities.emplace_back(std::move(ptr));
 
         // Set the manager reference and ID in the entity
-        ptr_alias->set_manager(this);
+        ptr_alias->set_manager(weak_from_this());
         ptr_alias->set_id(new_id);
 
         // Return the new object

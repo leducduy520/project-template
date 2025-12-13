@@ -1,8 +1,7 @@
-//#include "ThreadPoolGame.hpp"
 #include "countingtext.hpp"
 #include "entitymanager.hpp"
 #include "ball.hpp"
-#include "ThreadPoolGame.hpp"
+#include "threadpool.hpp"
 #include "helper.hpp"
 #include "constants.hpp"
 #include <spdlog/spdlog.h>
@@ -20,7 +19,7 @@ void CountingTextUpdate(CountingText* text)
     text->setString(utilities::texthelper::format_duration(left_time));
 }
 
-CountingText::CountingText() : Timer([this]() { CountingTextUpdate(this); })
+CountingText::CountingText() : sf::Text(constants::null_font), Timer([this]() { CountingTextUpdate(this); })
 {
     this->setOrigin({0, 0});
 }
@@ -117,8 +116,10 @@ void BallCountingText::associate_with(ball* entity)
     using namespace utilities::texthelper;
     m_associate = dynamic_cast<ball*>(entity);
     if (m_associate != nullptr) {
-        sf::Text::setPosition({m_associate->left() + (m_associate->w() - this->getGlobalBounds().width) / 2, m_associate->top() + m_associate->h()});
-        CountingText::set_limit(seconds(10));
+        m_associate->turn_on_update_publishing();
+        
+        sf::Text::setPosition({m_associate->left() + (m_associate->w() - this->getGlobalBounds().size.x) / 2, m_associate->top() + m_associate->h()});
+        CountingText::set_limit(constants::ball_scale_duration);
         CountingText::start();
 
         // Subscribe to ball destruction topic
@@ -142,10 +143,11 @@ void BallCountingText::on_message(const std::string& topic, Ientity* entity)
     }
     if (topic == ball_update_topic) {
         if (is_timeout()) {
+            m_associate->turn_off_update_publishing();
             m_associate->scale(1);
             destroy();
             return;
         }
-        sf::Text::setPosition({m_associate->left() + (m_associate->w() - this->getGlobalBounds().width) / 2, m_associate->top() + m_associate->h()});
+        sf::Text::setPosition({m_associate->left() + (m_associate->w() - this->getGlobalBounds().size.x) / 2, m_associate->top() + m_associate->h()});
     }
 }

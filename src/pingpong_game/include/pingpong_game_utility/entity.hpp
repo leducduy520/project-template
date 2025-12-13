@@ -2,36 +2,30 @@
 #define __ENTITY_H__
 
 #include "SFML/Graphics.hpp"
+#include "constants.hpp"
 #include <list>
 #include <functional>
 #include <string>
 #include <typeinfo>
 #include <type_traits>
 #include <set>
+#include <memory>
 
 class entity_manager;
+class IentityImpl;
 
 class Ientity
 {
 private:
     friend class entity_manager;
-    bool m_destroyed{false};
-    size_t m_id{0};
-    entity_manager* m_manager{nullptr};
-    std::set<std::string, std::less<>> m_subscribed_topics; // Cache of subscribed topics
+    std::shared_ptr<IentityImpl> pImpl = {};
 
 protected:
     // Private method to set the entity manager (only accessible by entity_manager)
-    void set_manager(entity_manager* manager) noexcept
-    {
-        m_manager = manager;
-    }
+    void set_manager(std::weak_ptr<entity_manager> manager) noexcept;
 
     // Private method to set the entity ID (only accessible by entity_manager)
-    void set_id(size_t id) noexcept
-    {
-        m_id = id;
-    }
+    void set_id(size_t id) noexcept;
 
     // Subscribe to a topic (caches the topic for automatic cleanup)
     void subscribe(const std::string& topic);
@@ -50,7 +44,7 @@ protected:
     }
 
 public:
-    Ientity() = default;
+    Ientity();
     Ientity(const Ientity& other) = delete;
     Ientity& operator=(const Ientity& other) = delete;
     virtual ~Ientity() noexcept;
@@ -61,28 +55,11 @@ public:
 
     virtual void init(float px_x, float px_y) = 0;
 
-    void swap(Ientity& other) noexcept
-    {
-        std::swap(m_destroyed, other.m_destroyed);
-        std::swap(m_id, other.m_id);
-        std::swap(m_manager, other.m_manager);
-        std::swap(m_subscribed_topics, other.m_subscribed_topics);
-    }
+    virtual void destroy() noexcept;
 
-    virtual void destroy() noexcept
-    {
-        m_destroyed = true;
-    }
+    bool is_destroyed() const noexcept;
 
-    bool is_destroyed() const noexcept
-    {
-        return m_destroyed;
-    }
-
-    size_t get_id() const noexcept
-    {
-        return m_id;
-    }
+    size_t get_id() const noexcept;
 
     // Static method to get typeid name for a type
     template <typename T>
@@ -94,7 +71,7 @@ public:
 
 class static_entity : public Ientity
 {
-    sf::Sprite m_sprite;
+    sf::Sprite m_sprite {constants::null_texture};
 
 public:
     static_entity() = default;
@@ -118,7 +95,6 @@ public:
     void set_position(const sf::Vector2f&) noexcept;
     void move(const sf::Vector2f&) noexcept;
 
-    sf::Vector2f get_centre() const noexcept;
     float x() const noexcept;
     float y() const noexcept;
     float w() const noexcept;

@@ -1,6 +1,6 @@
 #include "PingPongGame.hpp"
 #include "LoginGame.hpp"
-#include "ThreadPoolGame.hpp"
+#include "threadpool.hpp"
 #include "helper.hpp"
 #include "interactions.hpp"
 #include "soundplayer.hpp"
@@ -91,10 +91,8 @@ void PingPongGame::listening()
 {
     static bool pause_key_active = false;
     static bool reset_key_active = false;
-    sf::Event event{};
-
-    while (game_window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed) {
+    while (const auto event = game_window.pollEvent()) {
+        if (event->is<sf::Event::Closed>()) {
             game_window.close();
         }
     }
@@ -129,13 +127,13 @@ void PingPongGame::handleKeyPressed_P(bool& pause_key_active)
             if (m_state == game_state::paused) {
                 m_state = game_state::running;
                 m_countingText.stop_pause();
-                m_entity_manager.apply_all<BallCountingText>(
+                m_entity_manager->apply_all<BallCountingText>(
                     [](BallCountingText& a_coutningtext) { a_coutningtext.stop_pause(); });
             }
             else if (m_state == game_state::running) {
                 m_state = game_state::paused;
                 m_countingText.pause();
-                m_entity_manager.apply_all<BallCountingText>(
+                m_entity_manager->apply_all<BallCountingText>(
                     [](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
             }
         }
@@ -155,18 +153,18 @@ void PingPongGame::stateHandler()
         m_textState.setString("Paused");
         m_textLive.setString("Lives: " + std::to_string(m_live));
 
-        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
-        aligning::Aligning(&m_textLive, sf::FloatRect{0, 100, constants::window_width, constants::window_height - 100});
+        aligning::Aligning(&m_textState, sf::FloatRect{{0, 0}, {constants::window_width, constants::window_height}});
+        aligning::Aligning(&m_textLive, sf::FloatRect{{0, 100}, {constants::window_width, constants::window_height - 100}});
     } break;
     case game_state::game_over:
     {
         m_textState.setString("Game Over");
-        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
+        aligning::Aligning(&m_textState, sf::FloatRect{{0, 0}, {constants::window_width, constants::window_height}});
     } break;
     case game_state::player_wins:
     {
         m_textState.setString("Win");
-        aligning::Aligning(&m_textState, sf::FloatRect{0, 0, constants::window_width, constants::window_height});
+        aligning::Aligning(&m_textState, sf::FloatRect{{0, 0}, {constants::window_width, constants::window_height}});
     } break;
     case game_state::running:
         [[fallthrough]];
@@ -180,14 +178,14 @@ void PingPongGame::update()
 {
     if (m_state == game_state::running) {
         //! Calculate the updated graphics
-        m_entity_manager.update();
+        m_entity_manager->update();
 
         {
             std::vector<std::future<void>> futures;
 
             //! Calculate interaction between the balls and the paddle
-            m_entity_manager.apply_all<paddle>([this, &futures](const paddle& a_paddle) {
-                m_entity_manager.apply_all<ball>([&a_paddle, &futures](ball& a_ball) {
+            m_entity_manager->apply_all<paddle>([this, &futures](const paddle& a_paddle) {
+                m_entity_manager->apply_all<ball>([&a_paddle, &futures](ball& a_ball) {
                     futures.emplace_back(ThreadPool::getInstance().submit(100, [&a_ball, &a_paddle]() {
                         interactions::BallvsPaddle handler(a_ball, a_paddle);
                         handler();
@@ -196,10 +194,10 @@ void PingPongGame::update()
             });
 
             //! Calculate interaction between the balls and the wall
-            m_entity_manager.apply_all<ball>([this, &futures](ball& a_ball) mutable {
-                m_entity_manager.apply_all<wall>([this, &a_ball, &futures](wall& a_wall) mutable {
+            m_entity_manager->apply_all<ball>([this, &futures](ball& a_ball) mutable {
+                m_entity_manager->apply_all<wall>([this, &a_ball, &futures](wall& a_wall) mutable {
                     futures.emplace_back(ThreadPool::getInstance().submit(100, [this, &a_ball, &a_wall]() {
-                        interactions::BallVsWall handler(a_wall, a_ball, this->m_entity_manager);
+                        interactions::BallVsWall handler(a_wall, a_ball, *this->m_entity_manager);
                         handler();
                     }));
                 });
@@ -212,7 +210,7 @@ void PingPongGame::update()
 
         //! Update point
         m_point = 0;
-        const auto& walls = m_entity_manager.get_all<wall>();
+        const auto& walls = m_entity_manager->get_all<wall>();
         for (auto& a_wall : walls) {
             const auto* const wptr = dynamic_cast<wall*>(a_wall);
             m_point += wptr->getStatus().point;
@@ -222,12 +220,12 @@ void PingPongGame::update()
         if (m_countingText.is_timeout()) {
             m_state = game_state::game_over;
             m_countingText.pause();
-            m_entity_manager.apply_all<BallCountingText>(
+            m_entity_manager->apply_all<BallCountingText>(
                 [](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
             return;
         }
 
-        m_entity_manager.refresh();
+        m_entity_manager->refresh();
         check_finish_by_ball();
         check_finish_by_wall();
     }
@@ -235,22 +233,22 @@ void PingPongGame::update()
 
 void PingPongGame::check_finish_by_ball()
 {
-    if (m_entity_manager.get_all<ball>().empty()) {
+    if (m_entity_manager->get_all<ball>().empty()) {
         --m_live;
         if (m_live > 0) {
-            m_entity_manager.apply_all<paddle>([](paddle& a_paddle) {
+            m_entity_manager->apply_all<paddle>([](paddle& a_paddle) {
                 a_paddle.init(constants::window_width / 2.0F, constants::window_height * 1.0F);
             });
-            m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
+            m_entity_manager->create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
             m_countingText.pause();
-            m_entity_manager.apply_all<BallCountingText>(
+            m_entity_manager->apply_all<BallCountingText>(
                 [](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
             m_state = game_state::paused;
         }
         else {
             m_state = game_state::game_over;
             m_countingText.pause();
-            m_entity_manager.apply_all<BallCountingText>(
+            m_entity_manager->apply_all<BallCountingText>(
                 [](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
         }
     }
@@ -258,16 +256,17 @@ void PingPongGame::check_finish_by_ball()
 
 void PingPongGame::check_finish_by_wall()
 {
-    if (m_entity_manager.get_all<wall>().empty()) {
+    if (m_entity_manager->get_all<wall>().empty()) {
         m_state = game_state::player_wins;
         m_countingText.pause();
-        m_entity_manager.apply_all<BallCountingText>([](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
+        m_entity_manager->apply_all<BallCountingText>([](BallCountingText& a_coutningtext) { a_coutningtext.pause(); });
     }
 }
 
 void PingPongGame::render()
 {
-    m_entity_manager.draw(game_window);
+    game_window.clear(sf::Color::Black);
+    m_entity_manager->draw(game_window);
     if (m_state != game_state::running) {
         game_window.draw(m_textState);
     }
@@ -283,9 +282,9 @@ void PingPongGame::render()
 void PingPongGame::try_createwall()
 {
     try {
-        m_entity_manager.create<wall>();
-        m_entity_manager.apply_all<wall>([](wall& a_wall) {
-            utilities::wallhelper::build_wall(a_wall, (constants::resouces_path / "wall.csv").string().c_str());
+        m_entity_manager->create<wall>();
+        m_entity_manager->apply_all<wall>([](wall& a_wall) {
+            a_wall.load_from_file(constants::resouces_path / "wall.csv");
         });
     }
     catch (const std::ios::failure& e) {
@@ -338,7 +337,7 @@ void PingPongGame::initialize_text()
     m_textState.setCharacterSize(32);
     m_textState.setFillColor(sf::Color::Red);
     texthelper::aligning::Aligning(&m_textState,
-                                   {0, 0, constants::window_width, constants::window_height},
+                                   {{0, 0}, {constants::window_width, constants::window_height}},
                                    texthelper::aligning::MC);
 
     m_textLive.setFont(texthelper::getFont(CROSS_BOXED));
@@ -346,17 +345,17 @@ void PingPongGame::initialize_text()
     m_textLive.setCharacterSize(24);
     m_textLive.setFillColor(sf::Color(255, 26, 26));
     texthelper::aligning::Aligning(&m_textLive,
-                                   {0, 100.0F, constants::window_width, constants::window_height - 100.0F},
+                                   {{0, 100.0F}, {constants::window_width, constants::window_height - 100.0F}},
                                    texthelper::aligning::MC);
 
     m_textPoint.setFont(texthelper::getFont(CROSS_BOXED));
     m_textPoint.setString("0");
     m_textPoint.setCharacterSize(24);
     m_textPoint.setFillColor(sf::Color::Magenta);
-    m_textPoint.setPosition(0, 350);
+    m_textPoint.setPosition({0, 350});
 
     m_countingText.setFillColor(sf::Color::Blue);
-    m_countingText.setPosition(0, 400);
+    m_countingText.setPosition({0, 400});
     m_countingText.setFont(texthelper::getFont(CROSS_BOXED));
     m_countingText.setCharacterSize(24);
     m_countingText.set_limit(CountingText::duration{constants::round_duration});
@@ -375,9 +374,10 @@ void PingPongGame::init(std::string& resourcePath)
     game_window.setVerticalSyncEnabled(true);
     game_window.setPosition(sf::Vector2i{(1920 - constants::window_width) / 2, (1080 - constants::window_height) / 2});
 
-    m_entity_manager.create<background>(0.0F, 0.0F);
-    m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
-    m_entity_manager.create<paddle>(constants::window_width / 2.0F, constants::window_height * 1.0F);
+    m_entity_manager = std::make_shared<entity_manager>();
+    m_entity_manager->create<background>(0.0F, 0.0F);
+    m_entity_manager->create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
+    m_entity_manager->create<paddle>(constants::window_width / 2.0F, constants::window_height * 1.0F);
 
     try_createwall();
 
@@ -391,21 +391,20 @@ void PingPongGame::reset()
     m_state = game_state::running;
     m_live = constants::init_live;
     m_point = 0;
-
     //! Move a paddle to initial position
-    m_entity_manager.apply_all<paddle>(
+    m_entity_manager->apply_all<paddle>(
         [](paddle& a_paddle) { a_paddle.init(constants::window_width / 2.0f, constants::window_height * 1.0F); });
 
     //! Destroy the entities
-    m_entity_manager.apply_all<ball>([](ball& a_ball) { a_ball.destroy(); });
-    m_entity_manager.apply_all<wall>([](wall& a_wall) { a_wall.destroy(); });
-    m_entity_manager.apply_all<BallCountingText>([](BallCountingText& a_countingtext) { a_countingtext.destroy(); });
+    m_entity_manager->apply_all<ball>([](ball& a_ball) { a_ball.destroy(); });
+    m_entity_manager->apply_all<wall>([](wall& a_wall) { a_wall.destroy(); });
+    m_entity_manager->apply_all<BallCountingText>([](BallCountingText& a_countingtext) { a_countingtext.destroy(); });
 
     //! Refresh
-    m_entity_manager.refresh();
+    m_entity_manager->refresh();
 
     //! Recreate
-    m_entity_manager.create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
+    m_entity_manager->create<ball>(constants::window_width / 2.0F, constants::window_height / 2.0F);
     try_createwall();
 
     //! Restart the counting text
@@ -414,7 +413,7 @@ void PingPongGame::reset()
 
 void PingPongGame::clear()
 {
-    m_entity_manager.clear();
+    m_entity_manager->clear();
     game_window.clear(sf::Color::Black);
     game_window.close();
 }
@@ -432,7 +431,6 @@ void PingPongGame::run()
         SoundPlayer::loadSounds();
         m_countingText.start();
         while (game_window.isOpen()) {
-            game_window.clear(sf::Color::Black);
             listening();
             stateHandler();
             update();
@@ -441,7 +439,7 @@ void PingPongGame::run()
         m_countingText.stop();
         SoundPlayer::stopSounds();
         ThreadPool::getInstance().wait();
-        m_entity_manager.clear();
+        m_entity_manager->clear();
     }
     catch (const std::exception& e) {
         spdlog::critical("Failed to run PingPong Game: {}", e.what());

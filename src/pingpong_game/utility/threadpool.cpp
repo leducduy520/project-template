@@ -1,4 +1,4 @@
-#include "ThreadPoolGame.hpp"
+#include "threadpool.hpp"
 #include <thread>
 
 ThreadPool::ThreadPool(size_t num_threads)

@@ -4,6 +4,9 @@
 #include <string>
 #include <chrono>
 #include <filesystem>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 
 // Code for a "breakout" game
 // Based on a talk by Vittorio Romeo and code by "FamTrimli"
@@ -22,8 +25,8 @@ struct constants
     static constexpr float paddle_accel{2.00f};
     static constexpr float paddle_decel{2.50f};
     static constexpr float paddle_damping{0.20f};
-    static constexpr int brick_width{32};
-    static constexpr int brick_height{32};
+    static constexpr unsigned int brick_width{32};
+    static constexpr unsigned int brick_height{32};
     static constexpr int brick_verical_lanes{13};
     static constexpr int brick_horizontal_lanes{6};
     static constexpr int cap_brick_hit{5};
@@ -33,8 +36,16 @@ struct constants
     static constexpr int cap_clone_hit{1};
     static constexpr int init_live{5};
     static constexpr std::chrono::minutes round_duration{9};
+    static constexpr std::chrono::seconds ball_scale_duration{30};
     static constexpr size_t fmt_now{std::size("0000-00-00 00:00:00 GMT")};
     static std::filesystem::path resouces_path;
+    static const sf::Texture null_texture;
+    static const sf::Font null_font;
+    static const sf::SoundBuffer null_buffer;
 };
+
+inline const sf::Texture constants::null_texture{};
+inline const sf::Font constants::null_font{};
+inline const sf::SoundBuffer constants::null_buffer{};
 
 #endif // CONSTANTS_H

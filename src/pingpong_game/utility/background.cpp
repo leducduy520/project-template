@@ -19,12 +19,12 @@ sf::Texture& background::get_texture()
 
 background::background(float px_x, float px_y)
 {
-    set_texture(get_texture());
     background::init(px_x, px_y);
 }
 
 void background::init(float px_x, float px_y) noexcept
 {
+    set_texture(get_texture());
     set_position({px_x, px_y});
 }
 

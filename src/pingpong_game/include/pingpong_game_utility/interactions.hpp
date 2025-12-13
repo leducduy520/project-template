@@ -9,7 +9,7 @@
 
 namespace interactions
 {
-    bool are_interacting(const static_entity* element1, const static_entity* element12) noexcept;
+    auto are_interacting(const static_entity* element1, const static_entity* element12) noexcept;
 
     class BallvsPaddle
     {

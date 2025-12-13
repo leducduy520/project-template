@@ -21,7 +21,7 @@ SoundManager::SoundManager(size_t poolSize, float defaultVolume)
     // Pre-allocate sound pool
     soundPool.reserve(poolSize);
     for (size_t i = 0; i < poolSize; ++i) {
-        soundPool.emplace_back();
+        soundPool.emplace_back(constants::null_buffer);
     }
 }
 
@@ -41,13 +41,12 @@ void SoundManager::shutdown()
     {
         const std::scoped_lock lock(instance.mutex);
         for (auto& sound : instance.soundPool) {
-            if (sound.getStatus() != sf::Sound::Stopped) {
+            if (sound.getStatus() != sf::Sound::Status::Stopped) {
                 sound.stop();
-                sound.resetBuffer();
             }
         }
         for (auto& [music_id, music_ptr] : instance.musicTracks) {
-            if (music_ptr->getStatus() != sf::Music::Stopped) {
+            if (music_ptr->getStatus() != sf::Music::Status::Stopped) {
                 music_ptr->stop();
                 music_ptr.reset();
             }
@@ -122,7 +121,7 @@ void SoundManager::playSoundEffect(std::string_view name)
     // Find an available sound object in the pool
     sf::Sound* availableSound = nullptr;
     for (auto& sound : soundPool) {
-        if (sound.getStatus() == sf::Sound::Stopped) {
+        if (sound.getStatus() == sf::Sound::Status::Stopped) {
             availableSound = &sound;
             break;
         }
@@ -130,7 +129,7 @@ void SoundManager::playSoundEffect(std::string_view name)
 
     // If no available sound and pool isn't full, use a new slot
     if (availableSound == nullptr && soundPool.size() < maxConcurrentSounds) {
-        soundPool.emplace_back();
+        soundPool.emplace_back(constants::null_buffer);
         availableSound = &soundPool.back();
     }
 
@@ -149,7 +148,7 @@ void SoundManager::playMusic(std::string_view name, bool loop)
     if (it == musicTracks.end()) {
         throw std::runtime_error("Music not found: " + std::string(name));
     }
-    it->second->setLoop(loop);
+    it->second->setLooping(loop);
     it->second->setVolume(globalVolume);
     it->second->play();
 }
@@ -206,14 +205,14 @@ void SoundManager::setGlobalVolume(float volume)
 
     // Update volume for active sounds
     for (auto& sound : soundPool) {
-        if (sound.getStatus() == sf::Sound::Playing) {
+        if (sound.getStatus() == sf::Sound::Status::Playing) {
             sound.setVolume(globalVolume);
         }
     }
 
     // Update volume for playing music
     for (const auto& [music_id, music_ptr] : musicTracks) {
-        if (music_ptr->getStatus() == sf::Music::Playing) {
+        if (music_ptr->getStatus() == sf::Music::Status::Playing) {
             music_ptr->setVolume(globalVolume);
         }
     }
@@ -232,7 +231,7 @@ void SoundManager::cleanupSounds()
     if (soundPool.size() > maxConcurrentSounds) {
         soundPool.erase(std::remove_if(soundPool.begin(),
                                        soundPool.end(),
-                                       [](const sf::Sound& sound) { return sound.getStatus() == sf::Sound::Stopped; }),
+                                       [](const sf::Sound& sound) { return sound.getStatus() == sf::Sound::Status::Stopped; }),
                         soundPool.end());
     }
 }

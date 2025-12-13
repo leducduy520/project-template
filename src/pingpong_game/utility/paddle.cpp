@@ -30,10 +30,10 @@ void paddle::init(float px_x, float px_y) noexcept
 
 void paddle::update()
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && left() > 0.0f) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) && left() > 0.0f) {
         move_left();
     }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && right() < constants::window_width) {
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right) && right() < constants::window_width) {
         move_right();
     }
     else {

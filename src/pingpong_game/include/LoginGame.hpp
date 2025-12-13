@@ -24,7 +24,7 @@ class LoginWindow
     void listening();
     void update();
     void render();
-    void updateText(const sf::Uint32& code);
+    void updateText(char32_t code);
     void handleKeyPress(const sf::Event& event);
     void blinkAnimation();
 

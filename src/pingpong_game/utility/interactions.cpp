@@ -7,11 +7,11 @@
 
 namespace interactions
 {
-    bool are_interacting(const static_entity* element1, const static_entity* element2) noexcept
+    auto are_interacting(const static_entity* element1, const static_entity* element2) noexcept
     {
-        auto box1 = sf::FloatRect{element1->left(), element1->top(), element1->w(), element1->h()};
-        auto box2 = sf::FloatRect{element2->left(), element2->top(), element2->w(), element2->h()};
-        return box1.intersects(box2);
+        auto box1 = sf::FloatRect{{element1->left(), element1->top()}, {element1->w(), element1->h()}};
+        auto box2 = sf::FloatRect{{element2->left(), element2->top()}, {element2->w(), element2->h()}};
+        return box1.findIntersection(box2);
     }
 
     BallvsPaddle::BallvsPaddle(ball& a_ball, const paddle& a_paddle) : m_ball(a_ball), m_paddle(a_paddle)
@@ -20,7 +20,6 @@ namespace interactions
     void BallvsPaddle::operator()()
     {
         if (are_interacting(&m_ball, &m_paddle)) {
-            spdlog::warn("BallvsPaddle");
             SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::PADDLE_BOUNCE);
 
             sf::Vector2f new_vel{m_ball.get_velocity()};
@@ -47,7 +46,6 @@ namespace interactions
         std::for_each(wall_data.begin(), wall_data.end(), [this](auto& it) {
             auto& a_brick = *it.second.get();
             if (are_interacting(&m_ball, &a_brick)) {
-                spdlog::warn("BallVsWall");
                 switch (a_brick.getProperty()) {
                 case brick::BRICK:
                 {
@@ -90,12 +88,11 @@ namespace interactions
                                              end(ballcountingtexts),
                                              [id](Ientity* entity) { return entity->get_id() == id; });
                 found_it != end(ballcountingtexts)) {
-                dynamic_cast<BallCountingText*>(*found_it)->add_time_and_restart(std::chrono::seconds(10));
+                dynamic_cast<BallCountingText*>(*found_it)->add_time_and_restart(constants::ball_scale_duration);
             }
             else {
                 using namespace utilities::texthelper;
                 auto& associated_text = m_entity_manager.create<BallCountingText>();
-                spdlog::warn("Created BallCountingText entity ID {}", associated_text.get_id());
                 associated_text.setFont(getFont(ROBOTO_REGULAR));
                 associated_text.setCharacterSize(12);
                 associated_text.setFillColor(sf::Color::Blue);

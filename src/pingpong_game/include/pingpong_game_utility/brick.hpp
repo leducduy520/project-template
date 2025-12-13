@@ -5,6 +5,7 @@
 #include "entity.hpp"
 #include <functional>
 #include <limits>
+#include <map>
 
 #define fnhit(OBJECT) void hit_##OBJECT(bool& destroyed, const bool relate) const;
 
@@ -34,6 +35,8 @@ public:
     void registerDiamondAmountCallback(const std::function<void(int)>& fnc);
     void registerPontUpdate(const std::function<void(int16_t)>& fnc) noexcept;
     void registerParent(wall* parent) noexcept;
+
+    void on_message(const std::string&, Ientity*) override;
     friend class wall;
 
 private:
@@ -123,11 +126,13 @@ public:
     {
         m_status = status;
     }
-
+    
     // Render and update methods
     void update() override;
     void draw(sf::RenderWindow& window) noexcept override;
     void init(float x, float y) override;
+    void load_from_file(std::filesystem::path file);
     void refresh();
+    void destroy() noexcept override;
 };
 #endif // _BRICK_H

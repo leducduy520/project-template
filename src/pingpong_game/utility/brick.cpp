@@ -4,6 +4,8 @@
 #include "soundplayer.hpp"
 #include "brick.hpp"
 #include "constants.hpp"
+#include "rapidcsv.h"
+#include <charconv>
 #include <spdlog/spdlog.h>
 
 using namespace std::literals;
@@ -23,7 +25,7 @@ sf::Image& getImage(brick::BrickProperty property)
         const auto width = source.getSize().x;
         const auto height = source.getSize().y;
         const auto* const pixels = source.getPixelsPtr();
-        std::vector<std::vector<sf::Uint8>> matrix(width / constants::brick_width);
+        std::vector<std::vector<uint8_t>> matrix(width / constants::brick_width);
 
         for (unsigned int px_y = 0; px_y < height; ++px_y) {
             for (unsigned int px_x = 0; px_x < width; ++px_x) {
@@ -37,8 +39,7 @@ sf::Image& getImage(brick::BrickProperty property)
         }
 
         for (const auto& elm : matrix) {
-            list.emplace_back();
-            list.back().create(constants::brick_width, constants::brick_height, elm.data());
+            list.emplace_back(sf::Vector2u{constants::brick_width, constants::brick_height}, elm.data());
         }
 
         initialized = true;
@@ -140,7 +141,24 @@ void brick::registerPontUpdate(const std::function<void(int16_t)>& fnc) noexcept
 
 void brick::registerParent(wall* parent) noexcept
 {
+    if (parent == nullptr)
+        return;
     m_wall = parent;
+    
+    char char_id[10];
+    auto result = std::to_chars(char_id, char_id + sizeof(char_id), m_wall->get_id());
+    if (result.ec != std::errc()) {
+        return;
+    }
+
+    subscribe("wall/destroyed");
+}
+
+void brick::on_message(const std::string& topic, Ientity* entity)
+{
+    if (topic == "wall/destroyed" && entity->get_id() == m_wall->get_id()) {
+        m_wall = nullptr;
+    }
 }
 
 void brick::draw(sf::RenderWindow& window) noexcept
@@ -277,7 +295,35 @@ void wall::draw(sf::RenderWindow& window) noexcept
 
 void wall::init([[maybe_unused]] float px_x, [[maybe_unused]] float px_y)
 {
-    utilities::wallhelper::build_wall(*this, (constants::resouces_path / "wall.csv").string().c_str());
+    (void)0;
+}
+
+void wall::load_from_file(std::filesystem::path file)
+{
+    this->clear();
+    m_status.point = 0;
+
+    const rapidcsv::Document doc(file, rapidcsv::LabelParams(-1, -1));
+
+    const auto padding = (constants::window_width - constants::brick_width * doc.GetColumnCount()) / 2;
+    for (decltype(doc.GetRowCount()) i = 0; i < doc.GetRowCount(); i++) {
+        const auto rows = doc.GetRow<int>(i);
+        for (decltype(rows.size()) j = 0; j < rows.size(); j++) {
+            const auto px_x = static_cast<float>(padding + j * constants::brick_width);
+            const auto px_y = static_cast<float>(i * constants::brick_height);
+            const auto property = static_cast<brick::BrickProperty>(doc.GetCell<int>(j, i));
+            auto a_brick = std::make_unique<brick>(px_x, px_y, property);
+            a_brick->registerDiamondAmountCallback([this](int amount) mutable {
+                this->m_status.live++;
+            });
+            a_brick->registerPontUpdate([this](short point) mutable {
+                this->m_status.point += static_cast<uint16_t>(point);
+            });
+            a_brick->registerParent(this);
+            this->m_data.emplace(
+                std::make_pair<const e_location, std::unique_ptr<brick>>({px_x, px_y}, std::move(a_brick)));
+        }
+    }
 }
 
 void wall::refresh()
@@ -298,4 +344,10 @@ void wall::refresh()
     if (this->m_status.live <= 0) {
         this->destroy();
     }
+}
+
+void wall::destroy() noexcept
+{
+    Ientity::destroy();
+    publish("wall/destroyed", this);
 }

@@ -28,7 +28,7 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 find_path(RAPIDCSV_INCLUDE_DIRS "rapidcsv.h")
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
-find_package(SFML COMPONENTS system window graphics audio CONFIG REQUIRED)
+find_package(SFML COMPONENTS Graphics Audio CONFIG REQUIRED)
 find_package(boost_thread CONFIG REQUIRED)
 find_package(boost_asio CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
@@ -37,8 +37,8 @@ target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC nlohmann_json::nlohmann_json
            magic_enum::magic_enum
-           sfml-graphics
-           sfml-audio
+           SFML::Audio
+           SFML::Graphics
            Boost::thread
            Boost::asio
            fmt::fmt

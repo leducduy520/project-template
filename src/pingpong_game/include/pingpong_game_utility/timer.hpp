@@ -1,10 +1,9 @@
 #ifndef PINGPONG_GAME_UTILITY_TIMER_HPP
 #define PINGPONG_GAME_UTILITY_TIMER_HPP
 
-#include <SFML/System/Thread.hpp>
 #include <SFML/System/Sleep.hpp>
-#include <SFML/System/NonCopyable.hpp>
 #include <spdlog/spdlog.h>
+#include <future>
 #include <chrono>
 #include <functional>
 #include <cstdint>
@@ -15,7 +14,7 @@
 #include <condition_variable>
 
 template <typename Period_ = std::ratio<1, 1>>
-class Timer : private sf::NonCopyable
+class Timer
 {
 public:
     using sclock = std::chrono::steady_clock;
@@ -120,7 +119,7 @@ public:
         running_.store(true);
         start_time_ = sclock::now();
         lock.unlock();
-        thread_.launch();
+        thread_.launch([this]() { threadFunction(); });
     }
 
     void stop()
@@ -202,12 +201,33 @@ public:
     }
 
 private:
+
+    struct SimpleThread {
+        std::future<void> fut;
+        ~SimpleThread() {
+            wait();
+        }
+        void launch(std::function<void()> fnc) {
+            fut = std::async(std::launch::async, fnc);
+        }
+        void wait() noexcept {
+            if (!fut.valid())
+                return;
+            try {
+                fut.wait();
+            }
+            catch (...) {
+                (void)0;
+            }
+        }
+    };
+
     std::function<void()> callback_;
     std::chrono::duration<long long, Period_> interval2_;
     uint64_t repeat_ = 0;
     std::atomic_bool running_{false};
     std::atomic_bool stopped_{false};
-    sf::Thread thread_ = [this]() { threadFunction(); };
+    SimpleThread thread_;
     sclock::time_point start_time_;
     sclock::time_point pause_time_;
     std::mutex mt_;

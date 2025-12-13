@@ -1,6 +1,6 @@
 #include <iostream>
 #include "ball.hpp"
-#include "ThreadPoolGame.hpp"
+#include "threadpool.hpp"
 #include "soundplayer.hpp"
 #include "helper.hpp"
 #include "constants.hpp"
@@ -69,7 +69,9 @@ void ball::update()
     }
 
     move(m_velocity);
-    publish(Ientity::get_type_name<ball>() + "/update", this);
+    if (m_publish_update.load()) {
+        publish(Ientity::get_type_name<ball>() + "/update", this);
+    }
 }
 
 void ball::draw(sf::RenderWindow& window)
@@ -112,6 +114,16 @@ int ball::strength() noexcept
 size_t ball::get_counting_text_id() const noexcept
 {
     return m_counting_text_id;
+}
+
+void ball::turn_on_update_publishing() noexcept
+{
+    m_publish_update.store(true);
+}
+
+void ball::turn_off_update_publishing() noexcept
+{
+    m_publish_update.store(false);
 }
 
 void ball::destroy() noexcept
