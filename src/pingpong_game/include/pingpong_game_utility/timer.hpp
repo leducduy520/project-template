@@ -12,6 +12,7 @@
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
+#include "threadpool.hpp"
 
 template <typename Period_ = std::ratio<1, 1>>
 class Timer
@@ -119,7 +120,7 @@ public:
         running_.store(true);
         start_time_ = sclock::now();
         lock.unlock();
-        thread_.launch([this]() { threadFunction(); });
+        thread_future_ = ThreadPool::getInstance().submit(ThreadPriority::Highest, [this]() { threadFunction(); });
     }
 
     void stop()
@@ -128,7 +129,14 @@ public:
         running_.store(false);
         repeat_ = 0;
         cv_.notify_all();
-        thread_.wait();
+        if (thread_future_.valid()) {
+            try {
+                thread_future_.wait();
+            }
+            catch (...) {
+                (void)0;
+            }
+        }
     }
 
     void pause() noexcept
@@ -202,32 +210,12 @@ public:
 
 private:
 
-    struct SimpleThread {
-        std::future<void> fut;
-        ~SimpleThread() {
-            wait();
-        }
-        void launch(std::function<void()> fnc) {
-            fut = std::async(std::launch::async, fnc);
-        }
-        void wait() noexcept {
-            if (!fut.valid())
-                return;
-            try {
-                fut.wait();
-            }
-            catch (...) {
-                (void)0;
-            }
-        }
-    };
-
     std::function<void()> callback_;
     std::chrono::duration<long long, Period_> interval2_;
     uint64_t repeat_ = 0;
     std::atomic_bool running_{false};
     std::atomic_bool stopped_{false};
-    SimpleThread thread_;
+    std::future<void> thread_future_;
     sclock::time_point start_time_;
     sclock::time_point pause_time_;
     std::mutex mt_;

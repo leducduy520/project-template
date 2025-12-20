@@ -186,7 +186,7 @@ void PingPongGame::update()
             //! Calculate interaction between the balls and the paddle
             m_entity_manager->apply_all<paddle>([this, &futures](const paddle& a_paddle) {
                 m_entity_manager->apply_all<ball>([&a_paddle, &futures](ball& a_ball) {
-                    futures.emplace_back(ThreadPool::getInstance().submit(100, [&a_ball, &a_paddle]() {
+                    futures.emplace_back(ThreadPool::getInstance().submit(ThreadPriority::High, [&a_ball, &a_paddle]() {
                         interactions::BallvsPaddle handler(a_ball, a_paddle);
                         handler();
                     }));
@@ -196,7 +196,7 @@ void PingPongGame::update()
             //! Calculate interaction between the balls and the wall
             m_entity_manager->apply_all<ball>([this, &futures](ball& a_ball) mutable {
                 m_entity_manager->apply_all<wall>([this, &a_ball, &futures](wall& a_wall) mutable {
-                    futures.emplace_back(ThreadPool::getInstance().submit(100, [this, &a_ball, &a_wall]() {
+                    futures.emplace_back(ThreadPool::getInstance().submit(ThreadPriority::High, [this, &a_ball, &a_wall]() {
                         interactions::BallVsWall handler(a_wall, a_ball, *this->m_entity_manager);
                         handler();
                     }));

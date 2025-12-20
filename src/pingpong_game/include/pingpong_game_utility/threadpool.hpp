@@ -7,6 +7,24 @@
 #include <atomic>
 #include <boost/asio/thread_pool.hpp>
 #include <boost/asio/post.hpp>
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <pthread.h>
+#include <sched.h>
+#include <sys/resource.h>
+#endif
+
+/**
+ * @brief Thread priority levels
+ */
+enum class ThreadPriority {
+    Lowest = 0,   // Lowest priority
+    Low = 1,      // Low priority
+    Normal = 2,   // Normal priority (default)
+    High = 3,     // High priority
+    Highest = 4   // Highest priority
+};
 
 /**
  * @brief Wrapper class for boost::asio::thread_pool
@@ -28,19 +46,19 @@ public:
      * @brief Submit a task to the thread pool (member function version)
      * @tparam ClassType Class type
      * @tparam Ret Return type (must be void)
-     * @param priority Priority level (currently not used, reserved for future use)
+     * @param priority Priority level for the thread executing this task
      * @param func Member function pointer
      * @param obj Object pointer
      * @return std::future<void> Future object to track task completion
      */
     template <typename ClassType, typename Ret>
-    std::future<void> submit(int priority, Ret (ClassType::*func)(), ClassType* obj);
+    std::future<void> submit(ThreadPriority priority, Ret (ClassType::*func)(), ClassType* obj);
 
     /**
      * @brief Submit a task to the thread pool (free function version)
      * @tparam Function Function type (must not be a member function pointer)
      * @tparam Args Argument types
-     * @param priority Priority level (currently not used, reserved for future use)
+     * @param priority Priority level for the thread executing this task
      * @param func Function to execute
      * @param args Arguments to pass to the function
      * @return std::future<void> Future object to track task completion
@@ -48,7 +66,7 @@ public:
     template <typename Function, typename... Args>
     typename std::enable_if<!std::is_member_function_pointer<typename std::decay<Function>::type>::value,
                             std::future<void>>::type
-    submit(int priority, Function&& func, Args&&... args);
+    submit(ThreadPriority priority, Function&& func, Args&&... args);
 
     /**
      * @brief Get the number of threads in the pool
@@ -60,6 +78,13 @@ public:
      * @brief Wait for all tasks to complete
      */
     void wait();
+
+private:
+    /**
+     * @brief Set thread priority based on ThreadPriority enum
+     * @param priority Priority level to set
+     */
+    static void set_thread_priority(ThreadPriority priority) noexcept;
 
     // Delete copy constructor and assignment operator
     ThreadPool(const ThreadPool&) = delete;
@@ -86,14 +111,14 @@ private:
 
 // Template implementation for member functions
 template <typename ClassType, typename Ret>
-std::future<void> ThreadPool::submit(int priority, Ret (ClassType::*func)(), ClassType* obj)
+std::future<void> ThreadPool::submit(ThreadPriority priority, Ret (ClassType::*func)(), ClassType* obj)
 {
-    (void)priority; // Reserved for future use
     auto promise = std::make_shared<std::promise<void>>();
     auto future = promise->get_future();
 
-    // Wrap the member function call in a lambda
-    auto task = [promise, func, obj]() {
+    // Wrap the member function call in a lambda that sets thread priority
+    auto task = [promise, func, obj, priority]() {
+        set_thread_priority(priority);
         try {
             (obj->*func)();
             promise->set_value();
@@ -112,14 +137,14 @@ std::future<void> ThreadPool::submit(int priority, Ret (ClassType::*func)(), Cla
 // Template implementation for free functions
 template <typename Function, typename... Args>
 typename std::enable_if<!std::is_member_function_pointer<std::decay_t<Function>>::value, std::future<void>>::type
-ThreadPool::submit(int priority, Function&& func, Args&&... args)
+ThreadPool::submit(ThreadPriority priority, Function&& func, Args&&... args)
 {
-    (void)priority; // Reserved for future use
     auto promise = std::make_shared<std::promise<void>>();
     auto future = promise->get_future();
 
-    // Wrap the function call in a lambda that captures arguments by value
-    auto task = [promise, func = std::forward<Function>(func), args...]() mutable {
+    // Wrap the function call in a lambda that captures arguments by value and sets thread priority
+    auto task = [promise, func = std::forward<Function>(func), args..., priority]() mutable {
+        set_thread_priority(priority);
         try {
             func(args...);
             promise->set_value();
