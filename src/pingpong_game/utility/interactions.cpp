@@ -135,7 +135,7 @@ namespace interactions
 
     void BallVsWall::ball_interact_bomb_brick(brick& a_brick)
     {
-        utilities::wallhelper::destroy_around(a_brick, {3, 3});
+        utilities::wallhelper::destroy_around(a_brick, {3.0F, 3.0F});
         using namespace utilities::random;
         const std::function<bool(std::bernoulli_distribution&, std::mt19937&)> do_random =
             [](std::bernoulli_distribution& dist, std::mt19937& gen) { return dist(gen); };

@@ -1,6 +1,13 @@
 .vs
 .git
+.scannerwork
 /out
 /docs
 /external
 /libs
+/sonar/**/bin
+/sonar/**/conf
+/sonar/**/jre
+/sonar/**/lib
+/sonar/**/*.zip
+/sonar/**/*.exe

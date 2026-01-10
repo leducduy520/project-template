@@ -172,9 +172,9 @@ brick::BrickProperty brick::getProperty() const noexcept
     return m_property;
 }
 
-wall* brick::getWall() const noexcept
+std::set<brick*> brick::get_neighbors(sf::Vector2f range) const noexcept
 {
-    return m_wall;
+    return std::set<brick*>();
 }
 
 void brick::hit(const int damage, const bool relate) noexcept
@@ -271,6 +271,33 @@ void brick::hit_brick(bool& destroyed, const bool relate) const
     }
 }
 
+std::set<brick*> wall::get_brick_neighbors(const brick& a_brick, sf::Vector2f range) const noexcept
+{
+    const sf::Vector2f center_point{a_brick.x(), a_brick.y()};
+    auto px_x = center_point.x - floorf((static_cast<float>(range.x) - 1.0F) / 2.0F) * a_brick.w();
+    auto px_y = center_point.y - floorf((static_cast<float>(range.y) - 1.0F) / 2.0F) * a_brick.h();
+
+    std::set<brick*> neighbors;
+    for (int i = 0; i < range.y; ++i) {
+        for (int j = 0; j < range.x; ++j) {
+            const sf::Vector2f hit_point{px_x + static_cast<float>(i) * a_brick.w(),
+                                            px_y + static_cast<float>(j) * a_brick.h()};
+
+            try {
+                auto* brick = this->m_data.at(hit_point).get();
+                if (!brick->is_destroyed()) {
+                    neighbors.insert(brick);
+                }
+            }
+            catch (const std::out_of_range& e) {
+                (void)e;
+                continue;
+            }
+        }
+    }
+    return neighbors;
+}
+
 void wall::update()
 {
     if (is_destroyed()) {
@@ -303,7 +330,13 @@ void wall::load_from_file(std::filesystem::path file)
     this->clear();
     m_status.point = 0;
 
-    const rapidcsv::Document doc(file, rapidcsv::LabelParams(-1, -1));
+    std::error_code erc;
+    if (std::filesystem::file_size(file, erc) == 0) {
+        spdlog::error("Cannot open file {}: {}", file.string(), erc.message());
+        return;
+    }
+
+    const rapidcsv::Document doc(file.string(), rapidcsv::LabelParams(-1, -1));
 
     const auto padding = (constants::window_width - constants::brick_width * doc.GetColumnCount()) / 2;
     for (decltype(doc.GetRowCount()) i = 0; i < doc.GetRowCount(); i++) {
@@ -314,14 +347,13 @@ void wall::load_from_file(std::filesystem::path file)
             const auto property = static_cast<brick::BrickProperty>(doc.GetCell<int>(j, i));
             auto a_brick = std::make_unique<brick>(px_x, px_y, property);
             a_brick->registerDiamondAmountCallback([this](int amount) mutable {
-                this->m_status.live++;
+                this->m_status.live += amount;
             });
             a_brick->registerPontUpdate([this](short point) mutable {
                 this->m_status.point += static_cast<uint16_t>(point);
             });
             a_brick->registerParent(this);
-            this->m_data.emplace(
-                std::make_pair<const e_location, std::unique_ptr<brick>>({px_x, px_y}, std::move(a_brick)));
+            this->m_data.emplace(e_location{px_x, px_y}, std::move(a_brick));
         }
     }
 }

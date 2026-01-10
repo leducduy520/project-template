@@ -28,3 +28,11 @@ configure:
 git-update:
 	git fetch
 	git pull
+
+sonar-windows-download:
+	powershell.exe -ExecutionPolicy Bypass -File sonar/windows/download.ps1
+
+sonar-windows-extract:
+	powershell.exe -ExecutionPolicy Bypass -File sonar/windows/extract.ps1
+
+sonar-windows-setup: sonar-windows-download sonar-windows-extract

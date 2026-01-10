@@ -9,28 +9,15 @@ namespace utilities
 {
     namespace wallhelper
     {
-        void destroy_around(brick& a_brick, sf::Vector2i range)
+        void destroy_around(brick& a_brick, sf::Vector2f range)
         {
             const sf::Vector2f explode_point{a_brick.x(), a_brick.y()};
-            wall* a_wall = a_brick.getWall();
+            auto neighbors = a_brick.get_neighbors(range);
 
-                auto px_x = explode_point.x - floorf((static_cast<float>(range.x) - 1.0F) / 2.0F) * a_brick.w();
-                auto px_y = explode_point.y - floorf((static_cast<float>(range.y) - 1.0F) / 2.0F) * a_brick.h();
-
-                for (int i = 0; i < range.y; ++i) {
-                    for (int j = 0; j < range.x; ++j) {
-                        const sf::Vector2f hit_point{px_x + static_cast<float>(i) * a_brick.w(),
-                                                     px_y + static_cast<float>(j) * a_brick.h()};
-
-                        auto& wall_data = a_wall->data();
-                        auto iter = wall_data.find(hit_point);
-                        if (iter != wall_data.end() && !iter->second->is_destroyed()) {
-                            auto* alias = iter->second.get();
-                            alias->hit(constants::cap_brick_hit, true);
-                            if (alias->getProperty() == brick::BOMB) {
-                                destroy_around(*alias, range);
-                        }
-                    }
+            for (auto& neighbor : neighbors) {
+                neighbor->hit(constants::cap_brick_hit, true);
+                if (neighbor->getProperty() == brick::BOMB) {
+                    destroy_around(*neighbor, range);
                 }
             }
         }
