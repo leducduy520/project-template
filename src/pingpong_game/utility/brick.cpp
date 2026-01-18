@@ -234,7 +234,15 @@ void brick::hit_bomb(bool& destroyed, const bool relate) const
         destroyed = true;
     }
     if (!relate) {
-        SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::BOMB_EXPLOSION);
+        try {
+            SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::BOMB_EXPLOSION);
+        }
+        catch (const std::exception& e) {
+            spdlog::debug("Failed to play bomb explosion sound: {}", e.what());
+        }
+        catch (...) {
+            spdlog::debug("Failed to play bomb explosion sound: unknown error");
+        }
     }
 }
 
@@ -250,7 +258,15 @@ void brick::hit_diamond(bool& destroyed, const bool relate) const
         }
     }
     if (!relate) {
-        SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::DIAMOND_DESTROY);
+        try {
+            SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::DIAMOND_DESTROY);
+        }
+        catch (const std::exception& e) {
+            spdlog::debug("Failed to play diamond destroy sound: {}", e.what());
+        }
+        catch (...) {
+            spdlog::debug("Failed to play diamond destroy sound: unknown error");
+        }
     }
 }
 
@@ -263,7 +279,15 @@ void brick::hit_brick(bool& destroyed, const bool relate) const
         }
     }
     if (!relate) {
-        SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::BRICK_BOUNCE);
+        try {
+            SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::BRICK_BOUNCE);
+        }
+        catch (const std::exception& e) {
+            spdlog::debug("Failed to play brick bounce sound: {}", e.what());
+        }
+        catch (...) {
+            spdlog::debug("Failed to play brick bounce sound: unknown error");
+        }
     }
 }
 

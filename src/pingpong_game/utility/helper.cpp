@@ -5,6 +5,14 @@
 #include "resource_integrity.hpp"
 #include <chrono>
 #include <fmt/format.h>
+#ifdef _WIN32
+#include <windows.h>
+#include <psapi.h>
+#else
+#include <sys/resource.h>
+#include <unistd.h>
+#endif
+#include <spdlog/spdlog.h>
 
 namespace utilities
 {
@@ -139,5 +147,69 @@ namespace utilities
         std::uniform_int_distribution<int> generator::uniform_int_dist(-10, 10);
         std::mutex generator::rd_mutex{};
     } // namespace random
+
+    namespace profiling
+    {
+        bool enabled = false;
+        std::chrono::steady_clock::time_point start_time;
+
+        void init()
+        {
+            if (enabled) {
+                start_time = std::chrono::steady_clock::now();
+                spdlog::info("Profiling enabled");
+            }
+        }
+
+        void log_stats()
+        {
+            if (!enabled) return;
+
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - start_time).count();
+
+            long memory_kb = 0;
+            double cpu_time = 0.0;
+
+#ifdef _WIN32
+            PROCESS_MEMORY_COUNTERS pmc;
+            if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+                memory_kb = pmc.WorkingSetSize / 1024;
+            }
+
+            FILETIME creation, exit, kernel, user;
+            if (GetProcessTimes(GetCurrentProcess(), &creation, &exit, &kernel, &user)) {
+                ULARGE_INTEGER k, u;
+                k.LowPart = kernel.dwLowDateTime;
+                k.HighPart = kernel.dwHighDateTime;
+                u.LowPart = user.dwLowDateTime;
+                u.HighPart = user.dwHighDateTime;
+                cpu_time = (k.QuadPart + u.QuadPart) / 10000000.0; // Convert 100ns to seconds
+            }
+#else
+            struct rusage usage;
+            getrusage(RUSAGE_SELF, &usage);
+            memory_kb = usage.ru_maxrss; // in KB on Linux
+
+            cpu_time = usage.ru_utime.tv_sec + usage.ru_utime.tv_usec / 1e6 +
+                       usage.ru_stime.tv_sec + usage.ru_stime.tv_usec / 1e6;
+#endif
+
+            spdlog::info("Profiling: Elapsed time: {}s, CPU time: {:.2f}s, Memory: {} KB", elapsed, cpu_time, memory_kb);
+        }
+
+        void start_monitoring()
+        {
+            // Could start a thread for periodic logging, but for simplicity, call log_stats periodically
+        }
+
+        void stop_monitoring()
+        {
+            if (enabled) {
+                log_stats();
+                spdlog::info("Profiling stopped");
+            }
+        }
+    } // namespace profiling
 
 } // namespace utilities

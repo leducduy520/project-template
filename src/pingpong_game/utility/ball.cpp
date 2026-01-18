@@ -52,7 +52,15 @@ void ball::update()
 
         if (touch_left || touch_right) {
             m_velocity.x = -m_velocity.x;
-            SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::WALL_BOUNCE);
+            try {
+                SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::WALL_BOUNCE);
+            }
+            catch (const std::exception& e) {
+                spdlog::debug("Failed to play wall bounce sound: {}", e.what());
+            }
+            catch (...) {
+                spdlog::debug("Failed to play wall bounce sound: unknown error");
+            }
         }
     }
 
@@ -66,7 +74,15 @@ void ball::update()
         }
         if (touch_up) {
             m_velocity.y = -m_velocity.y;
-            SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::WALL_BOUNCE);
+            try {
+                SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::WALL_BOUNCE);
+            }
+            catch (const std::exception& e) {
+                spdlog::debug("Failed to play wall bounce sound: {}", e.what());
+            }
+            catch (...) {
+                spdlog::debug("Failed to play wall bounce sound: unknown error");
+            }
         }
     }
 

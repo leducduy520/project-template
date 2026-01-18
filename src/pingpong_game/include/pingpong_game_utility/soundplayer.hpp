@@ -269,6 +269,7 @@ private:
     size_t maxConcurrentSounds;    ///< Maximum number of concurrent sounds allowed in the pool
     mutable std::mutex mutex;      ///< Mutex for thread-safe access to all member variables
     static bool s_shutdown_called; ///< Flag indicating if shutdown() was called (prevents double-cleanup)
+    bool audioAvailable;          ///< Flag indicating if audio device is available
 };
 
 /**

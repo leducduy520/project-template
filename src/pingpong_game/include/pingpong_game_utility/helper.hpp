@@ -82,6 +82,16 @@ namespace utilities
 
     } // namespace random
 
+    namespace profiling
+    {
+        extern bool enabled;
+
+        void init();
+        void log_stats();
+        void start_monitoring();
+        void stop_monitoring();
+    } // namespace profiling
+
 } // namespace utilities
 
 #endif // __WALL_HELPER__

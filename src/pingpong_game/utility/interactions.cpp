@@ -20,7 +20,15 @@ namespace interactions
     void BallvsPaddle::operator()()
     {
         if (are_interacting(&m_ball, &m_paddle)) {
-            SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::PADDLE_BOUNCE);
+            try {
+                SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t::PADDLE_BOUNCE);
+            }
+            catch (const std::exception& e) {
+                spdlog::debug("Failed to play paddle bounce sound: {}", e.what());
+            }
+            catch (...) {
+                spdlog::debug("Failed to play paddle bounce sound: unknown error");
+            }
 
             sf::Vector2f new_vel{m_ball.get_velocity()};
 

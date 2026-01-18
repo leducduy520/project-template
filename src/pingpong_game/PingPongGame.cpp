@@ -8,6 +8,7 @@
 #include "resource_integrity.hpp"
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <cstdlib>
 
 std::filesystem::path constants::resouces_path;
 
@@ -445,12 +446,29 @@ void PingPongGame::run()
         ThreadPool::getInstance(thread_pool_volume);
         SoundPlayer::loadSounds();
         m_countingText.start();
+
+        if (getenv("VERBOSE")) {
+            utilities::profiling::enabled = true;
+            utilities::profiling::init();
+        }
+
+        size_t frame_count = 0;
         while (game_window.isOpen()) {
             listening();
             stateHandler();
             update();
             render();
+
+            if (utilities::profiling::enabled && ++frame_count % 300 == 0) { // log every 300 frames
+                utilities::profiling::log_stats();
+                frame_count = 0;
+            }
         }
+
+        if (utilities::profiling::enabled) {
+            utilities::profiling::stop_monitoring();
+        }
+
         SoundPlayer::stopSounds();
         m_countingText.stop();
         m_entity_manager->clear();

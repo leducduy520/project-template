@@ -4,6 +4,8 @@
 #include <thread>
 #include <chrono>
 #include <magic_enum/magic_enum_all.hpp>
+#include <cstdlib>
+#include <spdlog/spdlog.h>
 #include "constants.hpp"
 #include "resource_integrity.hpp"
 
@@ -17,13 +19,17 @@ SoundManager& SoundManager::getInstance(size_t poolSize, float defaultVolume)
 }
 
 SoundManager::SoundManager(size_t poolSize, float defaultVolume)
-    : globalVolume(defaultVolume), maxConcurrentSounds(poolSize)
+    : globalVolume(defaultVolume), maxConcurrentSounds(poolSize), audioAvailable(true)
 {
     // Pre-allocate sound pool
     soundPool.reserve(poolSize);
     for (size_t i = 0; i < poolSize; ++i) {
         soundPool.emplace_back(constants::null_buffer);
     }
+    
+    // Note: Audio availability is checked lazily when play() is first called
+    // If initialization fails, audioAvailable will be set to false
+    // This prevents repeated initialization attempts in headless environments
 }
 
 void SoundManager::shutdown()
@@ -93,12 +99,25 @@ SoundManager::~SoundManager()
 
 void SoundManager::loadSoundEffect(std::string_view name, std::string_view filePath)
 {
-    const std::scoped_lock lock(mutex);
-    sf::SoundBuffer buffer;
-    if (const std::string filePathStr(filePath); !buffer.loadFromFile(filePathStr)) {
-        throw std::runtime_error("Failed to load sound effect: " + filePathStr);
+    // Skip loading if audio is not available
+    if (!audioAvailable) {
+        return;
     }
-    soundBuffers[std::string(name)] = buffer;
+
+    const std::scoped_lock lock(mutex);
+    try {
+        sf::SoundBuffer buffer;
+        if (const std::string filePathStr(filePath); !buffer.loadFromFile(filePathStr)) {
+            throw std::runtime_error("Failed to load sound effect: " + filePathStr);
+        }
+        soundBuffers[std::string(name)] = buffer;
+    }
+    catch (...) {
+        // If loading fails due to audio issues, mark audio as unavailable
+        // This prevents repeated attempts to load sounds
+        audioAvailable = false;
+        throw;
+    }
 }
 
 void SoundManager::loadMusic(std::string_view name, std::string_view filePath)
@@ -113,6 +132,11 @@ void SoundManager::loadMusic(std::string_view name, std::string_view filePath)
 
 void SoundManager::playSoundEffect(std::string_view name)
 {
+    // Skip playback if audio is not available (prevents repeated initialization attempts)
+    if (!audioAvailable) {
+        return;
+    }
+
     const std::scoped_lock lock(mutex);
     auto it = soundBuffers.find(std::string(name));
     if (it == soundBuffers.end()) {
@@ -130,15 +154,27 @@ void SoundManager::playSoundEffect(std::string_view name)
 
     // If no available sound and pool isn't full, use a new slot
     if (availableSound == nullptr && soundPool.size() < maxConcurrentSounds) {
+        const size_t oldSize = soundPool.size();
         soundPool.emplace_back(constants::null_buffer);
         availableSound = &soundPool.back();
+        
+        // Log pool growth in verbose mode
+        if (getenv("VERBOSE") && soundPool.size() > oldSize) {
+            spdlog::debug("Sound pool grew from {} to {} (max: {})", oldSize, soundPool.size(), maxConcurrentSounds);
+        }
     }
 
     // If we found an available sound, configure and play it
     if (availableSound != nullptr) {
-        availableSound->setBuffer(it->second);
-        availableSound->setVolume(globalVolume);
-        availableSound->play();
+        try {
+            availableSound->setBuffer(it->second);
+            availableSound->setVolume(globalVolume);
+            availableSound->play();
+        }
+        catch (...) {
+            // Audio initialization failed, mark as unavailable to prevent future attempts
+            audioAvailable = false;
+        }
     }
 }
 
@@ -228,12 +264,23 @@ float SoundManager::getGlobalVolume() const
 void SoundManager::cleanupSounds()
 {
     const std::scoped_lock lock(mutex);
+    const size_t oldSize = soundPool.size();
+    
     // Remove excess stopped sounds if pool grows beyond max
     if (soundPool.size() > maxConcurrentSounds) {
         soundPool.erase(std::remove_if(soundPool.begin(),
                                        soundPool.end(),
                                        [](const sf::Sound& sound) { return sound.getStatus() == sf::Sound::Status::Stopped; }),
                         soundPool.end());
+        
+        // Log cleanup in verbose mode
+        if (getenv("VERBOSE") && soundPool.size() < oldSize) {
+            spdlog::debug("Sound pool cleaned: {} -> {} sounds (removed {} stopped sounds)", 
+                         oldSize, soundPool.size(), oldSize - soundPool.size());
+        }
+    }
+    else if (getenv("VERBOSE") && oldSize > maxConcurrentSounds) {
+        spdlog::debug("Sound pool size: {} (at max: {})", soundPool.size(), maxConcurrentSounds);
     }
 }
 
@@ -300,7 +347,18 @@ void SoundPlayer::playSoundEffect(SoundPlayer::SoundEffect_t type)
         {SoundEffect_t::PADDLE_BOUNCE, sound_id::PADDLE_BOUNCE_ID},
         {SoundEffect_t::DIAMOND_DESTROY, sound_id::DIAMOND_DESTROY_ID},
         {SoundEffect_t::BOMB_EXPLOSION, sound_id::BOMB_EXPLOSION_ID}};
-    SoundManager::getInstance().playSoundEffect(sound_map.at(type));
+    try {
+        SoundManager::getInstance().playSoundEffect(sound_map.at(type));
+    }
+    catch (const std::out_of_range&) {
+        spdlog::warn("Invalid sound effect type requested");
+    }
+    catch (const std::exception& e) {
+        spdlog::debug("Failed to play sound effect: {}", e.what());
+    }
+    catch (...) {
+        spdlog::debug("Failed to play sound effect: unknown error");
+    }
 }
 
 void SoundPlayer::playMusic(Mussic_t type, bool loop)
