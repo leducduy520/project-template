@@ -22,7 +22,7 @@ public:
     using timer = Timer<std::milli>;
 
     CountingText();
-    ~CountingText();
+    virtual ~CountingText();
 
     void start();
     void restart();

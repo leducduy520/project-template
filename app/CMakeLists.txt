@@ -27,6 +27,8 @@ target_set_warnings(
     TARGET MySFMLApp ENABLE ${ENABLE_WARNINGS} AS_ERRORS ${ENABLE_WARNINGS_AS_ERRORS}
     )
 
+set_target_properties(MySFMLApp PROPERTIES FOLDER "App")
+
 if(WIN32)
     install(
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/mysfmlapp.ico DESTINATION resources
@@ -36,7 +38,7 @@ if(WIN32)
     install(
         CODE "
         execute_process(
-            COMMAND powershell.exe -File ${CMAKE_CURRENT_SOURCE_DIR}/resources/create_shortcuts.ps1 -InstallDir \${CMAKE_INSTALL_PREFIX} -AppName MySFMLApp -ExePath \${CMAKE_INSTALL_PREFIX}/bin/MySFMLApp.exe -IconPath \${CMAKE_INSTALL_PREFIX}/resources/mysfmlapp.ico
+            COMMAND powershell.exe -ExecutionPolicy Bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/resources/create_shortcuts.ps1 -InstallDir \${CMAKE_INSTALL_PREFIX} -AppName MySFMLApp -ExePath \${CMAKE_INSTALL_PREFIX}/bin/MySFMLApp.exe -IconPath \${CMAKE_INSTALL_PREFIX}/resources/mysfmlapp.ico
             )
             "
         )

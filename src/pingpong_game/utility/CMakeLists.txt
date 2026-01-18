@@ -75,7 +75,9 @@ endif(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
 # =============================================================================
 # Target Properties
 # =============================================================================
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "PingPong Game")
+set_target_properties(
+    ${PROJECT_NAME} PROPERTIES FOLDER "PingPong Game" PUBLIC_HEADER "${HEADER_FILES}"
+    )
 
 # =============================================================================
 # Code Quality Tools
@@ -114,6 +116,8 @@ install(
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PARENT_PROJECT_NAME}/${PROJECT_NAME}
+                  COMPONENT Development
     )
 
 install(DIRECTORY ${THIS_PARENT_PATH}/resources DESTINATION "." COMPONENT Resources)

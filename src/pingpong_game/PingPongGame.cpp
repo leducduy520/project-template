@@ -427,7 +427,6 @@ void PingPongGame::run()
     try {
         SoundManager::getInstance(sound_pool_volume, sound_default_volume);
         ThreadPool::getInstance(thread_pool_volume);
-
         SoundPlayer::loadSounds();
         m_countingText.start();
         while (game_window.isOpen()) {
@@ -436,10 +435,10 @@ void PingPongGame::run()
             update();
             render();
         }
-        m_countingText.stop();
         SoundPlayer::stopSounds();
-        ThreadPool::getInstance().wait();
+        m_countingText.stop();
         m_entity_manager->clear();
+        ThreadPool::getInstance().wait();
     }
     catch (const std::exception& e) {
         spdlog::critical("Failed to run PingPong Game: {}", e.what());
@@ -453,3 +452,42 @@ extern "C" IGame* createPingPongGame()
     // The caller is responsible for deleting the returned pointer
     return std::make_unique<PingPongGame>().release();
 }
+
+#ifdef _WIN32
+#include <Windows.h>
+
+// DllMain is the entry point for Windows DLLs
+// Called when DLL is loaded, unloaded, or when threads attach/detach
+// IMPORTANT: Keep DllMain minimal and non-blocking to avoid hanging during DLL load
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+{
+    // Use lpReserved to check if DLL is being loaded statically or dynamically
+    // lpReserved is NULL for dynamic loads, non-NULL for static loads
+    
+    switch (ul_reason_for_call) {
+    case DLL_PROCESS_ATTACH:
+        // DLL is being loaded into the process
+        // Disable thread library calls for better performance
+        // This prevents DllMain from being called for each thread attach/detach
+        // and reduces overhead
+        DisableThreadLibraryCalls(hModule);
+        // Note: Avoid heavy initialization here (like spdlog) as it can cause hangs
+        // Do minimal setup only - heavy initialization should be in createPingPongGame()
+        break;
+    case DLL_PROCESS_DETACH:
+        // DLL is being unloaded from the process
+        // Cleanup should be minimal here
+        // Heavy cleanup should be in destructors or explicit cleanup functions
+        break;
+    case DLL_THREAD_ATTACH:
+        // A new thread is being created in the process
+        // Note: This won't be called if DisableThreadLibraryCalls was used
+        break;
+    case DLL_THREAD_DETACH:
+        // A thread is exiting cleanly
+        // Note: This won't be called if DisableThreadLibraryCalls was used
+        break;
+    }
+    return TRUE; // Return TRUE to indicate successful initialization
+}
+#endif // _WIN32

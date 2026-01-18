@@ -144,12 +144,6 @@ void brick::registerParent(wall* parent) noexcept
     if (parent == nullptr)
         return;
     m_wall = parent;
-    
-    char char_id[10];
-    auto result = std::to_chars(char_id, char_id + sizeof(char_id), m_wall->get_id());
-    if (result.ec != std::errc()) {
-        return;
-    }
 
     subscribe("wall/destroyed");
 }
@@ -174,7 +168,7 @@ brick::BrickProperty brick::getProperty() const noexcept
 
 std::set<brick*> brick::get_neighbors(sf::Vector2f range) const noexcept
 {
-    return std::set<brick*>();
+    return m_wall->get_brick_neighbors(*this, range);
 }
 
 void brick::hit(const int damage, const bool relate) noexcept
@@ -274,14 +268,14 @@ void brick::hit_brick(bool& destroyed, const bool relate) const
 std::set<brick*> wall::get_brick_neighbors(const brick& a_brick, sf::Vector2f range) const noexcept
 {
     const sf::Vector2f center_point{a_brick.x(), a_brick.y()};
-    auto px_x = center_point.x - floorf((static_cast<float>(range.x) - 1.0F) / 2.0F) * a_brick.w();
-    auto px_y = center_point.y - floorf((static_cast<float>(range.y) - 1.0F) / 2.0F) * a_brick.h();
+    auto px_x = center_point.x - ((range.x - 1.0F) / 2.0F) * a_brick.w();
+    auto px_y = center_point.y - ((range.y - 1.0F) / 2.0F) * a_brick.h();
 
     std::set<brick*> neighbors;
-    for (int i = 0; i < range.y; ++i) {
-        for (int j = 0; j < range.x; ++j) {
-            const sf::Vector2f hit_point{px_x + static_cast<float>(i) * a_brick.w(),
-                                            px_y + static_cast<float>(j) * a_brick.h()};
+    for (auto i = 0; i < range.y; ++i) {
+        for (auto j = 0; j < range.x; ++j) {
+            const sf::Vector2f hit_point{px_x + i * a_brick.w(),
+                                            px_y + j * a_brick.h()};
 
             try {
                 auto* brick = this->m_data.at(hit_point).get();
@@ -330,13 +324,72 @@ void wall::load_from_file(std::filesystem::path file)
     this->clear();
     m_status.point = 0;
 
-    std::error_code erc;
-    if (std::filesystem::file_size(file, erc) == 0) {
-        spdlog::error("Cannot open file {}: {}", file.string(), erc.message());
+    // Security: Check if file exists first
+    if (!std::filesystem::exists(file)) {
+        spdlog::error("File does not exist: {}", file.string());
         return;
     }
 
-    const rapidcsv::Document doc(file.string(), rapidcsv::LabelParams(-1, -1));
+    // Security: Validate file path - normalize to prevent path traversal attacks
+    // canonical() resolves symlinks and gives absolute path, but requires file to exist
+    std::error_code path_ec;
+    const auto canonical_file = std::filesystem::canonical(file, path_ec);
+    if (path_ec) {
+        spdlog::error("Invalid file path {}: {}", file.string(), path_ec.message());
+        return;
+    }
+
+    // Security: Check if it's a regular file (not a directory, symlink, etc.)
+    if (!std::filesystem::is_regular_file(canonical_file)) {
+        spdlog::error("Path is not a regular file: {}", canonical_file.string());
+        return;
+    }
+
+    // Security: Validate file size with proper error checking
+    std::error_code size_ec;
+    const auto file_size = std::filesystem::file_size(canonical_file, size_ec);
+    if (size_ec) {
+        spdlog::error("Cannot get file size for {}: {}", canonical_file.string(), size_ec.message());
+        return;
+    }
+
+    // Security: Enforce maximum file size to prevent memory exhaustion (10MB limit)
+    constexpr std::uintmax_t MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+    if (file_size > MAX_FILE_SIZE) {
+        spdlog::error("File too large: {} bytes (max: {} bytes)", file_size, MAX_FILE_SIZE);
+        return;
+    }
+
+    // Security: Reject empty files
+    if (file_size == 0) {
+        spdlog::error("File is empty: {}", canonical_file.string());
+        return;
+    }
+
+    // Security: Parse CSV with exception handling
+    rapidcsv::Document doc;
+    try {
+        doc = rapidcsv::Document(canonical_file.string(), rapidcsv::LabelParams(-1, -1));
+    }
+    catch (const std::exception& e) {
+        spdlog::error("Failed to parse CSV file {}: {}", canonical_file.string(), e.what());
+        return;
+    }
+
+    // Security: Enforce maximum CSV dimensions to prevent memory exhaustion
+    constexpr size_t MAX_ROWS = 1000;
+    constexpr size_t MAX_COLUMNS = 1000;
+    const auto row_count = doc.GetRowCount();
+    const auto col_count = doc.GetColumnCount();
+
+    if (row_count > MAX_ROWS) {
+        spdlog::error("CSV has too many rows: {} (max: {})", row_count, MAX_ROWS);
+        return;
+    }
+    if (col_count > MAX_COLUMNS) {
+        spdlog::error("CSV has too many columns: {} (max: {})", col_count, MAX_COLUMNS);
+        return;
+    }
 
     const auto padding = (constants::window_width - constants::brick_width * doc.GetColumnCount()) / 2;
     for (decltype(doc.GetRowCount()) i = 0; i < doc.GetRowCount(); i++) {

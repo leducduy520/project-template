@@ -12,7 +12,7 @@
 #include <memory>
 
 class entity_manager;
-class IentityImpl;
+struct IentityImpl;
 
 class Ientity
 {

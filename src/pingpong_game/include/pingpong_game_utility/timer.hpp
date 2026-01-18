@@ -50,7 +50,7 @@ private:
 
     void threadFunction()
     {
-        while (repeat_ != 0) {
+        while (repeat_ != 0 && !stopped_) {
             update();
             if (repeat_ == 0) {
                 stopped_.store(true);
@@ -90,7 +90,7 @@ public:
         : callback_([obj, mem_func]() { (obj->*mem_func)(); }), start_time_(sclock::now()), pause_time_(sclock::now())
     {}
 
-    ~Timer()
+    virtual ~Timer()
     {
         try {
             stop();
