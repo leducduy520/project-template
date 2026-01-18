@@ -1,6 +1,7 @@
 project(pingpong_game)
 
 add_subdirectory(utility)
+add_subdirectory(resources)
 
 file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp" "${CMAKE_CURRENT_LIST_DIR}/*.c")
 file(GLOB HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/include/*.hpp"
@@ -9,6 +10,7 @@ file(GLOB HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/include/*.hpp"
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} PUBLIC pingpong_game_utility)
+add_dependencies(${PROJECT_NAME} generate_manifest)
 target_include_directories(
     ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>

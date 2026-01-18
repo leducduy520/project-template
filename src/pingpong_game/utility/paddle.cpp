@@ -7,6 +7,9 @@ sf::Texture& paddle::get_texture()
     static sf::Texture texture;
     static bool initialized = false;
     if (!initialized) {
+
+        Ientity::check_resource_integrity("steel.png");
+
         if (!texture.loadFromFile((constants::resouces_path / "steel.png").string())) {
             spdlog::error("Failed to load paddle texture from: {}", (constants::resouces_path / "steel.png").string());
         }

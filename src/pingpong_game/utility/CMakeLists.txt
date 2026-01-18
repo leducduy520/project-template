@@ -26,6 +26,7 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 # External Dependencies
 # =============================================================================
 find_path(RAPIDCSV_INCLUDE_DIRS "rapidcsv.h")
+find_path(PICOSHA2_INCLUDE_DIRS "picosha2.h")
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
 find_package(SFML COMPONENTS Graphics Audio CONFIG REQUIRED)
@@ -57,6 +58,7 @@ target_include_directories(
            $<BUILD_INTERFACE:${THIS_PARENT_PATH}/include/${PROJECT_NAME}>
     INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/interface>
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/interface> ${RAPIDCSV_INCLUDE_DIRS}
+              ${PICOSHA2_INCLUDE_DIRS}
     )
 
 # =============================================================================
@@ -119,5 +121,3 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PARENT_PROJECT_NAME}/${PROJECT_NAME}
                   COMPONENT Development
     )
-
-install(DIRECTORY ${THIS_PARENT_PATH}/resources DESTINATION "." COMPONENT Resources)

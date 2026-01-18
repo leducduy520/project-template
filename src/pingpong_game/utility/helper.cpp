@@ -2,6 +2,7 @@
 #include "brick.hpp"
 #include "magic_enum/magic_enum.hpp"
 #include "rapidcsv.h"
+#include "resource_integrity.hpp"
 #include <chrono>
 #include <fmt/format.h>
 
@@ -85,6 +86,22 @@ namespace utilities
             static sf::Font font_modesticsans_bolditalic;
 
             if (!initialized) {
+                if (!resource_integrity::ResourceIntegrityChecker::is_manifest_loaded()) {
+                    resource_integrity::ResourceIntegrityChecker::load_manifest(constants::resouces_path / "resources_manifest.json");
+                }
+                auto resource_check = [](const std::string& filename) {
+                    if (!resource_integrity::ResourceIntegrityChecker::verify_file(filename, constants::resouces_path)) {
+                        throw std::logic_error("File integrity check FAILED for " + filename);
+                    }
+                };
+                resource_check("Cross Boxed.ttf");
+                resource_check("Roboto/Roboto-Regular.ttf");
+                resource_check("Roboto/Roboto-Italic.ttf");
+                resource_check("Roboto/Roboto-Bold.ttf");
+                resource_check("ModesticSans/ModesticSans-BoldItalic.ttf");
+                resource_check("ModesticSans/ModesticSans-Bold.ttf");
+
+
                 (void)font_cross_boxed.openFromFile((constants::resouces_path / "Cross Boxed.ttf").string());
                 (void)font_roboto_regurlar.openFromFile((constants::resouces_path / "Roboto/Roboto-Regular.ttf").string());
                 (void)font_roboto_italic.openFromFile((constants::resouces_path / "Roboto/Roboto-Italic.ttf").string());
@@ -121,17 +138,6 @@ namespace utilities
         std::bernoulli_distribution generator::bernoulli_dist(0.25F);
         std::uniform_int_distribution<int> generator::uniform_int_dist(-10, 10);
         std::mutex generator::rd_mutex{};
-
-        // int getRandomInt(
-        //     std::function<int(std::uniform_int_distribution<int>&, std::mt19937&)>& fnc)
-        // {
-        //     return fnc(generator::uniform_int_dist, generator::gen);
-        // }
-
-        // bool getRandomBoolen(std::function<bool(std::bernoulli_distribution&, std::mt19937&)>& fnc)
-        // {
-        //     return fnc(generator::bernoulli_dist, generator::gen);
-        // }
     } // namespace random
 
 } // namespace utilities

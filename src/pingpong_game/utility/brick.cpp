@@ -15,6 +15,8 @@ sf::Image& getImage(brick::BrickProperty property)
     static bool initialized = false;
     static std::vector<sf::Image> list;
     if (!initialized) {
+        Ientity::check_resource_integrity("brick.png");
+        
         sf::Image source;
         if (!source.loadFromFile((constants::resouces_path / "brick.png").string())) {
             const std::string message =
@@ -364,6 +366,18 @@ void wall::load_from_file(std::filesystem::path file)
     if (file_size == 0) {
         spdlog::error("File is empty: {}", canonical_file.string());
         return;
+    }
+
+    // Security: Verify file integrity against manifest (if available)
+    // Get relative path for manifest lookup
+    std::filesystem::path relative_file_path = std::filesystem::relative(canonical_file, constants::resouces_path);
+    if (resource_integrity::ResourceIntegrityChecker::is_manifest_loaded()) {
+        if (!resource_integrity::ResourceIntegrityChecker::verify_file(relative_file_path,
+                                                                          constants::resouces_path)) {
+            spdlog::error("File integrity check FAILED for: {}", relative_file_path.string());
+            spdlog::error("File may have been modified. Loading aborted for security.");
+            return;
+        }
     }
 
     // Security: Parse CSV with exception handling

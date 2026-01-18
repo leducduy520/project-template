@@ -5,6 +5,7 @@
 #include "interactions.hpp"
 #include "soundplayer.hpp"
 #include "countingtext.hpp"
+#include "resource_integrity.hpp"
 #include <memory>
 #include <spdlog/spdlog.h>
 
@@ -369,6 +370,21 @@ PingPongGame::PingPongGame(std::string resourcePath)
 void PingPongGame::init(std::string& resourcePath)
 {
     constants::resouces_path = resourcePath;
+
+    // Security: Load resource integrity manifest if available
+    const auto manifest_path = std::filesystem::path(resourcePath) / "resources_manifest.json";
+    if (std::filesystem::exists(manifest_path)) {
+        if (resource_integrity::ResourceIntegrityChecker::load_manifest(manifest_path)) {
+            spdlog::info("Resource integrity checking enabled");
+        }
+        else {
+            spdlog::warn("Failed to load resource manifest - integrity checking disabled");
+        }
+    }
+    else {
+        spdlog::info("Resource manifest not found - integrity checking disabled (manifest: {})",
+                     manifest_path.string());
+    }
 
     game_window.setFramerateLimit(60);
     game_window.setVerticalSyncEnabled(true);

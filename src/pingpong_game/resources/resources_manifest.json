@@ -1,0 +1,90 @@
+{
+  "files": {
+    "CMakeLists.txt": {
+      "hash": "5532ace29e32c56aabfe2d2441f483431f8cec7b9246592ed40cb5ba3bc15058",
+      "size": 3376
+    },
+    "Cross Boxed.ttf": {
+      "hash": "32c7d813f2e43c4fd2f162f52266b62e72a57588237b3066ea370b36f1373a50",
+      "size": 69300
+    },
+    "ModesticSans/ModesticSans-Bold.otf": {
+      "hash": "d29e411531c2651a3bea1612f0e8b40b80cafb61ed875fdfc17f31e1d8feb081",
+      "size": 40260
+    },
+    "ModesticSans/ModesticSans-Bold.ttf": {
+      "hash": "072719a53f299804ea3e34fb11a2ca90f70247656169cafad42b216b65ee994c",
+      "size": 128236
+    },
+    "ModesticSans/ModesticSans-BoldItalic.otf": {
+      "hash": "3a3cb0834d749883dc801b05f82fa25526a004858b4d61b66dad5cc4834173a7",
+      "size": 41068
+    },
+    "ModesticSans/ModesticSans-BoldItalic.ttf": {
+      "hash": "b6a60b004c377a9ed13c2ea0c251b79be79eae3c1fc54627ad4f72f93a1a91f4",
+      "size": 104544
+    },
+    "Roboto/Roboto-Bold.ttf": {
+      "hash": "24571503140760240924dcd1238f77e7cd0454c0d8b0793990cefa2fad71471f",
+      "size": 163448
+    },
+    "Roboto/Roboto-Italic.ttf": {
+      "hash": "470123c6fb5d6c0005431c0f5390742497c55087361a7636b7e82eb35635ded7",
+      "size": 160736
+    },
+    "Roboto/Roboto-Regular.ttf": {
+      "hash": "16466ef65064e6f3885a6d2806b8949ac1ac38b524dd0cf8fc96565eb4cc28e8",
+      "size": 158604
+    },
+    "background.jpg": {
+      "hash": "9ae89f7f07729bcc4e252351c0b55470e4dba3dbc736b9b60ed4b3515df97c44",
+      "size": 32936
+    },
+    "ball.png": {
+      "hash": "651396d58b3a3d4c2ce97db46a22f314bbb1691b34b3656e27258273d0986650",
+      "size": 472
+    },
+    "bomb_explosion.wav": {
+      "hash": "31d4afce5803740af3ad7782a503a6d98be81229315725d5dfad6e479be76ad6",
+      "size": 81998
+    },
+    "brick.png": {
+      "hash": "6c224f7ecbe2c675a26e7c813f033bc47362842de735cc4a0e43d3f5ebf830fa",
+      "size": 6991
+    },
+    "brick_bounce.wav": {
+      "hash": "2d70974b5f5302ea615682b38b3571a83e70afffdf86cb01b87a6f1a51ff517b",
+      "size": 20594
+    },
+    "diamond_destroy.wav": {
+      "hash": "0ff5df2e122c7073428c4d8db9f1f3ec6dab7dc5f3af2b6fe52b9b95a123a133",
+      "size": 57474
+    },
+    "game_background.wav": {
+      "hash": "099959faca07c8b17473379a8ece9c98ab94bf305b9ac5ca6079341a22fe85cd",
+      "size": 1413052
+    },
+    "generate_manifest.cpp": {
+      "hash": "b446077663a05f5825b9a4c9c6540cc2b0dec831ad94626e0290f6c412a20dbd",
+      "size": 2562
+    },
+    "paddle_bounce.wav": {
+      "hash": "5b06f44989dafbf6ed04b9a0f4643f7a6a3089c5ec6aa8bf2128e0e3d8091f60",
+      "size": 20558
+    },
+    "steel.png": {
+      "hash": "129162085d3f279c57b445d3a4742a0a7f841da6f3423dfd5c2c6cec8fb1c49f",
+      "size": 3462
+    },
+    "wall.csv": {
+      "hash": "5c95ec4b57bff88fd0d510fed8b9009d1ae7b863d676663a69c7768adae8c278",
+      "size": 266
+    },
+    "wall_bounce.wav": {
+      "hash": "c3840ef0e74afbf8c94b0d04c3073cefcb148563fe384e9194003a2bf2f38dad",
+      "size": 12366
+    }
+  },
+  "generated": 1768711746,
+  "version": "1.0"
+}

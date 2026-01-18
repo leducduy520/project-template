@@ -17,6 +17,7 @@
     "boost-asio",
     "rapidcsv",
     "spdlog",
-    "fmt"
+    "fmt",
+    "picosha2"
   ]
 }

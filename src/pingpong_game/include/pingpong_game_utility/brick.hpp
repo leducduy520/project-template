@@ -52,12 +52,10 @@ private:
 
     fnhit(brick) fnhit(diamond) fnhit(bomb) fnhit(scaleup) fnhit(clone)
 
-        static sf::Texture& get_texture(BrickProperty property = BRICK);
+    static sf::Texture& get_texture(BrickProperty property = BRICK);
 };
 
-extern sf::Image& getImage(brick::BrickProperty property);
-
-typedef sf::Vector2f e_location;
+using e_location = sf::Vector2f;
 
 namespace std
 {

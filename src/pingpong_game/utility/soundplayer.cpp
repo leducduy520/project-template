@@ -5,6 +5,7 @@
 #include <chrono>
 #include <magic_enum/magic_enum_all.hpp>
 #include "constants.hpp"
+#include "resource_integrity.hpp"
 
 // Static member initialization
 bool SoundManager::s_shutdown_called = false;
@@ -238,31 +239,45 @@ void SoundManager::cleanupSounds()
 
 void SoundPlayer::loadSounds()
 {
-    magic_enum::enum_for_each<SoundEffect_t>([](auto val) {
+    if (!resource_integrity::ResourceIntegrityChecker::is_manifest_loaded()) {
+        resource_integrity::ResourceIntegrityChecker::load_manifest(constants::resouces_path / "resources_manifest.json");
+    }
+    auto resource_check = [](const std::string& filename) {
+        if (!resource_integrity::ResourceIntegrityChecker::verify_file(filename, constants::resouces_path)) {
+            throw std::logic_error("File integrity check FAILED for " + filename);
+        }
+    };
+    magic_enum::enum_for_each<SoundEffect_t>([&resource_check](auto val) {
         constexpr SoundEffect_t mode = val;
         switch (mode) {
         case SoundEffect_t::WALL_BOUNCE:
         {
+            resource_check("wall_bounce.wav");
             SoundManager::getInstance().loadSoundEffect(sound_id::WALL_BOUNCE_ID,
                                                         (constants::resouces_path / "wall_bounce.wav").string());
         } break;
         case SoundEffect_t::BRICK_BOUNCE:
         {
+
+            resource_check("brick_bounce.wav");
             SoundManager::getInstance().loadSoundEffect(sound_id::BRICK_BOUNCE_ID,
                                                         (constants::resouces_path / "brick_bounce.wav").string());
         } break;
         case SoundEffect_t::PADDLE_BOUNCE:
         {
+            resource_check("paddle_bounce.wav");
             SoundManager::getInstance().loadSoundEffect(sound_id::PADDLE_BOUNCE_ID,
                                                         (constants::resouces_path / "paddle_bounce.wav").string());
         } break;
         case SoundEffect_t::DIAMOND_DESTROY:
         {
+            resource_check("diamond_destroy.wav");
             SoundManager::getInstance().loadSoundEffect(sound_id::DIAMOND_DESTROY_ID,
                                                         (constants::resouces_path / "diamond_destroy.wav").string());
         } break;
         case SoundEffect_t::BOMB_EXPLOSION:
         {
+            resource_check("bomb_explosion.wav");
             SoundManager::getInstance().loadSoundEffect(sound_id::BOMB_EXPLOSION_ID,
                                                         (constants::resouces_path / "bomb_explosion.wav").string());
         } break;

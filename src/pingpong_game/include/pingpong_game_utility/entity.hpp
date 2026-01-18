@@ -3,6 +3,7 @@
 
 #include "SFML/Graphics.hpp"
 #include "constants.hpp"
+#include "resource_integrity.hpp"
 #include <list>
 #include <functional>
 #include <string>
@@ -66,6 +67,16 @@ public:
     static std::string get_type_name() noexcept
     {
         return std::string(typeid(T).name());
+    }
+
+    static void check_resource_integrity(const std::filesystem::path& relative_file_path)
+    {
+        if (!resource_integrity::ResourceIntegrityChecker::is_manifest_loaded()) {
+            resource_integrity::ResourceIntegrityChecker::load_manifest(constants::resouces_path / "resources_manifest.json");
+        }
+        if (!resource_integrity::ResourceIntegrityChecker::verify_file(relative_file_path, constants::resouces_path)) {
+            throw std::logic_error("File integrity check FAILED for " + relative_file_path.string());
+        }
     }
 };
 

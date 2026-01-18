@@ -1,5 +1,6 @@
 #include "background.hpp"
 #include "constants.hpp"
+#include "resource_integrity.hpp"
 #include <iostream>
 #include <spdlog/spdlog.h>
 
@@ -8,6 +9,7 @@ sf::Texture& background::get_texture()
     static sf::Texture texture;
     static bool initialized = false;
     if (!initialized) {
+        
         if (!texture.loadFromFile((constants::resouces_path / "background.jpg").string())) {
             spdlog::error("Failed to load background texture from: {}",
                           (constants::resouces_path / "background.jpg").string());
