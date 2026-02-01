@@ -11,3 +11,12 @@
 /sonar/**/lib
 /sonar/**/*.zip
 /sonar/**/*.exe
+
+# Coverage files
+*.gcda
+*.gcno
+*.gcov
+coverage/
+*.info
+*.profraw
+*.profdata

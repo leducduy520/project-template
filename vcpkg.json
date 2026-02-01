@@ -18,6 +18,7 @@
     "rapidcsv",
     "spdlog",
     "fmt",
-    "picosha2"
+    "picosha2",
+    "gtest"
   ]
 }

@@ -44,6 +44,7 @@ struct constants
     static const sf::SoundBuffer null_buffer;
 };
 
+inline std::filesystem::path constants::resouces_path{};
 inline const sf::Texture constants::null_texture{};
 inline const sf::Font constants::null_font{};
 inline const sf::SoundBuffer constants::null_buffer{};

@@ -72,6 +72,10 @@
       "hash": "5b06f44989dafbf6ed04b9a0f4643f7a6a3089c5ec6aa8bf2128e0e3d8091f60",
       "size": 20558
     },
+    "resources_manifest.json": {
+      "hash": "af07fc1c5f494b0324ea7f4a45a9f850d59f88d219347967b9e22f1e0a84e13a",
+      "size": 2985
+    },
     "steel.png": {
       "hash": "129162085d3f279c57b445d3a4742a0a7f841da6f3423dfd5c2c6cec8fb1c49f",
       "size": 3462
@@ -85,6 +89,6 @@
       "size": 12366
     }
   },
-  "generated": 1768711746,
+  "generated": 1769605481,
   "version": "1.0"
 }

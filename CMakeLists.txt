@@ -27,6 +27,7 @@ option(ENABLE_WARNINGS_AS_ERRORS "enable warnings as errors" OFF)
 option(ENABLE_CLANG_TIDY "enable clang tidy" OFF)
 option(ENABLE_SANITIZE_ADDR "enable address sanitizer" OFF)
 option(ENABLE_SANITIZE_UNDEF "enable undefined behavior sanitizer" OFF)
+option(ENABLE_COVERAGE "enable code coverage" OFF)
 
 cmake_dependent_option(INSTALL_DOCS "install docs" OFF "NOT BUILD_DOCS" OFF)
 cmake_dependent_option(INSTALL_GRAPH "install graph" OFF "NOT BUILD_GRAPH" OFF)
@@ -75,6 +76,9 @@ add_project_documentation()
 include(Sanitizer)
 add_sanitizer_flags()
 
+include(Coverage)
+add_coverage_flags()
+
 if(THIS_OS_LINUX)
     set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 endif(THIS_OS_LINUX)
@@ -85,21 +89,6 @@ add_subdirectory(app)
 if(BUILD_TEST)
     include(CTest)
     enable_testing()
-    # add_subdirectory(test)
+    add_subdirectory(test)
+    setup_coverage_target()
 endif(BUILD_TEST)
-
-# if(NOT SUBPROJECT)
-# configure_package_config_file(
-# ${CMAKE_CURRENT_LIST_DIR}/cmake/ZooClassConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake
-# INSTALL_DESTINATION ${INSTALL_CONFIG_DIR}
-# )
-
-# write_basic_package_version_file(
-# "${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake" COMPATIBILITY SameMajorVersion
-# )
-
-# install(
-# FILES ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/ZooClassConfigVersion.cmake
-# DESTINATION ${INSTALL_CONFIG_DIR}
-# )
-# endif(NOT SUBPROJECT)

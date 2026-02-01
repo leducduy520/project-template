@@ -10,8 +10,6 @@
 #include <spdlog/spdlog.h>
 #include <cstdlib>
 
-std::filesystem::path constants::resouces_path;
-
 extern void CountingTextUpdate(CountingText* text);
 
 void PingPongGame::updateGameSessionStartTime()
