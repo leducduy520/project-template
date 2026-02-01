@@ -1,0 +1,80 @@
+# Build artifacts
+out/
+build/
+bin/
+lib/
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.dll
+
+# Testing
+test/
+Testing/
+*.log
+*.tmp
+
+# Dependencies (should be installed in container)
+vcpkg/
+
+# Version control
+.git/
+.github/
+.gitignore
+.gitattributes
+.gitmodules
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Documentation (typically not needed in Docker images)
+*.md
+docs/
+README*
+CHANGELOG*
+LICENSE*
+CONTRIBUTING*
+
+# Docker files (don't include Dockerfile in the image)
+Dockerfile*
+docker/
+.dockerignore
+docker-compose*.yml
+
+# CI/CD
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+Jenkinsfile
+
+# Environment and config files
+.env
+.env.*
+*.local
+config.local.*
+
+# Temporary files
+*.bak
+*.swp
+*.tmp
+*.cache
+.cache/

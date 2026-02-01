@@ -1,30 +1,68 @@
+# Use specific Ubuntu version for reproducible builds
+FROM ubuntu:22.04
 
-FROM ubuntu:latest
+# Set environment variables to avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=UTC
 
-RUN  apt-get update
-RUN  apt upgrade -y
-RUN  apt-get install -y build-essential \
-cmake git doxygen python3 python3-pip \
-ninja-build graphviz pkg-config dos2unix cmake-format \
-libxrandr-dev \
-libxcursor-dev \
-libudev-dev \
-libopenal-dev \
-libflac-dev \
-libvorbis-dev \
-libgl1-mesa-dev \
-libegl1-mesa-dev \
-libdrm-dev \
-libgbm-dev \
-libfreetype6-dev \
-libssl-dev \
-clang-tidy clang-format wget \
-libx11-dev libxi-dev
+# Install CMake 3.30 from Kitware and all other packages in a single layer
+# This reduces image size and number of layers
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        gnupg \
+        wget && \
+    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \
+    echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        autoconf \
+        automake \
+        build-essential \
+        clang-format \
+        clang-tidy \
+        cmake=3.30.* \
+        cmake-data=3.30.* \
+        cmake-format \
+        curl \
+        doxygen \
+        dos2unix \
+        git \
+        graphviz \
+        lcov \
+        libdrm-dev \
+        libegl1-mesa-dev \
+        libflac-dev \
+        libfreetype6-dev \
+        libgbm-dev \
+        libgl1-mesa-dev \
+        libopenal-dev \
+        libssl-dev \
+        libtool \
+        libudev-dev \
+        libvorbis-dev \
+        libx11-dev \
+        libxcursor-dev \
+        libxi-dev \
+        libxrandr-dev \
+        ninja-build \
+        pkg-config \
+        python3 \
+        python3-pip \
+        tar \
+        unzip \
+        zip &&\
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ADD https://github.com/mongodb/mongo-cxx-driver.git#r3.10.2 /usr/src/mongo-cxx-driver
-RUN cmake -S /usr/src/mongo-cxx-driver -B /usr/src/mongo-cxx-driver/build --fresh -DCMAKE_INSTALL_PREFIX="/usr/src/external/mongo-cxx-driver" -DBUILD_SHARED_LIBS=OFF -DENABLE_BSONCXX_POLY_USE_IMPLS=ON -DBUILD_VERSION="3.10.2" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS_INIT="-fPIC" 
-RUN cmake --build /usr/src/mongo-cxx-driver/build -t install --config RelWithDebInfo -j8
+# Create a non-root user for security
+RUN groupadd -r builder && \
+    useradd -r -g builder -m -s /bin/bash builder
 
-ADD https://github.com/SFML/SFML.git#2.6.x /usr/src/SFML
-RUN cmake -S /usr/src/SFML -B /usr/src/SFML/build --fresh -DCMAKE_INSTALL_PREFIX="/usr/src/external/SFML" -DBUILD_SHARED_LIBS=OFF -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS_INIT="-fPIC"
-RUN cmake --build /usr/src/SFML/build -t install --config RelWithDebInfo -j8
+# Switch to non-root user
+USER builder
+
+# Set working directory
+WORKDIR /home/builder
+
+CMD ["/bin/bash"]
