@@ -1,6 +1,5 @@
 # Set the default behavior for all files.
 * text=auto eol=lf
-
 # Normalized and converts to native line endings on checkout.
 *.c text
 *.cc text
@@ -9,3 +8,6 @@
 *.h text
 *.hxx text
 *.hpp text
+*.png filter=lfs diff=lfs merge=lfs -text
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.ttf filter=lfs diff=lfs merge=lfs -text

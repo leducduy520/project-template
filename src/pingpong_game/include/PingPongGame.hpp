@@ -10,6 +10,7 @@
 #include "entitymanager.hpp"
 #include "nlohmann/json.hpp"
 #include "paddle.hpp"
+#include "MainProcessManager.hpp"
 #include <memory>
 #include <vector>
 
@@ -20,6 +21,7 @@ class PingPongGame : public IGame
                                  "Simple Breakout Game Version 9",
                                  sf::Style::None};
     std::shared_ptr<entity_manager> m_entity_manager;
+    std::unique_ptr<ipc::MainProcessManager> m_main_process_manager {std::make_unique<ipc::MainProcessManager>("ipc_queue_pingpong_game")};
     enum class game_state
     {
         paused,

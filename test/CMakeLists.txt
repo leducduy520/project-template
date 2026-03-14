@@ -5,7 +5,7 @@ find_package(GTest CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME} test.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE pingpong_game_utility)
+target_link_libraries(${PROJECT_NAME} PRIVATE pingponggameutility)
 
 # Link against Google Test
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest GTest::gtest_main GTest::gmock)

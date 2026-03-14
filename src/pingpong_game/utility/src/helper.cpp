@@ -102,7 +102,7 @@ namespace utilities
                         throw std::logic_error("File integrity check FAILED for " + filename);
                     }
                 };
-                resource_check("Cross Boxed.ttf");
+                resource_check("Cross-Boxed.ttf");
                 resource_check("Roboto/Roboto-Regular.ttf");
                 resource_check("Roboto/Roboto-Italic.ttf");
                 resource_check("Roboto/Roboto-Bold.ttf");
@@ -110,7 +110,7 @@ namespace utilities
                 resource_check("ModesticSans/ModesticSans-Bold.ttf");
 
 
-                (void)font_cross_boxed.openFromFile((constants::resouces_path / "Cross Boxed.ttf").string());
+                (void)font_cross_boxed.openFromFile((constants::resouces_path / "Cross-Boxed.ttf").string());
                 (void)font_roboto_regurlar.openFromFile((constants::resouces_path / "Roboto/Roboto-Regular.ttf").string());
                 (void)font_roboto_italic.openFromFile((constants::resouces_path / "Roboto/Roboto-Italic.ttf").string());
                 (void)font_roboto_bold.openFromFile((constants::resouces_path / "Roboto/Roboto-Bold.ttf").string());

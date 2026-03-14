@@ -1,38 +1,25 @@
-# =============================================================================
-# Resource Manifest Generator Tool
-# =============================================================================
-# This tool generates a manifest file with SHA-256 hashes for all resource files
-# to enable integrity checking at runtime.
-
+# Resource manifest generator tool
 project(generate_manifest)
 
-# =============================================================================
-# Find Dependencies
-# =============================================================================
+# Dependencies
 find_path(PICOSHA2_INCLUDE_DIRS "picosha2.h")
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
-# =============================================================================
-# Executable Definition
-# =============================================================================
+# Executable
 add_executable(generate_manifest
     generate_manifest.cpp
 )
 
-# =============================================================================
-# Include Directories
-# =============================================================================
+# Includes
 target_include_directories(
     generate_manifest
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/pingpong_game_utility
+        ${CMAKE_CURRENT_LIST_DIR}/../utility/include
         ${PICOSHA2_INCLUDE_DIRS}
 )
 
-# =============================================================================
-# Link Libraries
-# =============================================================================
+# Links
 target_link_libraries(
     generate_manifest
     PRIVATE
@@ -40,28 +27,19 @@ target_link_libraries(
         spdlog::spdlog_header_only
 )
 
-# =============================================================================
-# Compiler Options
-# =============================================================================
+# Compiler options
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU|Clang")
     target_compile_options(generate_manifest PRIVATE -Wall -Wextra)
 endif()
 
-# =============================================================================
-# Set Output Directory
-# =============================================================================
-# Output the executable to the build directory, not installed
+# Properties
 set_target_properties(
     generate_manifest
     PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tools
 )
 
-# =============================================================================
-# Post-Build: Generate Resource Manifest
-# =============================================================================
-# Generate resource manifest after building generate_manifest tool
-# The manifest will be generated in the source resources directory
+# Post-build command
 add_custom_command(
     TARGET generate_manifest
     POST_BUILD
@@ -73,15 +51,38 @@ add_custom_command(
     VERBATIM
 )
 
-# =============================================================================
-# Install Resource Files
-# =============================================================================
-# Install all resource files to install_prefix/resources
-# Exclude *.cpp and CMakeLists.txt files
+# Resource files
+set(RESOURCE_FILES
+    wall.csv
+    resources_manifest.json
+    background.jpg
+    ball.png
+    brick.png
+    steel.png
+    bomb_explosion.wav
+    brick_bounce.wav
+    diamond_destroy.wav
+    game_background.wav
+    paddle_bounce.wav
+    wall_bounce.wav
+    Cross-Boxed.ttf
+    ModesticSans/ModesticSans-Bold.ttf
+    ModesticSans/ModesticSans-BoldItalic.ttf
+    Roboto/Roboto-Bold.ttf
+    Roboto/Roboto-Italic.ttf
+    Roboto/Roboto-Regular.ttf
+    PARENT_SCOPE
+)
+
+source_group("Resource Files" FILES ${RESOURCE_FILES})
+
+# Install
 install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-    DESTINATION resources
+    DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
     COMPONENT Resources
     PATTERN "*.cpp" EXCLUDE
+    PATTERN "*.h" EXCLUDE
+    PATTERN "*.hpp" EXCLUDE
     PATTERN "CMakeLists.txt" EXCLUDE
 )

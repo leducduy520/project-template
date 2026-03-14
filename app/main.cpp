@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
     int c;
     
     // Parse arguments
-    while ((c = getopt_long(argc, argv, "vf:ch", long_options, &option_index)) != -1) {
+    while ((c = getopt_long(argc, argv, "vchf:", long_options, &option_index)) != -1) {
         switch (c) {
         case 'v':
             verbose = true;
@@ -148,12 +148,14 @@ int main(int argc, char* argv[])
         }
     }
 #endif
-    
-    if (optind >= argc) {
-        spdlog::error("Expected argument after options");
-        return EXIT_FAILURE;
+
+    if (optind < argc) {
+        spdlog::error("non-option ARGV-elements: ");
+        while (optind < argc)
+            spdlog::error("%s ", argv[optind++]);
+        spdlog::error("\n");
     }
-    
+
     // Configure logging
     if (!log_file.empty() && log_console) {
         set_log_both(log_file);
@@ -172,10 +174,10 @@ int main(int argc, char* argv[])
 #else
     ModuleManager moduleManager(SELF_PATH.parent_path() / "lib");
 #endif
-    moduleManager.load_plugin("pingpong_game");
-    if (moduleManager.has_plugin("pingpong_game")) {
+    moduleManager.load_plugin("pingponggame");
+    if (moduleManager.has_plugin("pingponggame")) {
         // Retrieve function pointers for creating and destroying the Game object
-        auto createGame = moduleManager.get_function<IGame*()>("pingpong_game", "createPingPongGame");
+        auto createGame = moduleManager.get_function<IGame*()>("pingponggame", "createPingPongGame");
 
         if (createGame) {
             // Create the Game object

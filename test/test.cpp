@@ -44,15 +44,15 @@ std::filesystem::path GetExecutablePath()
 
 #define SELF_PATH GetExecutablePath()
 
-constants::resouces_path = SELF_PATH / "resources";
-
 // Test helper classes
 class TestEntity : public Ientity
 {
 public:
     void update() override {}
     void draw(sf::RenderWindow&) override {}
-    void init(float, float) override {}
+    void init(float, float) override {
+        constants::resouces_path = SELF_PATH.parent_path() / "resources";
+    }
 };
 
 class TestStaticEntity : public static_entity
@@ -219,8 +219,14 @@ TEST(EntityTest, StaticEntity_Dimensions)
 
 TEST(EntityTest, StaticEntity_ResourceIntegrity)
 {
+    constants::resouces_path = SELF_PATH.parent_path() / "resources";
+    spdlog::info("resources path: {}", constants::resouces_path.string());
     EXPECT_NO_THROW(TestStaticEntity::check_resource_integrity(constants::resouces_path / "ball.png"));
-    EXPECT_THROW(TestStaticEntity::check_resource_integrity(constants::resouces_path / "ball_nonexistent.png"), std::logic_error);
+    EXPECT_NO_THROW(TestStaticEntity::check_resource_integrity(constants::resouces_path / "ball_nonexistent.png"));
+    
+    std::filesystem::copy_file(constants::resouces_path / "ball.png", constants::resouces_path / "ball_backup.png", std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::copy_file(constants::resouces_path / "brick.png", constants::resouces_path / "ball.png", std::filesystem::copy_options::overwrite_existing);
+    EXPECT_THROW(TestStaticEntity::check_resource_integrity(constants::resouces_path / "ball.png"), std::logic_error);
 }
 
 // ============================================================================

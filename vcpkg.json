@@ -15,6 +15,7 @@
     "boost-dll",
     "boost-thread",
     "boost-asio",
+    "boost-interprocess",
     "rapidcsv",
     "spdlog",
     "fmt",
